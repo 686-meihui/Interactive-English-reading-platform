@@ -1,0 +1,1340 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Working with Others 電子書</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: an open book. Left page = big read-aloud text, right page = teacher's notes. One page at a time on narrow screens. */
+:root{
+  --desk:#d9e6ec; --paperL:#fffef9; --paperR:#eaf3f9; --card:#ffffff;
+  --ink:#1f2a44; --ink2:#52607f; --line:#c5d3e0; --accent:#0f857d; --accent-ink:#ffffff;
+  --accent-soft:#d6f0ec; --hl:#ffe27a; --hl-ink:#1f2a44; --coral:#d9483c; --coral-soft:#fde6e3;
+  --blue:#2459c9; --red:#c92a2a; --green:#177a43; --gray:#5b667f; --warn:#fff3c4;
+  --spine:rgba(31,42,68,.18); --shadow:0 10px 30px rgba(31,42,68,.18);
+  --f-display:"Fredoka","Noto Sans TC",system-ui,sans-serif;
+  --f-read:"Andika","Trebuchet MS","Noto Sans TC",system-ui,sans-serif;
+  --f-ui:"Noto Sans TC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#0d1320; --paperL:#1c2438; --paperR:#162033; --card:#222c44;
+    --ink:#eef2ff; --ink2:#aab6d3; --line:#34425f; --accent:#43cfc2; --accent-ink:#06211f;
+    --accent-soft:#17403e; --hl:#7a6516; --hl-ink:#fff7d6; --coral:#ff8a7d; --coral-soft:#4a2723;
+    --blue:#8db4ff; --red:#ff8c8c; --green:#6fdc9a; --gray:#a3aecb; --warn:#4b3f12;
+    --spine:rgba(0,0,0,.5); --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0d1320; --paperL:#1c2438; --paperR:#162033; --card:#222c44;
+  --ink:#eef2ff; --ink2:#aab6d3; --line:#34425f; --accent:#43cfc2; --accent-ink:#06211f;
+  --accent-soft:#17403e; --hl:#7a6516; --hl-ink:#fff7d6; --coral:#ff8a7d; --coral-soft:#4a2723;
+  --blue:#8db4ff; --red:#ff8c8c; --green:#6fdc9a; --gray:#a3aecb; --warn:#4b3f12;
+  --spine:rgba(0,0,0,.5); --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--f-ui);
+  padding-inline:max(12px,env(safe-area-inset-left,0px)) max(12px,env(safe-area-inset-right,0px));
+  -webkit-text-size-adjust:100%;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{height:100%;display:flex;flex-direction:column;gap:8px;padding-block:8px;max-width:1500px;margin:0 auto}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand .logo{width:38px;height:38px;border-radius:10px;background:var(--accent);display:grid;place-items:center;flex:none}
+.brand b{font-family:var(--f-display);font-size:1.15rem;font-weight:600;display:block;line-height:1.1}
+.brand small{color:var(--ink2);font-size:.78rem}
+.tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tb{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font-size:.88rem;font-weight:500;min-height:40px}
+.tb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tb svg{width:18px;height:18px;flex:none}
+.tb:focus-visible,.btn:focus-visible,.chip:focus-visible,.blank:focus-visible,.sent:focus-visible,.toc-item:focus-visible,.vcard:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* the book */
+.book{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;position:relative;border-radius:18px;box-shadow:var(--shadow)}
+.book::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:26px;transform:translateX(-50%);pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--spine) 50%,transparent);z-index:3;border-radius:6px}
+.page{position:relative;min-width:0;overflow-y:auto;overflow-x:hidden;padding:clamp(16px,2.6vw,34px);overscroll-behavior:contain;scrollbar-width:thin}
+.page.left{background:var(--paperL);border-radius:18px 0 0 18px;font-family:var(--f-read);
+  padding-bottom:0}
+.page.right{background:var(--paperR);border-radius:0 18px 18px 0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 34px;background-attachment:local;background-position:0 12px}
+.page.right>*{position:relative}
+.book.turn-next .page.right{animation:turnNext .38s ease both;transform-origin:left center}
+.book.turn-prev .page.left{animation:turnPrev .38s ease both;transform-origin:right center}
+@keyframes turnNext{from{transform:perspective(1400px) rotateY(-24deg);opacity:.2}to{transform:none;opacity:1}}
+@keyframes turnPrev{from{transform:perspective(1400px) rotateY(24deg);opacity:.2}to{transform:none;opacity:1}}
+
+/* left page reading */
+.read{font-size:calc(var(--fs)*clamp(1.55rem,2.5vw,2.25rem));line-height:1.75;color:var(--ink)}
+.read p{margin:0 0 .7em}
+.read h2.title{font-family:var(--f-display);font-weight:600;font-size:1.5em;line-height:1.15;margin:.1em 0 .1em}
+.read .by{font-size:.62em;color:var(--ink2);margin:0 0 .6em}
+.read h3{font-family:var(--f-display);font-weight:600;font-size:1.25em;margin:.5em 0 .3em;line-height:1.2}
+.read .label{font-family:var(--f-ui);font-size:.5em;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:1em 0 .2em}
+.read ul{list-style:none;margin:0 0 .7em;padding:0}
+.read li{position:relative;padding-left:1.3em;margin:.1em 0}
+.read li::before{content:"";position:absolute;left:.15em;top:.62em;width:.5em;height:.5em;border-radius:50%;background:var(--accent)}
+.sent{border-radius:8px;padding:.04em .08em;cursor:pointer;transition:background .15s;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.sent:hover{background:var(--accent-soft)}
+.sent.sel{outline:2px dashed var(--accent);outline-offset:2px}
+.sent.now{background:var(--hl);color:var(--hl-ink)}
+.sent.rec::after{content:"";display:inline-block;width:.38em;height:.38em;border-radius:50%;background:var(--coral);margin-left:.25em;vertical-align:.25em}
+.vw{border-bottom:3px dotted var(--accent);cursor:help}
+.chipsrow{display:flex;flex-wrap:wrap;gap:10px;margin:.3em 0 .8em}
+.pw{font-family:var(--f-display);font-weight:500;background:var(--accent-soft);border:2px solid var(--accent);border-radius:14px;padding:.1em .6em;font-size:.95em}
+.art{background:#fff8e4;border:3px solid #2b3550;border-radius:16px;padding:6px;margin:0 0 14px;width:fit-content;max-width:100%}
+.art svg{display:block;height:clamp(140px,26vh,240px);width:auto;max-width:100%;filter:url(#rough)}
+.gloss{position:fixed;z-index:30;background:var(--ink);color:var(--paperL);padding:8px 14px;border-radius:12px;font-family:var(--f-ui);font-size:1rem;font-weight:500;box-shadow:var(--shadow);pointer-events:none;max-width:70vw}
+.gloss i{font-style:normal;opacity:.75;margin-left:8px;font-family:var(--f-read);font-size:.9em}
+
+/* dock */
+.dock{position:sticky;bottom:0;margin:12px calc(-1*clamp(16px,2.6vw,34px)) 0;padding:10px clamp(16px,2.6vw,34px) 12px;background:var(--paperL);
+  border-top:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--f-ui);z-index:4}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:8px 14px;font-weight:700;font-size:.95rem;min-height:46px;color:var(--ink)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.rec{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+.btn.recording{background:var(--coral);color:#fff;border-color:var(--coral);animation:pulse 1s infinite}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.sm{min-height:38px;padding:5px 10px;font-size:.85rem;border-radius:11px}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(217,72,60,.25)}}
+.dock .sep{width:2px;align-self:stretch;background:var(--line);margin:0 2px}
+.dock .hint{font-size:.85rem;color:var(--ink2);flex:1 1 180px;min-width:0}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{border:0;background:var(--card);padding:7px 11px;font-size:.85rem;font-weight:700;min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+
+/* right page */
+.rh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.rh h2{font-family:var(--f-display);font-size:1.45rem;margin:0;font-weight:600}
+.rh span{color:var(--ink2);font-size:.85rem}
+.sec{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:0 0 14px}
+.sec>h3{margin:0 0 10px;font-size:1rem;font-family:var(--f-display);font-weight:600;display:flex;align-items:center;gap:8px}
+.sec>h3 small{color:var(--ink2);font-family:var(--f-ui);font-weight:400;font-size:.8rem}
+.sec.parent{background:var(--warn);border-color:#e3c24b}
+.sec.exam{background:var(--accent-soft);border-color:var(--accent)}
+.sec p{margin:.2em 0;line-height:1.65}
+.tr{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px dashed var(--line);padding:9px 8px;border-radius:8px}
+.tr:last-child{border-bottom:0}
+.tr .en{font-family:var(--f-read);font-weight:700;font-size:1.05rem;line-height:1.5;display:block}
+.tr .zh{color:var(--ink2);font-size:1rem;line-height:1.55;display:block}
+.tr.now{background:var(--hl);color:var(--hl-ink)}
+.tr.now .zh{color:var(--hl-ink)}
+.tr:hover{background:var(--accent-soft)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.vcard{background:var(--paperR);border:2px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;display:block;width:100%}
+.vcard:hover{border-color:var(--accent)}
+.vcard .w{font-family:var(--f-read);font-weight:700;font-size:1.15rem;display:flex;gap:8px;align-items:center}
+.vcard .w svg{width:18px;height:18px;color:var(--accent)}
+.vcard .ipa{font-family:var(--f-read);color:var(--ink2);font-size:.9rem}
+.vcard .zh{font-weight:700;margin:2px 0}
+.vcard .ex{font-family:var(--f-read);font-size:.9rem;color:var(--ink2);line-height:1.4}
+.plist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.plist li{display:flex;gap:10px;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--line);padding:5px 2px;flex-wrap:wrap}
+.plist .e{font-family:var(--f-read);font-weight:700;color:var(--ink)}
+.plist .z{color:var(--ink2)}
+.pat{margin:0 0 12px}
+.pat .pt{font-weight:700;font-size:.9rem;margin-bottom:5px}
+.pat .row{display:flex;flex-wrap:wrap;gap:6px;font-family:var(--f-read);font-size:1.1rem}
+.pat .row span{padding:4px 10px;border-radius:9px;border:2px solid;font-weight:700;line-height:1.3}
+.r-S{color:var(--blue);border-color:var(--blue)}
+.r-V{color:var(--red);border-color:var(--red)}
+.r-O{color:var(--green);border-color:var(--green)}
+.r-X{color:var(--gray);border-color:var(--line);font-weight:400!important}
+.pat .note{color:var(--ink2);font-size:.9rem;margin-top:5px;line-height:1.55}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;font-size:.8rem}
+.legend span{padding:2px 9px;border-radius:999px;border:2px solid;font-weight:700}
+table.vt{width:100%;border-collapse:collapse;font-family:var(--f-read)}
+table.vt th{font-family:var(--f-ui);font-size:.8rem;color:var(--ink2);text-align:left;padding:4px 6px;border-bottom:2px solid var(--line)}
+table.vt td{padding:7px 6px;border-bottom:1px dashed var(--line);font-size:1.05rem}
+table.vt td.z{font-family:var(--f-ui);color:var(--ink2);font-size:.95rem}
+table.vt td.irr{color:var(--coral);font-weight:700}
+table.vt tr{cursor:pointer}
+table.vt tr:hover td{background:var(--accent-soft)}
+.vtwrap{overflow-x:auto}
+.legend2{font-size:.8rem;color:var(--ink2);margin-top:6px}
+.legend2 b{color:var(--coral)}
+
+/* test prep */
+.qbadge{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:5px 14px;font-family:var(--f-display);font-weight:500;margin-bottom:12px;font-size:1rem}
+.qtext{font-size:calc(var(--fs)*clamp(1.5rem,2.4vw,2.1rem));line-height:1.4;font-weight:700;margin:0 0 .15em}
+.qzh{font-family:var(--f-ui);color:var(--ink2);font-size:calc(var(--fs)*1.05rem);margin:0 0 14px}
+.hintbox{background:var(--warn);border:2px solid #e3c24b;border-radius:14px;padding:10px 14px;font-family:var(--f-ui);line-height:1.6;margin:0 0 16px}
+.hintbox b{display:block;font-size:.8rem;letter-spacing:.06em;margin-bottom:2px}
+.frame{font-size:calc(var(--fs)*clamp(1.4rem,2.2vw,2rem));line-height:2.3;margin:0 0 14px}
+.frame .ln{display:block;margin-bottom:.3em}
+.frame .lab{font-family:var(--f-ui);font-size:.55em;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:2px 8px;margin-right:6px;vertical-align:middle}
+.blank{display:inline-block;min-width:3.2em;border:0;border-bottom:4px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-weight:700;padding:0 .4em;margin:0 .1em;border-radius:8px 8px 0 0;line-height:1.5;vertical-align:baseline;text-align:center}
+.blank.cur{background:var(--hl);color:var(--hl-ink);box-shadow:0 0 0 3px var(--accent)}
+.blank.ok{background:transparent;border-bottom-color:var(--green);color:var(--green)}
+.blank .h{opacity:.55;font-weight:400}
+.bank{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.chip{font-family:var(--f-read);font-weight:700;font-size:calc(var(--fs)*1.25rem);border:2px solid var(--accent);background:var(--card);color:var(--ink);border-radius:14px;padding:6px 16px;min-height:50px}
+.chip.used{opacity:.3;pointer-events:none}
+.chip.bad{animation:shake .35s;border-color:var(--red);background:var(--coral-soft)}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.win{background:var(--accent-soft);border:3px solid var(--accent);border-radius:16px;padding:12px 16px;font-family:var(--f-ui);font-weight:700;margin:0 0 12px;font-size:1.05rem;line-height:1.5}
+.ans{font-family:var(--f-read);font-size:1.15rem;line-height:1.7;font-weight:700}
+.reveal{width:100%;border-style:dashed}
+.jumps{display:flex;flex-wrap:wrap;gap:8px}
+
+/* covers & toc */
+.cover{display:grid;place-items:center;height:100%;padding:0}
+.page.left.coverpg{padding:0;background:#0f857d}
+.page.left.coverpg .art{width:100%;max-width:none;height:100%;margin:0;border:0;border-radius:0;background:transparent;padding:0}
+.page.left.coverpg .art svg{height:100%;width:100%;filter:url(#rough2)}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;line-height:1.6}
+.steps li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:600}
+.tpgrid{display:grid;gap:8px}
+.tpitem{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:10px 14px}
+.tpitem:hover{border-color:var(--accent)}
+.tpitem .n{flex:none;width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:600}
+.tpitem .t{flex:1;min-width:0}
+.tpitem .t b{display:block;font-family:var(--f-read)}
+.tpitem .t small{color:var(--ink2)}
+.star{width:22px;height:22px;color:var(--line);flex:none}
+.star.on{color:#f2b705}
+
+.pager{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pager .mid{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.flip{display:inline-flex;align-items:center;gap:8px;border:0;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:8px 22px;min-height:50px;font-family:var(--f-display);font-weight:500;font-size:1.05rem}
+.flip svg{width:22px;height:22px}
+.flip[disabled]{opacity:.35;cursor:not-allowed}
+.pn{font-family:var(--f-display);color:var(--ink2);font-size:.95rem;text-align:center}
+.pn b{color:var(--ink)}
+.tabs{display:none}
+.stars{display:inline-flex;align-items:center;gap:5px;font-weight:700}
+.stars svg{width:20px;height:20px;color:#f2b705}
+
+.toc{position:fixed;inset:0;z-index:40;background:rgba(10,16,30,.55);display:flex;justify-content:flex-start}
+.toc[hidden]{display:none}
+.toc .panel{width:min(440px,92vw);height:100%;background:var(--paperR);overflow:auto;padding:max(18px,env(safe-area-inset-top,0px)) 16px 24px;box-shadow:var(--shadow)}
+.toc h2{font-family:var(--f-display);margin:.2em 0 .5em}
+.toc h4{margin:16px 0 6px;color:var(--ink2);font-size:.85rem;letter-spacing:.06em}
+.toc-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+.toc-item.cur{border-color:var(--accent);background:var(--accent-soft)}
+.toc-item span.t{flex:1;min-width:0;font-weight:500}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paperL);padding:10px 18px;border-radius:999px;font-weight:500;z-index:60;max-width:92vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+@media (max-width:900px){
+  .book{grid-template-columns:1fr}
+  .book::after{display:none}
+  .page.left{border-radius:18px}
+  .page.right{border-radius:18px}
+  .book[data-side="L"] .page.right{display:none}
+  .book[data-side="R"] .page.left{display:none}
+  .tabs{display:inline-flex}
+  .brand small{display:none}
+  .read{font-size:calc(var(--fs)*1.6rem)}
+}
+@media (max-width:560px){
+  .tb span.lbl{display:none}
+  .tb{padding:7px 10px}
+  .flip span{display:none}
+  .flip{padding:8px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .book.turn-next .page.right,.book.turn-prev .page.left{animation:none}
+  .btn.recording{animation:none}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<filter id="rough" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/></filter>
+<filter id="rough2" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.4"/></filter>
+</defs></svg>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5-.7 1.5-1.5z"/></svg></div>
+      <div><b>Working with Others</b><small>by Robin Nelson · 課本 pp.228–238</small></div>
+    </div>
+    <div class="tools">
+      <span class="stars" id="starCount" title="已得到的星星"></span>
+      <button class="tb" id="bToc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="lbl">目錄</span></button>
+      <button class="tb" id="bAuto" aria-pressed="true" title="翻到新的一頁就自動朗讀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg><span class="lbl">翻頁自動朗讀</span></button>
+      <button class="tb" id="bSlow" aria-pressed="false" title="慢速朗讀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 8v5l3 2"/></svg><span class="lbl">慢速</span></button>
+      <button class="tb" id="bVoice" title="換朗讀聲音"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span class="lbl">聲音</span></button>
+      <button class="tb" id="bSmall" aria-label="字變小">A−</button>
+      <button class="tb" id="bBig" aria-label="字變大">A＋</button>
+    </div>
+  </header>
+  <main class="book" id="book" data-side="L">
+    <section class="page left" id="pgL" aria-label="課文頁"></section>
+    <section class="page right" id="pgR" aria-label="教師手冊頁"></section>
+  </main>
+  <nav class="pager">
+    <button class="flip" id="bPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg><span>上一頁</span></button>
+    <div class="mid">
+      <div class="seg tabs" id="tabs"><button data-side="L" aria-pressed="true">課文</button><button data-side="R" aria-pressed="false">手冊</button></div>
+      <div class="pn" id="pn"></div>
+    </div>
+    <button class="flip" id="bNext"><span>下一頁</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+  </nav>
+</div>
+<aside class="toc" id="toc" hidden><div class="panel" id="tocPanel"></div></aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="gloss" id="gloss" hidden></div>
+<input type="file" id="upl" accept="audio/*" hidden>
+<script>
+/* ============ BOOK DATA (每週新增文章時，只要照這個格式新增資料) ============ */
+const T = (en, zh) => ({ en, zh });
+
+const SPREADS = [
+/* ---------------------------------- 封面 ---------------------------------- */
+{ id:'cover', kind:'cover', label:'封面與使用說明' },
+
+/* ---------------------------------- 課前準備 ---------------------------------- */
+{ id:'prep', kind:'read', label:'課前準備 · p.228', art:'prep',
+  left:[
+    {k:'h', s:[T('Prepare to Read','準備閱讀')]},
+    {k:'label', text:'Genre Study 文體學習'},
+    {k:'p', s:[T('Informational text is nonfiction.','資訊類文章是非虛構的（真實的）文章。'),
+            T('It gives facts about a topic.','它提供關於一個主題的事實。'),
+            T('As you read Working with Others, look for:','閱讀《與他人合作》時，請找找看：')]},
+    {k:'li', s:[T('the main topic and details','主要主題和細節')]},
+    {k:'li', s:[T('headings that stand out','醒目的標題')]},
+    {k:'li', s:[T('photographs','照片')]},
+    {k:'label', text:'Set a Purpose 設定閱讀目的'},
+    {k:'p', s:[T('You know that informational texts include facts.','你知道資訊類文章包含事實。'),
+            T('Make a prediction, or good guess, about the information you will read about in this text.','對你將在這篇文章中讀到的資訊做一個預測，也就是好好猜一猜。'),
+            T('Read to see if your prediction is right.','閱讀，看看你的預測是否正確。'),
+            T('If not, make a new prediction.','如果不對，就做一個新的預測。')]},
+    {k:'label', text:'Power Words 重點單字'},
+    {k:'words', s:[T('blamed','被責怪'),T('argue','爭吵'),T('respectful','有禮貌的'),T('practice','練習')]},
+    {k:'label', text:'Build Background 背景知識'},
+    {k:'p', s:[T('Teamwork and Cooperation','團隊合作與合作')]},
+  ],
+  vocab:[
+    ['informational text','ˌɪnfɚˈmeɪʃənl tɛkst','資訊類文章','Informational text has facts.','informational text'],
+    ['nonfiction','nɑnˈfɪkʃən','非虛構（真實的）','A science book is nonfiction.','nonfiction'],
+    ['fact','fækt','事實','Facts are true.','facts?'],
+    ['topic','ˈtɑpɪk','主題','The topic is animals.','topic'],
+    ['heading','ˈhɛdɪŋ','標題','A heading is a title for a part.','headings?'],
+    ['photograph','ˈfoʊtəˌɡræf','照片','I see a photograph of a dog.','photographs?'],
+    ['prediction','prɪˈdɪkʃən','預測','My prediction is right.','prediction'],
+    ['purpose','ˈpɝpəs','目的','My purpose is to learn.','purpose'],
+    ['blamed','bleɪmd','被責怪（blame 的過去分詞）','I was blamed for the mess.','blamed'],
+    ['argue','ˈɑrɡju','爭吵、爭論','Do not argue with your friend.','argue'],
+    ['respectful','rɪˈspɛktfəl','有禮貌的、尊重人的','Be respectful to others.','respectful'],
+    ['practice','ˈpræktɪs','練習','Practice makes perfect.','practice'],
+  ],
+  phrases:[
+    ['look for','尋找、留意'],['make a prediction','做出預測'],['a good guess','好的猜測'],
+    ['stand out','突出、醒目'],['Genre Study','文體學習（認識文章的種類）'],['Set a Purpose','設定閱讀目的'],
+  ],
+  patterns:[
+    ['It gives facts about a topic.',[['It','S'],['gives','V'],['facts','O'],['about a topic.','X']],'主詞 + 動詞 + 受詞 + 補充說明。It 指的是 informational text（資訊類文章）。'],
+    ['Make a prediction.',[['Make','V'],['a prediction.','O']],'祈使句：省略主詞 You，直接用動詞開頭，表示「請你…」。'],
+    ['…headings that stand out',[['headings','O'],['that stand out','X']],'that 後面說明這是什麼樣的標題：醒目、突出的標題。'],
+  ],
+  verbs:[['be','was / were','been','是'],['give','gave','given','給、提供'],['make','made','made','做、製作'],['read','read','read','閱讀（過去式念 /rɛd/）'],['know','knew','known','知道'],['look','looked','looked','看、尋找'],['include','included','included','包含']],
+  exam:'這一頁幫你回答 Q1「文體 Genre」：資訊類文章的三個線索就是 topic and details（主題與細節）、headings（標題）、photographs（照片）。Q6「主題 Topic」也要先記得標題是 Working with Others。',
+  parent:'先不要急著讀全文。請孩子指著 Power Words 的四個字，跟著聽一遍：blamed、argue、respectful、practice。孩子只要知道中文意思就很棒了！'
+},
+
+/* ---------------------------------- 課文 1：pp.230–231 ---------------------------------- */
+{ id:'r1', kind:'read', label:'課文 1 · pp.229–231', art:'play',
+  left:[
+    {k:'title', s:[T('Working with Others','與他人合作')], by:'by Robin Nelson'},
+    {k:'p', s:[T('You work and play with other people every day.','你每天都和其他人一起工作和玩耍。'),
+            T('Most of the time, you get along well, but sometimes people do or say things that you don’t like.','大部分的時候，你們相處得很好，但有時候人們會做或說一些你不喜歡的事。')]},
+    {k:'p', s:[T('Maybe someone takes one of your toys or you are blamed for something you didn’t do.','也許有人拿走了你的一個玩具，或是你被怪罪做了你沒做過的事。'),
+            T('Maybe someone calls you a mean name or you feel left out.','也許有人用難聽的名字叫你，或是你覺得被排擠。'),
+            T('Maybe you argue with a friend.','也許你和朋友吵架。'),
+            T('These things can make you angry.','這些事情會讓你生氣。'),
+            T('It is okay to feel angry sometimes, and it is okay to have conflicts with people.','有時候感到生氣沒關係，和別人有衝突也沒關係。')]},
+  ],
+  vocab:[
+    ['get along','ɡɛt əˈlɔŋ','相處（融洽）','We get along well.','get along'],
+    ['blame','bleɪm','責怪、怪罪','Do not blame me.','blamed|blame'],
+    ['mean','min','刻薄的、不友善的','Mean words hurt.','mean'],
+    ['left out','lɛft aʊt','被排擠、被忽略','I felt left out.','left out'],
+    ['argue','ˈɑrɡju','爭吵','They argue about toys.','argue'],
+    ['angry','ˈæŋɡri','生氣的','He is angry.','angry'],
+    ['conflict','ˈkɑnflɪkt','衝突、爭執','We had a conflict.','conflicts?'],
+    ['toy','tɔɪ','玩具','I share my toy.','toys?'],
+  ],
+  phrases:[
+    ['work and play','工作和玩耍'],['get along well','相處得很好'],['most of the time','大部分的時候'],
+    ['be blamed for ...','因…被責怪'],['call someone a name','用難聽的名字叫某人'],['feel left out','覺得被排擠'],
+    ['argue with ...','和…吵架'],['It is okay to + 動詞','做…是沒關係的'],
+  ],
+  patterns:[
+    ['You work and play with other people every day.',[['You','S'],['work and play','V'],['with other people','X'],['every day.','X']],'主詞 + 兩個動詞（用 and 連接）+ 和誰 + 什麼時候。'],
+    ['Maybe someone takes one of your toys.',[['Maybe','X'],['someone','S'],['takes','V'],['one of your toys.','O']],'Maybe（也許）放在句子前面，後面接一個完整的句子。someone 是第三人稱單數，所以動詞加 s。'],
+    ['You are blamed for something you didn’t do.',[['You','S'],['are blamed','V'],['for something','X'],['you didn’t do.','X']],'被動語態：be + 過去分詞（blamed）＝被怪罪。for 後面接被怪罪的原因。'],
+    ['It is okay to feel angry.',[['It','S'],['is','V'],['okay','X'],['to feel angry.','X']],'句型：It is okay to + 原形動詞 ＝ 做…是可以的。'],
+  ],
+  verbs:[['work','worked','worked','工作'],['play','played','played','玩'],['take','took','taken','拿走'],['say','said','said','說'],['do','did','done','做'],['call','called','called','稱呼、叫'],['feel','felt','felt','覺得、感到'],['make','made','made','使、讓'],['get','got','got / gotten','得到、變得'],['argue','argued','argued','爭吵'],['have','had','had','有']],
+  exam:'Q2 敘事視角：第一句就用 You，所以是第二人稱。Q4 背景：every day（每一天）就在這一頁。Q6 主題：標題 Working with Others。Q8 人物：文章在談 you（你）和 other people。',
+  parent:'請孩子找出第一句的 You，並用手指著它：「作者在跟誰說話？」答案是「你」，這就是第二人稱（Q2）。接著把「Maybe …」開頭的三句話換成孩子自己的生活例子，用中文說也可以。'
+},
+
+/* ---------------------------------- 課文 2：p.232 ---------------------------------- */
+{ id:'r2', kind:'read', label:'課文 2 · p.232', art:'angry',
+  left:[
+    {k:'p', s:[T('What do people do when conflicts make them angry?','當衝突讓人們生氣時，他們會怎麼做？'),
+            T('Some people yell and scream when they feel angry.','有些人感到生氣時會大吼大叫。'),
+            T('Some people even hit other people.','有些人甚至會打別人。'),
+            T('Yelling, screaming, and hitting do not solve conflicts.','大吼、尖叫和打人都不能解決衝突。'),
+            T('They hurt people and make problems worse.','它們會傷害別人，讓問題變得更糟。')]},
+    {k:'p', s:[T('Some people walk away from conflicts.','有些人會從衝突中走開。'),
+            T('They want to be alone when they feel angry.','他們生氣的時候想要一個人靜一靜。'),
+            T('They need time to calm down.','他們需要時間冷靜下來。')]},
+  ],
+  vocab:[
+    ['yell','jɛl','大吼','Do not yell at me.','yell|yelling'],
+    ['scream','skrim','尖叫','She screams loudly.','scream|screaming'],
+    ['hit','hɪt','打、擊','Do not hit people.','hit|hitting'],
+    ['solve','sɑlv','解決','Let us solve the problem.','solve'],
+    ['hurt','hɝt','傷害','Words can hurt people.','hurt'],
+    ['worse','wɝs','更糟的（bad 的比較級）','The problem got worse.','worse'],
+    ['alone','əˈloʊn','獨自、一個人','He wants to be alone.','alone'],
+    ['calm down','kɑm daʊn','冷靜下來','Take a breath and calm down.','calm down'],
+  ],
+  phrases:[
+    ['some people ... some people ...','有些人…有些人…'],['even + 動詞','甚至（做）…'],['walk away from ...','從…走開'],
+    ['make + 事物 + worse','讓…變得更糟'],['need time to + 動詞','需要時間去…'],['by yourself / alone','一個人'],
+  ],
+  patterns:[
+    ['Some people yell and scream.',[['Some people','S'],['yell and scream.','V']],'兩個動詞用 and 連接，主詞是複數 people，所以動詞不加 s。'],
+    ['Some people even hit other people.',[['Some people','S'],['even hit','V'],['other people.','O']],'even（甚至）放在動詞前面，加強語氣。'],
+    ['Yelling, screaming, and hitting do not solve conflicts.',[['Yelling, screaming, and hitting','S'],['do not solve','V'],['conflicts.','O']],'動詞加 -ing 可以當主詞（大吼、尖叫、打人這些「行為」）。三個並列的詞用逗號與 and 連接。'],
+    ['They hurt people and make problems worse.',[['They','S'],['hurt','V'],['people','O'],['and make problems worse.','V']],'make + 事物 + 形容詞（worse）＝讓…變得更糟。'],
+  ],
+  verbs:[['yell','yelled','yelled','大吼'],['scream','screamed','screamed','尖叫'],['hit','hit','hit','打（三態相同）'],['solve','solved','solved','解決'],['hurt','hurt','hurt','傷害（三態相同）'],['make','made','made','使、讓'],['walk','walked','walked','走'],['feel','felt','felt','感到'],['want','wanted','wanted','想要'],['need','needed','needed','需要']],
+  exam:'這一頁就是 Q9 的答案！題目 What do people do when conflicts make them angry? 在這頁第一句。答案有三種人：yell and scream（大吼大叫）、hit other people（打人）、walk away（走開）。Q10 也會用到 make problems worse。',
+  parent:'讓孩子用手比出三個動作：大吼（雙手張開）、打人（握拳，請他放下）、走開（兩根手指走路）。再說：「這三種人，你覺得哪種比較好？」因為文章說，大吼和打人會 make problems worse。'
+},
+
+/* ---------------------------------- 課文 3：p.233 ---------------------------------- */
+{ id:'r3', kind:'read', label:'課文 3 · p.233', art:'talk',
+  left:[
+    {k:'p', s:[T('Walking away is okay at first.','一開始先走開是可以的。'),
+            T('But it won’t solve anything.','但這解決不了任何事。'),
+            T('People need to work things out with each other.','人們需要彼此把事情談開。'),
+            T('People should talk about their feelings.','人們應該談談自己的感受。'),
+            T('Talking can solve conflicts.','談話可以解決衝突。'),
+            T('Talking can make everyone feel better.','談話可以讓每個人心情變好。')]},
+    {k:'p', s:[T('We can solve conflicts without arguing.','我們可以不用吵架就解決衝突。'),
+            T('Take turns talking to let everyone share his or her opinion.','輪流說話，讓每個人都能分享自己的意見。'),
+            T('Sometimes you will not agree with a person’s opinion.','有時候你不會同意別人的意見。'),
+            T('Listen to what the other person is saying and ask questions.','聽聽對方在說什麼，並且提問。')]},
+  ],
+  vocab:[
+    ['at first','æt fɝst','一開始、起初','At first, I was shy.','at first'],
+    ['work out','wɝk aʊt','解決、談開','Let us work it out.','work things out|work out'],
+    ['feelings','ˈfilɪŋz','感受、心情','Talk about your feelings.','feelings'],
+    ['opinion','əˈpɪnjən','意見、看法','Share your opinion.','opinions?'],
+    ['agree','əˈɡri','同意','I agree with you.','agree'],
+    ['take turns','teɪk tɝnz','輪流','We take turns.','take turns'],
+    ['share','ʃɛr','分享','Share your idea.','share'],
+    ['question','ˈkwɛstʃən','問題（提問）','Ask a question.','questions?'],
+  ],
+  phrases:[
+    ['at first','一開始'],['work things out','把事情談開、解決'],['talk about ...','談論…'],['take turns + 動詞-ing','輪流做…'],
+    ['agree with ...','同意…'],['listen to ...','聽…'],['ask questions','提問'],['without + 動詞-ing','沒有…（做某事）'],
+    ['make everyone feel better','讓大家心情變好'],
+  ],
+  patterns:[
+    ['Talking can solve conflicts.',[['Talking','S'],['can solve','V'],['conflicts.','O']],'Talking（動詞加 -ing）當主詞，意思是「談話這件事」。can + 原形動詞 ＝ 可以、能夠。'],
+    ['We can solve conflicts without arguing.',[['We','S'],['can solve','V'],['conflicts','O'],['without arguing.','X']],'without + 動詞-ing ＝ 不用…就；without arguing ＝ 不用吵架。這句就是 Q3 中心主旨的關鍵句！'],
+    ['Take turns talking.',[['Take turns','V'],['talking.','X']],'祈使句（命令或建議）。take turns + 動詞-ing ＝ 輪流做…。'],
+    ['Talking can make everyone feel better.',[['Talking','S'],['can make','V'],['everyone','O'],['feel better.','X']],'make + 人 + 原形動詞 ＝ 讓某人…。注意 feel 前面不加 to。'],
+  ],
+  verbs:[['walk','walked','walked','走'],['work','worked','worked','工作、解決'],['talk','talked','talked','談話'],['solve','solved','solved','解決'],['make','made','made','使、讓'],['take','took','taken','拿、輪流（take turns）'],['let','let','let','讓（三態相同）'],['share','shared','shared','分享'],['agree','agreed','agreed','同意'],['listen','listened','listened','聽'],['ask','asked','asked','問'],['say','said','said','說']],
+  exam:'Q3 中心主旨：核心句就是 We can solve conflicts without arguing.（本頁）和 Solving conflicts peacefully takes practice.（課文 5）。Q11 統整題：本頁可以挑到 talk about their feelings、take turns、listen。',
+  parent:'試試看「輪流說話」：家長和孩子各拿一支筆，拿到筆的人才能說話。這就是 take turns talking！玩完之後問孩子：「剛剛有沒有比較容易聽懂？」'
+},
+
+/* ---------------------------------- 課文 4：p.234 ---------------------------------- */
+{ id:'r4', kind:'read', label:'課文 4 · p.234', art:'respect',
+  left:[
+    {k:'p', s:[T('Use respectful words.','使用有禮貌的字詞。'),
+            T('Don’t call each other names.','不要互相叫難聽的名字。'),
+            T('Apologize when you are wrong.','做錯的時候要道歉。'),
+            T('Make sure everyone has a chance to speak.','確定每個人都有機會發言。')]},
+    {k:'p', s:[T('Then you can solve conflicts together.','這樣你們就能一起解決衝突。'),
+            T('Think of ideas to solve the conflicts.','想出解決衝突的點子。'),
+            T('Decide which ideas will work best.','決定哪些點子最有效。')]},
+  ],
+  vocab:[
+    ['respectful','rɪˈspɛktfəl','有禮貌的、尊重人的','Use respectful words.','respectful'],
+    ['apologize','əˈpɑləˌdʒaɪz','道歉','Apologize when you are wrong.','apologize'],
+    ['wrong','rɔŋ','錯的','I was wrong.','wrong'],
+    ['chance','tʃæns','機會','Give me a chance.','chance'],
+    ['speak','spik','說話、發言','Everyone can speak.','speak'],
+    ['idea','aɪˈdiə','點子、想法','I have an idea.','ideas?'],
+    ['decide','dɪˈsaɪd','決定','Let us decide together.','decide'],
+    ['together','təˈɡɛðɚ','一起','We solve it together.','together'],
+  ],
+  phrases:[
+    ['call someone names','用難聽的話罵人'],['each other','彼此、互相'],['make sure ...','確定…'],['have a chance to + 動詞','有機會做…'],
+    ['think of ...','想出…'],['work best','效果最好'],['be wrong','做錯了、不對'],
+  ],
+  patterns:[
+    ['Use respectful words.',[['Use','V'],['respectful words.','O']],'祈使句：動詞開頭。對孩子說「請你…」。'],
+    ['Don’t call each other names.',[['Don’t call','V'],['each other','O'],['names.','O']],'Don’t + 原形動詞 ＝ 不要…（否定的祈使句）。call each other names ＝ 互相罵難聽的話。'],
+    ['Make sure everyone has a chance to speak.',[['Make sure','V'],['everyone','S'],['has','V'],['a chance to speak.','O']],'Make sure + 一個完整的句子 ＝ 確定…。everyone 是單數，所以用 has。'],
+    ['Decide which ideas will work best.',[['Decide','V'],['which ideas','S'],['will work','V'],['best.','X']],'which + 名詞 ＋ 一個句子 ＝ 哪些…。will work best ＝ 將會最有效。'],
+  ],
+  verbs:[['use','used','used','使用'],['call','called','called','稱呼、叫'],['apologize','apologized','apologized','道歉'],['make','made','made','使、確保'],['have','had','had','有'],['speak','spoke','spoken','說話'],['think','thought','thought','想'],['decide','decided','decided','決定'],['work','worked','worked','有效、運作'],['solve','solved','solved','解決']],
+  exam:'Q11 統整題：本頁可以挑 use respectful words（使用有禮貌的字詞）和 apologize when they are wrong（做錯時道歉）。Q3 的 talking respectfully 也來自這一頁。',
+  parent:'一起練習兩句「魔法句子」：I’m sorry.（對不起。）／Thank you.（謝謝你。）。孩子說對一次就給一個擊掌。家長也可以跟著練習，這也是你的英文時間！'
+},
+
+/* ---------------------------------- 課文 5：pp.235–236 ---------------------------------- */
+{ id:'r5', kind:'read', label:'課文 5 · pp.235–236', art:'adult',
+  left:[
+    {k:'p', s:[T('If you are stuck, ask an adult to help you solve the conflicts.','如果你卡住了，請大人幫你解決衝突。'),
+            T('Ask someone to help who will listen and not take sides.','找一個會傾聽、不偏袒任何一方的人來幫忙。')]},
+    {k:'p', s:[T('You might have to compromise.','你可能必須妥協。'),
+            T('Compromise means both sides must give up something to solve conflicts.','妥協的意思是雙方都必須放棄一些東西來解決衝突。')]},
+    {k:'p', s:[T('Solving conflicts peacefully takes practice.','和平地解決衝突需要練習。'),
+            T('Work together!','一起努力！'),
+            T('Solve conflicts as a team.','像團隊一樣解決衝突。'),
+            T('Talk them out, and everyone will be happy!','把它們談開，大家就會開心！')]},
+  ],
+  vocab:[
+    ['stuck','stʌk','卡住的、沒辦法的','I am stuck.','stuck'],
+    ['adult','əˈdʌlt','大人、成年人','Ask an adult for help.','adults?'],
+    ['take sides','teɪk saɪdz','偏袒（支持某一方）','A good helper does not take sides.','take sides'],
+    ['compromise','ˈkɑmprəˌmaɪz','妥協、互相讓步','We compromise.','compromise'],
+    ['give up','ɡɪv ʌp','放棄','Give up one toy.','give up'],
+    ['peacefully','ˈpisfəli','和平地','Solve it peacefully.','peacefully'],
+    ['practice','ˈpræktɪs','練習','It takes practice.','practice'],
+    ['team','tim','團隊','We are a team.','team'],
+  ],
+  phrases:[
+    ['be stuck','卡住、不知道怎麼辦'],['ask someone to + 動詞','請某人去做…'],['take sides','偏袒一方'],['might have to + 動詞','可能必須…'],
+    ['give up something','放棄某些東西'],['take practice','需要練習'],['as a team','像團隊一樣'],['talk something out','把事情談開'],
+  ],
+  patterns:[
+    ['If you are stuck, ask an adult.',[['If you are stuck,','X'],['ask','V'],['an adult','O'],['to help you solve the conflicts.','X']],'If + 一句話, + 另一句話 ＝ 如果…，就…。ask + 人 + to + 動詞 ＝ 請某人去做…。'],
+    ['Compromise means both sides must give up something.',[['Compromise','S'],['means','V'],['both sides must give up something.','O']],'A means B ＝ A 的意思是 B。用來解釋一個單字的意思。'],
+    ['Solving conflicts peacefully takes practice.',[['Solving conflicts peacefully','S'],['takes','V'],['practice.','O']],'動詞加 -ing 當主詞（解決衝突這件事）。takes practice ＝ 需要練習。這句是 Q3 與 Q7 結尾的重點！'],
+    ['Talk them out, and everyone will be happy!',[['Talk them out,','V'],['and','X'],['everyone','S'],['will be','V'],['happy!','X']],'will + 原形動詞 ＝ 將會。前面是建議，後面是結果。'],
+  ],
+  verbs:[['be','was / were','been','是、在'],['ask','asked','asked','請求、問'],['help','helped','helped','幫助'],['listen','listened','listened','聽'],['take','took','taken','拿、需要'],['have','had','had','有、必須'],['mean','meant','meant','意思是'],['give','gave','given','給'],['solve','solved','solved','解決'],['work','worked','worked','合作、運作'],['talk','talked','talked','談話']],
+  exam:'Q3 中心主旨的結尾句、Q7 結尾（End）：Solving conflicts peacefully takes practice. Q7 中間（Middle）也會用到 ask an adult for help、compromise。Q11 統整題可以用 compromise 和 ask an adult for help。',
+  parent:'問孩子：「如果你和同學都想玩同一個玩具，怎麼辦？」引導他想出 compromise：一人先玩五分鐘，再換另一人。這就是妥協！'
+},
+
+/* ---------------------------------- 課文 6：p.237 ---------------------------------- */
+{ id:'r6', kind:'read', label:'課文 6 · p.237', art:'calm',
+  left:[
+    {k:'h', s:[T('Dealing with Anger','處理憤怒')]},
+    {k:'p', s:[T('What do you do when you feel angry?','你生氣的時候會怎麼做？'),
+            T('You might feel too angry to talk about how you feel.','你可能氣到沒辦法談論自己的感受。'),
+            T('Here are some ways for you to calm down and get the anger out.','這裡有一些方法，讓你冷靜下來、把怒氣發洩出來。')]},
+    {k:'li', s:[T('Take deep breaths and count slowly.','做幾次深呼吸，慢慢地數數。')]},
+    {k:'li', s:[T('Write down what happened and how you feel about it.','把發生的事和你的感受寫下來。')]},
+    {k:'li', s:[T('Draw a picture.','畫一張圖。')]},
+    {k:'li', s:[T('Listen to calm music.','聽輕柔的音樂。')]},
+    {k:'li', s:[T('Read a book.','讀一本書。')]},
+    {k:'li', s:[T('Take a walk or do some other kind of exercise.','去散步或做其他運動。')]},
+    {k:'li', s:[T('Pound on a pillow.','搥打枕頭。')]},
+    {k:'li', s:[T('Stomp your feet.','用力跺腳。')]},
+  ],
+  vocab:[
+    ['deep breath','dip brɛθ','深呼吸','Take a deep breath.','deep breaths?'],
+    ['count','kaʊnt','數數','Count to ten.','count'],
+    ['slowly','ˈsloʊli','慢慢地','Count slowly.','slowly'],
+    ['calm','kɑm','平靜的、冷靜的','Calm music helps me.','calm'],
+    ['exercise','ˈɛksɚˌsaɪz','運動','Exercise is good for you.','exercise'],
+    ['pound','paʊnd','用力搥打','Pound on a pillow.','pound'],
+    ['pillow','ˈpɪloʊ','枕頭','A soft pillow.','pillow'],
+    ['stomp','stɑmp','用力跺腳','Stomp your feet.','stomp'],
+  ],
+  phrases:[
+    ['take a deep breath','深呼吸'],['write down','寫下來'],['calm down','冷靜下來'],['get ... out','把…發洩出來'],
+    ['take a walk','散步'],['some other kind of ...','其他種類的…'],['too ... to ...','太…以致於不能…'],['how you feel','你的感受如何'],
+  ],
+  patterns:[
+    ['You might feel too angry to talk.',[['You','S'],['might feel','V'],['too angry','X'],['to talk about how you feel.','X']],'too + 形容詞 + to + 動詞 ＝ 太…而不能…。too angry to talk ＝ 氣到沒辦法說話。Q10 的重點句型！'],
+    ['Here are some ways for you to calm down.',[['Here are','V'],['some ways','S'],['for you to calm down.','X']],'Here are + 名詞 ＝ 這裡有…。ways to + 動詞 ＝ …的方法。'],
+    ['Take deep breaths and count slowly.',[['Take','V'],['deep breaths','O'],['and count slowly.','V']],'一連串的建議都是祈使句：動詞開頭，沒有主詞。'],
+    ['Write down what happened.',[['Write down','V'],['what happened.','O']],'what + 動詞 ＝ …的事情（發生了什麼事）。'],
+  ],
+  verbs:[['take','took','taken','拿、做（take a walk）'],['write','wrote','written','寫'],['draw','drew','drawn','畫'],['read','read','read','讀（過去式念 /rɛd/）'],['do','did','done','做'],['feel','felt','felt','感到'],['listen','listened','listened','聽'],['count','counted','counted','數'],['happen','happened','happened','發生'],['stomp','stomped','stomped','跺腳']],
+  exam:'Q10 推論題：為什麼要先冷靜？因為本頁說 You might feel too angry to talk about how you feel.（你可能氣到說不出自己的感受）。Q1 文體：Dealing with Anger 是醒目的標題（headings that stand out）。Q5 作者目的：這一頁提供了很多方法，是為了 inform（教導）。',
+  parent:'現在就試一個：請孩子「深呼吸三次，慢慢數 1、2、3」，大人也一起做。哪一個方法最適合你家的孩子？找出一個，下次孩子生氣時提醒他。'
+},
+
+/* ---------------------------------- 課文 7：p.238 上 ---------------------------------- */
+{ id:'r7', kind:'read', label:'課文 7 · p.238（上）', art:'look',
+  left:[
+    {k:'h', s:[T('Talking Things Out','把話說清楚')]},
+    {k:'p', s:[T('When you feel a little better, it is time to talk.','當你覺得好一點了，就是該說話的時候了。'),
+            T('Here are some things to remember when talking things out.','這裡有一些把話談開時要記得的事。')]},
+    {k:'li', s:[T('Tell the other person how you feel and why you feel that way.','告訴對方你的感受，以及你為什麼有這種感受。'),
+                 T('Be honest.','要誠實。'),
+                 T('Ask that person how he or she feels.','問對方他（她）的感受如何。')]},
+    {k:'li', s:[T('Remember that your body also tells a person how you are feeling.','記住，你的身體也會告訴別人你的感受。'),
+                 T('Show that you care about what he or she is saying.','表現出你在乎對方說的話。'),
+                 T('Don’t cross your arms or make faces.','不要雙手交叉抱胸，也不要做鬼臉。')]},
+  ],
+  vocab:[
+    ['honest','ˈɑnɪst','誠實的','Be honest.','honest'],
+    ['remember','rɪˈmɛmbɚ','記得','Remember to listen.','remember'],
+    ['body','ˈbɑdi','身體','Your body can talk.','body'],
+    ['care about','kɛr əˈbaʊt','在乎、關心','I care about you.','care about'],
+    ['cross','krɔs','交叉','Do not cross your arms.','cross'],
+    ['arms','ɑrmz','手臂','Arms down.','arms'],
+    ['make faces','meɪk ˈfeɪsɪz','做鬼臉、擺臭臉','Do not make faces.','make faces'],
+    ['talk out','tɔk aʊt','把話談開','Let us talk it out.','talking things out|talk (?:them|it) out'],
+  ],
+  phrases:[
+    ['a little better','好一點點'],['it is time to + 動詞','是該…的時候了'],['remember that ...','記得…'],['tell someone how/why ...','告訴某人…怎麼樣／為什麼'],
+    ['care about ...','在乎…'],['cross your arms','雙手交叉抱胸'],['make faces','做鬼臉、擺臭臉'],['that way','那樣、那個原因'],
+  ],
+  patterns:[
+    ['It is time to talk.',[['It','S'],['is','V'],['time','X'],['to talk.','X']],'It is time to + 原形動詞 ＝ 是該…的時候了。'],
+    ['Tell the other person how you feel.',[['Tell','V'],['the other person','O'],['how you feel.','O']],'Tell + 人 + 內容 ＝ 告訴某人…。how you feel ＝ 你的感受如何。'],
+    ['Don’t cross your arms or make faces.',[['Don’t cross','V'],['your arms','O'],['or make faces.','V']],'Don’t + 動詞 ＝ 不要…。or 連接兩件「不要做」的事。'],
+    ['Show that you care about what he or she is saying.',[['Show','V'],['that you care about','X'],['what he or she is saying.','O']],'Show that + 句子 ＝ 表現出…。what he or she is saying ＝ 他（她）正在說的話。'],
+  ],
+  verbs:[['feel','felt','felt','感到'],['tell','told','told','告訴'],['ask','asked','asked','問'],['remember','remembered','remembered','記得'],['show','showed','shown','展現、顯示'],['care','cared','cared','在乎'],['cross','crossed','crossed','交叉'],['make','made','made','做、製造'],['say','said','said','說']],
+  exam:'Q5 作者目的：這一頁的「Here are some things to remember」就是作者在教導我們，所以是 inform。Q11 統整題：可以挑 talk about their feelings、be honest、show that you care。',
+  parent:'一起玩「身體說話」遊戲：大人故意交叉雙手、做鬼臉，問孩子：「我現在想聽你說話嗎？」孩子馬上就懂了 your body also tells how you feel！'
+},
+
+/* ---------------------------------- 課文 8：p.238 下 ---------------------------------- */
+{ id:'r8', kind:'read', label:'課文 8 · p.238（下）', art:'team',
+  left:[
+    {k:'li', s:[T('Look at the person you are speaking to.','看著你正在對話的人。'),
+                 T('Do the same thing when the other person is speaking to you.','當對方對你說話時，也這樣做。')]},
+    {k:'li', s:[T('Listen carefully to what the other person has to say.','仔細聽對方要說的話。')]},
+    {k:'li', s:[T('Wait for your turn to speak.','等輪到你的時候再說話。')]},
+    {k:'li', s:[T('Apologize when you are wrong or if you hurt someone’s feelings.','做錯了，或傷了別人的感受時，要道歉。')]},
+    {k:'li', s:[T('Try to find a way to do things differently next time.','試著找出下次用不同方式做事的辦法。')]},
+  ],
+  vocab:[
+    ['carefully','ˈkɛrfəli','仔細地','Listen carefully.','carefully'],
+    ['turn','tɝn','輪到（一個人的機會）','It is my turn.','turn'],
+    ['same','seɪm','相同的','Do the same thing.','same'],
+    ['hurt feelings','hɝt ˈfilɪŋz','傷了別人的感受','I hurt his feelings.','hurt someone’s feelings'],
+    ['differently','ˈdɪfərəntli','用不同的方式','Try it differently.','differently'],
+    ['next time','nɛkst taɪm','下一次','Next time, I will listen.','next time'],
+    ['find','faɪnd','找到、找出','Find a way.','find'],
+    ['try','traɪ','嘗試','Try again.','try'],
+  ],
+  phrases:[
+    ['look at ...','看著…'],['the same thing','同樣的事'],['listen to ...','聽…'],['wait for your turn','等輪到你'],
+    ['hurt someone’s feelings','傷了某人的感受'],['try to + 動詞','試著做…'],['a way to + 動詞','一個…的方法'],['next time','下一次'],
+  ],
+  patterns:[
+    ['Look at the person you are speaking to.',[['Look at','V'],['the person','O'],['you are speaking to.','X']],'the person (that) you are speaking to ＝ 你正在對他說話的那個人，用來說明是哪一個人。'],
+    ['Wait for your turn to speak.',[['Wait for','V'],['your turn','O'],['to speak.','X']],'wait for + 名詞 ＝ 等待…。your turn to speak ＝ 輪到你說話。'],
+    ['Apologize when you are wrong or if you hurt someone’s feelings.',[['Apologize','V'],['when you are wrong','X'],['or if you hurt someone’s feelings.','X']],'when（當…時候）和 if（如果…）都能放在句子後面，說明什麼時候要道歉。'],
+    ['Try to find a way to do things differently.',[['Try to find','V'],['a way','O'],['to do things differently.','X']],'try to + 原形動詞 ＝ 試著…。a way to + 動詞 ＝ 做…的方法。'],
+  ],
+  verbs:[['look','looked','looked','看'],['speak','spoke','spoken','說話'],['do','did','done','做'],['listen','listened','listened','聽'],['wait','waited','waited','等待'],['apologize','apologized','apologized','道歉'],['hurt','hurt','hurt','傷害'],['try','tried','tried','嘗試'],['find','found','found','找到'],['have','had','had','有']],
+  exam:'Q11 統整題：listen carefully（仔細聽）、wait for your turn / take turns（等輪到你）、apologize（道歉）都在這一頁。Q7 結尾：整篇文章最後給了「消氣清單」和「溝通守則」。',
+  parent:'讓孩子當小老師，用中文教你「談話守則」，再問他：「哪一條你最容易做到？哪一條最難？」把最難的一條貼在冰箱上，一週練習一次。'
+},
+
+/* ---------------------------------- 考前練習 ---------------------------------- */
+{ id:'tp', kind:'tpintro', label:'Test Prep · 考前練習' },
+];
+
+/* 11 題口試模擬 */
+const QS = [
+ { no:1, cat:'Genre', zh:'文體', q:'What is the genre of this text? How do you know?', qzh:'這篇文章的文體是什麼？你怎麼知道？',
+   frame:'The genre is {{informational}} text. I know because it gives {{facts}} about a topic, has {{headings}} that stand out, and uses real {{photographs}}.',
+   bank:['informational','facts','headings','photographs','fiction','stories'],
+   ans:'The genre is informational text (nonfiction). I know because it gives facts about a topic, has headings that stand out (like Dealing with Anger and Talking Things Out), and uses real photographs.',
+   azh:'這篇文章的文體是資訊類文章（非虛構類）。我知道是因為它提供了一個主題的真實資訊，有醒目的小標題（例如「處理憤怒」和「把話說清楚」），而且使用了真實的照片。',
+   tip:'請孩子翻回 p.228 的 Genre Study 找線索。Informational text 是「資訊類文章」，內容都是真實的（nonfiction / facts），不是編出來的童話故事。從「大標題（headings）」、「真實照片（photographs）」和「事實（facts）」可以看出來。',
+   words:[['informational','資訊類的'],['nonfiction','非虛構'],['facts','事實'],['headings','標題'],['photographs','照片']],
+   pat:'I know because ... ＝ 我知道是因為…（回答「你怎麼知道？」的標準句型）。',
+   jump:['prep','r6'], parent:'先讓孩子回答中文：「這是故事還是知識書？」再用 I know because … 說出三個證據。' },
+ { no:2, cat:'Point of View', zh:'敘事視角', q:'What point of view is this story told from?', qzh:'這個故事（文章）是用誰的視角寫的？',
+   frame:'This text is told from the {{second}}-person point of view. The author uses the word “{{you}}” to talk directly to the reader.',
+   bank:['second','you','first','third','I','he'],
+   ans:'This text is told from the second-person point of view. The author uses the word “you” to talk directly to the reader.',
+   azh:'這篇文章是以第二人稱視角敘述的。作者使用「你（you）」這個字直接對讀者說話。',
+   tip:'帶孩子看文章裡最常出現的「代名詞（pronouns）」。翻到 p.230，第一句就是 “You work and play…”，整篇作者都在跟「你（讀者）」說話，這叫做第二人稱。',
+   words:[['point of view','視角、觀點'],['second person','第二人稱'],['author','作者'],['reader','讀者'],['directly','直接地']],
+   pat:'第一人稱 I / we（我、我們）；第二人稱 you（你）；第三人稱 he / she / they（他、她、他們）。',
+   jump:['r1'], parent:'玩「代名詞找找看」：請孩子在課文 1 圈出所有的 you，數數看有幾個。' },
+ { no:3, cat:'Central Idea', zh:'中心主旨', q:'What is the central idea of the text?', qzh:'這篇文章的中心主旨是什麼？',
+   frame:'The central idea is that people can solve conflicts {{peacefully}} by {{calming}} down, talking {{respectfully}}, and working together as a {{team}}.',
+   bank:['peacefully','calming','respectfully','team','angrily','alone'],
+   ans:'The central idea is that people can solve conflicts peacefully by calming down, talking respectfully, and working together as a team.',
+   azh:'中心主旨是人們可以透過冷靜下來、有禮貌地溝通，以及像團隊一樣合作，來和平地解決衝突。',
+   tip:'主旨就是「作者最想教會我們的一件事」。帶孩子看 p.233 和 p.236 的核心句子：We can solve conflicts without arguing. ／ Solving conflicts peacefully takes practice. Work together!',
+   words:[['central idea','中心主旨'],['peacefully','和平地'],['calming down','冷靜下來'],['respectfully','有禮貌地'],['team','團隊']],
+   pat:'The central idea is that + 一個完整的句子。 ＝ 中心主旨是…（that 後面接完整句子）。',
+   jump:['r3','r5'], parent:'問孩子：「作者最想告訴我們什麼？」用中文說一句話，再一起用上面的句型換成英文。' },
+ { no:4, cat:'Setting', zh:'背景', q:'What is the setting of the story?', qzh:'這個故事的背景（時間與地點）是什麼？',
+   frame:'Because this is an {{informational}} text, there is no single setting. It takes place {{every}} day in places where people work and {{play}} together, such as at school, at home, or on the {{playground}}.',
+   bank:['informational','every','play','playground','story','kitchen'],
+   ans:'Because this is an informational text, there is no single setting. It takes place every day in places where people work and play together, such as at school, at home, or on the playground.',
+   azh:'因為這是一篇資訊類文章，所以沒有單一的場景設定。它發生在每一天，在人們一起工作和玩耍的地方，例如學校、家裡或遊樂場。',
+   tip:'提醒孩子這是一篇 informational text（非故事類），沒有單一固定的時間地點。看 p.230 的 every day，再引導孩子說出：時間是「每一天」，地點是「我們與人相處的任何地方（家裡、學校或遊樂場）」。',
+   words:[['setting','背景（時間與地點）'],['every day','每一天'],['at school','在學校'],['at home','在家裡'],['playground','遊樂場']],
+   pat:'such as ... ＝ 例如…（用來舉例）。It takes place ... ＝ 它發生在…。',
+   jump:['r1'], parent:'問孩子：「你今天在哪裡跟別人一起玩？」把答案套進 such as at school。' },
+ { no:5, cat:'Author’s Purpose', zh:'作者目的', q:'What is the author’s purpose for writing this text? How do you know?', qzh:'作者為什麼要寫這篇文章？你怎麼知道？',
+   frame:'The author’s purpose is to {{inform}} readers. I know because the author gives facts, {{steps}}, and helpful ways to calm down when angry and solve conflicts with others.',
+   bank:['inform','steps','persuade','entertain','jokes','songs'],
+   ans:'The author’s purpose is to inform (teach) readers. I know because the author gives facts, steps, and helpful ways to calm down when angry and solve conflicts with others.',
+   azh:'作者的寫作目的是為了告知（教導）讀者。我知道是因為作者提供了真實的方法和步驟，教導我們生氣時如何冷靜以及如何與他人解決衝突。',
+   tip:'複習 P.I.E. 口訣：Persuade 說服、Inform 告知／教導、Entertain 娛樂。這篇文章教我們怎麼處理生氣與解決衝突，所以是 Inform！',
+   words:[['purpose','目的'],['inform','告知、教導'],['persuade','說服'],['entertain','娛樂'],['steps','步驟']],
+   pat:'P.I.E. ＝ Persuade（說服）、Inform（教導）、Entertain（娛樂）。',
+   jump:['r6','r7'], parent:'用 P.I.E. 玩猜謎：廣告是 Persuade，故事書是 Entertain，這篇是哪一個？' },
+ { no:6, cat:'Topic', zh:'主題', q:'What is the topic of this text? How do you know?', qzh:'這篇文章的主題是什麼？你怎麼知道？',
+   frame:'The topic is working with others and solving {{conflicts}}. I know because the {{title}} is Working with Others, and the text talks about conflicts and getting along on almost every {{page}}.',
+   bank:['conflicts','title','page','toys','author','pictures'],
+   ans:'The topic is working with others and solving conflicts. I know because the title is Working with Others, and the text talks about conflicts and getting along on almost every page.',
+   azh:'文章的主題是與他人合作並解決衝突。我知道是因為標題就是《與他人合作》，而且幾乎每一頁都在談論衝突與和睦相處。',
+   tip:'Topic（主題）只要用「一兩個字或短語」回答就好（跟 Central Idea 是一句完整的話不同喔！）。看標題 Working with Others 和課本反覆出現的單字 conflicts（衝突）與 teamwork（團隊合作）。',
+   words:[['topic','主題'],['title','標題'],['conflicts','衝突'],['getting along','和睦相處'],['almost','幾乎']],
+   pat:'Topic 是一個短語；Central Idea 是一個完整的句子。',
+   jump:['r1'], parent:'比一比：「主題」像「這本書在講什麼東西」，「中心主旨」像「作者想教我們什麼」。' },
+ { no:7, cat:'Beginning · Middle · End', zh:'開頭、中間、結尾', q:'What happens at the beginning, middle, and end of the story?', qzh:'文章的開頭、中間、結尾分別說了什麼？',
+   frame:'Beginning: The text explains that people sometimes have {{conflicts}} and feel angry, and that is {{okay}}.\nMiddle: It teaches ways to solve conflicts, such as calming down, talking, listening, apologizing, compromising, and asking an adult for {{help}}.\nEnd: The text concludes that solving conflicts peacefully takes {{practice}}.',
+   bank:['conflicts','okay','help','practice','toys','money'],
+   ans:'Beginning: The text explains that people sometimes have conflicts and feel angry, and that is okay.\nMiddle: It shows what not to do (yelling or hitting) and teaches ways to solve conflicts, such as calming down, talking, listening, apologizing, compromising, and asking an adult for help.\nEnd: The text concludes that solving conflicts peacefully takes practice and gives helpful lists of ways to deal with anger and talk things out.',
+   azh:'開頭：文章說明人們有時候會發生衝突並感到生氣，這是沒關係的。\n中間：指出不該做的事（大叫或打人），並教導解決衝突的方法，例如冷靜、溝通、傾聽、道歉、妥協，以及請大人幫忙。\n結尾：總結和平解決衝突需要練習，並提供具體的清單，教導如何處理憤怒與把話說清楚。',
+   tip:'這篇是說明文，沒有「情節（plot）」，我們用文章結構來梳理。Beginning（pp.230–231）：發生衝突、生氣是正常的。Middle（pp.232–235）：生氣時該怎麼辦，以及解決衝突的方法。End（pp.236–238）：和平解決衝突需要練習，並列出「消氣清單」和「溝通守則」。',
+   words:[['beginning','開頭'],['middle','中間'],['end','結尾'],['conclude','總結'],['compromise','妥協']],
+   pat:'such as ... ＝ 例如…。The text concludes that ... ＝ 文章最後總結說…。',
+   jump:['r1','r2','r5','r8'], parent:'用三根手指：第一根指開頭、第二根指中間、第三根指結尾，孩子每指一根就說一句。' },
+ { no:8, cat:'Main Characters', zh:'主要人物', q:'Who are the main characters in the story?', qzh:'這個故事的主要人物是誰？',
+   frame:'Since this is an {{informational}} text, there are no story {{characters}}. Instead, it is about real {{people}}: you (the reader), your {{friends}}, and adults who can help.',
+   bank:['informational','characters','people','friends','animals','monsters'],
+   ans:'Since this is an informational text, there are no story characters. Instead, it is about real people—you (the reader), your friends, and adults who can help.',
+   azh:'因為這是一篇資訊類文章，所以沒有故事角色。相對地，它談論的是真實世界的人——也就是你（讀者）、你的朋友，以及可以提供協助的大人。',
+   tip:'這題是個小陷阱！考孩子有沒有發現這是 informational text。非虛構文章沒有「故事角色（characters）」，寫的是真實世界裡的人們（real people）——也就是「你（the reader）」、「朋友（friends）」和「幫忙的大人（adults）」。',
+   words:[['character','角色'],['real people','真實的人'],['reader','讀者'],['adults','大人'],['instead','相反地']],
+   pat:'Since ... ＝ 因為…（和 because 類似）。Instead, ... ＝ 相反地，…。',
+   jump:['r1','r5'], parent:'提醒孩子：看到 informational text 就要想「沒有 characters」。' },
+ { no:9, cat:'RCQT 細節題', zh:'閱讀理解（細節）', q:'What do people do when conflicts make them angry?', qzh:'當衝突讓人們生氣時，他們會怎麼做？',
+   frame:'When conflicts make them angry, some people {{yell}} and scream, some people {{hit}} other people, and some people {{walk}} away to be alone and calm down.',
+   bank:['yell','hit','walk','sing','hug','sleep'],
+   ans:'When conflicts make them angry, some people yell and scream, some people hit other people, and some people walk away to be alone and calm down.',
+   azh:'當衝突讓人們生氣時，有些人會大吼大叫，有些人會打人，而有些人則會走開，想要獨處並冷靜下來。',
+   tip:'帶孩子用「掃讀（scanning）」技巧，直接去 p.232 找一模一樣的問句：What do people do when conflicts make them angry? 答案就在後面幾句！注意三種人：yell and scream、hit、walk away。',
+   words:[['yell','大吼'],['scream','尖叫'],['hit','打'],['walk away','走開'],['calm down','冷靜下來']],
+   pat:'some people ... , some people ... , and some people ... ＝ 有些人…，有些人…，還有些人…（並列三個動作）。',
+   jump:['r2'], parent:'讓孩子用三個動作表演答案，再用 some people … 說出來。' },
+ { no:10, cat:'RCQT 推論題', zh:'閱讀理解（推論）', q:'Why is it important to cool down when you feel angry?', qzh:'為什麼生氣的時候要先冷靜下來？',
+   frame:'It is important to cool down because you might be too {{angry}} to talk about how you feel. If you stay angry, yelling or hitting will {{hurt}} people and make problems {{worse}} instead of solving the conflict.',
+   bank:['angry','hurt','worse','happy','help','better'],
+   ans:'It is important to cool down because you might be too angry to talk about how you feel. If you stay angry, yelling or hitting will hurt people and make problems worse instead of solving the conflict.',
+   azh:'冷靜下來很重要，因為太生氣時你可能無法好好說出自己的感受。如果你一直處於生氣狀態，大叫或打人會傷害別人並讓問題變得更糟，而無法解決衝突。',
+   tip:'帶孩子看 p.232、p.233 和 p.237。為什麼不能在氣頭上直接處理問題？1. 生氣時的大吼或打人只會傷人、讓問題變糟（make problems worse）；2. 太生氣時沒辦法好好說出自己的感受（too angry to talk about how you feel）。冷靜後才能好好溝通。',
+   words:[['important','重要的'],['cool down','冷靜下來'],['hurt','傷害'],['worse','更糟的'],['instead of','而不是']],
+   pat:'It is important to + 動詞 ＝ 做…很重要。because ... ＝ 因為…。too + 形容詞 + to + 動詞 ＝ 太…而不能…。',
+   jump:['r2','r3','r6'], parent:'問孩子：「你生氣的時候，能不能好好說話？」讓他親身說出原因，答案會更有力量。' },
+ { no:11, cat:'RCQT 統整題', zh:'閱讀理解（統整）', q:'What can people do to solve a conflict after they have calmed down?', qzh:'人們冷靜之後，可以怎麼解決衝突？',
+   frame:'After they have calmed down, people can talk about their {{feelings}}, use {{respectful}} words, {{listen}} carefully to each other, take {{turns}} speaking, {{apologize}} when they are wrong, compromise, or ask an adult for help.',
+   bank:['feelings','respectful','listen','turns','apologize','mean','shout','toys'],
+   ans:'After they have calmed down, people can talk about their feelings, use respectful words, listen carefully to each other, take turns speaking, apologize when they are wrong, compromise, or ask an adult for help.',
+   azh:'在冷靜下來之後，人們可以說出自己的感受、使用有禮貌的字眼、仔細傾聽彼此、輪流發言、做錯時道歉、互相妥協，或是請大人幫忙。',
+   tip:'這題考統整能力！帶孩子從 pp.233–235 以及 p.238（Talking Things Out）挑出 3 到 4 個最清楚的行動動詞（action verbs），用逗號連接成一句漂亮的句子。',
+   words:[['calmed down','已經冷靜下來'],['respectful','有禮貌的'],['listen carefully','仔細聽'],['take turns','輪流'],['apologize','道歉']],
+   pat:'列舉三個以上用逗號，最後一個前面加 or 或 and：A, B, C, or D。',
+   jump:['r3','r4','r5','r7'], parent:'每個孩子至少挑 3 個方法就夠了，不用全部背！' },
+];
+/* ============ 小工具 ============ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const nl = s => esc(s).replace(/\n/g, '<br>');
+
+const ICON = {
+  spk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  star: '<svg class="star" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.1 8.6 22 9.3 16.8 14 18.2 21 12 17.5 5.8 21 7.2 14 2 9.3 8.9 8.6"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>',
+};
+
+/* ============ 手繪風插圖 (SVG) ============ */
+const OUT = '#2b3550';
+function kid(x, y, o = {}) {
+  const { s = 1, skin = '#f2c29b', hair = '#4a3326', shirt = '#3b82f6', mood = 'happy', arms = 'down', flip = false, style = 'short', pants = '#3d4766' } = o;
+  const A = {
+    down: ['M-20 -34 Q-33 -8 -27 12', 'M20 -34 Q33 -8 27 12'],
+    up: ['M-20 -36 Q-42 -50 -38 -80', 'M20 -36 Q42 -50 38 -80'],
+    out: ['M-20 -34 Q-42 -28 -54 -12', 'M20 -34 Q42 -28 54 -12'],
+    reachR: ['M-20 -34 Q-33 -8 -27 12', 'M20 -36 Q50 -32 66 -22'],
+    reachL: ['M-20 -36 Q-50 -32 -66 -22', 'M20 -34 Q33 -8 27 12'],
+  }[arms] || [];
+  const eyes = `<circle cx="-9" cy="-74" r="2.9" fill="${OUT}"/><circle cx="9" cy="-74" r="2.9" fill="${OUT}"/>`;
+  const cheeks = '<circle cx="-15" cy="-63" r="5" fill="#ff9e9e" opacity=".55"/><circle cx="15" cy="-63" r="5" fill="#ff9e9e" opacity=".55"/>';
+  const steam = '<path d="M-14 -102 q-7 -9 1 -16 M0 -104 q-7 -12 3 -20 M14 -102 q-7 -9 1 -16" stroke="#e24c3f" stroke-width="3.5" fill="none"/>';
+  const face = {
+    happy: eyes + cheeks + `<path d="M-9 -63 Q0 -53 9 -63" stroke="${OUT}" stroke-width="3" fill="none"/>`,
+    talk: eyes + cheeks + `<path d="M-7 -63 Q0 -50 7 -63 Z" fill="#7a2230" stroke="${OUT}" stroke-width="2"/>`,
+    angry: eyes + `<path d="M-17 -85 L-4 -78 M17 -85 L4 -78" stroke="${OUT}" stroke-width="3.5"/>` + `<circle cx="-15" cy="-63" r="5.5" fill="#ff6b5e" opacity=".6"/><circle cx="15" cy="-63" r="5.5" fill="#ff6b5e" opacity=".6"/>` + `<path d="M-8 -57 Q0 -65 8 -57" stroke="${OUT}" stroke-width="3" fill="none"/>` + steam,
+    shout: eyes + `<path d="M-17 -85 L-4 -78 M17 -85 L4 -78" stroke="${OUT}" stroke-width="3.5"/>` + `<circle cx="-15" cy="-63" r="5.5" fill="#ff6b5e" opacity=".6"/><circle cx="15" cy="-63" r="5.5" fill="#ff6b5e" opacity=".6"/>` + `<ellipse cx="0" cy="-57" rx="8.5" ry="10" fill="#7a2230" stroke="${OUT}" stroke-width="2.5"/>` + steam,
+    sad: eyes + `<path d="M-16 -81 L-5 -85 M16 -81 L5 -85" stroke="${OUT}" stroke-width="3"/>` + `<path d="M-8 -57 Q0 -65 8 -57" stroke="${OUT}" stroke-width="3" fill="none"/><path d="M-12 -67 q-4 8 0 10 q4 -2 0 -10z" fill="#7cc4ff" stroke="${OUT}" stroke-width="1.5"/>`,
+    calm: `<path d="M-15 -74 Q-9 -69 -3 -74 M3 -74 Q9 -69 15 -74" stroke="${OUT}" stroke-width="3" fill="none"/>` + cheeks + `<path d="M-6 -61 Q0 -57 6 -61" stroke="${OUT}" stroke-width="3" fill="none"/>`,
+  }[mood];
+  const capH = `<path d="M-26 -75 A26 26 0 0 1 26 -75 Q10 -92 -4 -84 Q-18 -81 -26 -75Z" fill="${hair}" stroke="${OUT}" stroke-width="2.5"/>`;
+  const hairSvg = {
+    short: capH,
+    pony: capH + `<circle cx="28" cy="-82" r="10" fill="${hair}" stroke="${OUT}" stroke-width="2.5"/>`,
+    curly: capH + `<circle cx="-17" cy="-93" r="11" fill="${hair}" stroke="${OUT}" stroke-width="2.5"/><circle cx="0" cy="-99" r="12" fill="${hair}" stroke="${OUT}" stroke-width="2.5"/><circle cx="17" cy="-93" r="11" fill="${hair}" stroke="${OUT}" stroke-width="2.5"/>`,
+  }[style];
+  const armSvg = A.map(d => `<path d="${d}" stroke="${OUT}" stroke-width="14" fill="none"/><path d="${d}" stroke="${skin}" stroke-width="8" fill="none"/>`).join('');
+  return `<g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-9 8 V50 M9 8 V50" stroke="${OUT}" stroke-width="15" fill="none"/><path d="M-9 8 V50 M9 8 V50" stroke="${pants}" stroke-width="10" fill="none"/>
+    <ellipse cx="-10" cy="55" rx="11" ry="5.5" fill="${OUT}"/><ellipse cx="10" cy="55" rx="11" ry="5.5" fill="${OUT}"/>
+    ${armSvg}
+    <rect x="-21" y="-48" width="42" height="58" rx="17" fill="${shirt}" stroke="${OUT}" stroke-width="3"/>
+    <circle cx="0" cy="-72" r="25" fill="${skin}" stroke="${OUT}" stroke-width="3"/>
+    ${hairSvg}${face}</g>`;
+}
+function bub(x, y, w, h, txt, tx, ty, fs = 22) {
+  const bx = Math.min(Math.max(tx, x + 24), x + w - 24);
+  return `<g stroke-linejoin="round"><polygon points="${bx - 10},${y + h - 2} ${bx + 10},${y + h - 2} ${tx},${ty}" fill="#fff" stroke="${OUT}" stroke-width="3"/>
+  <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="18" fill="#fff" stroke="${OUT}" stroke-width="3"/>
+  <text x="${x + w / 2}" y="${y + h / 2 + fs * 0.34}" text-anchor="middle" font-family="Fredoka,Andika,sans-serif" font-weight="600" font-size="${fs}" fill="${OUT}">${txt}</text></g>`;
+}
+const ground = `<path d="M0 236 Q100 226 200 236 T400 234 V280 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>`;
+const sun = `<g stroke="${OUT}" stroke-width="3"><circle cx="352" cy="44" r="22" fill="#ffd23f"/><path d="M352 8v10M352 70v10M316 44h10M378 44h10M326 18l7 7M371 63l7 7M378 18l-7 7M333 63l-7 7" fill="none"/></g>`;
+const heart = (cx, cy, k = 1) => `<path transform="translate(${cx} ${cy}) scale(${k})" d="M0 22 C-30 0 -15 -22 0 -8 C15 -22 30 0 0 22Z" fill="#ef5b5b" stroke="${OUT}" stroke-width="3"/>`;
+const star = (cx, cy, r, fill = '#ffd23f') => {
+  let p = []; for (let i = 0; i < 10; i++) { const a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r * .45 : r; p.push((cx + rr * Math.cos(a)).toFixed(1) + ',' + (cy + rr * Math.sin(a)).toFixed(1)); }
+  return `<polygon points="${p.join(' ')}" fill="${fill}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>`;
+};
+const svgWrap = (inner, label, vb = '0 0 400 280') => `<svg viewBox="${vb}" role="img" aria-label="${label}">${inner}</svg>`;
+
+const ART = {
+  play: () => svgWrap(sun + ground +
+    `<g stroke="${OUT}" stroke-width="3"><circle cx="200" cy="148" r="20" fill="#b9814f"/><circle cx="186" cy="130" r="8" fill="#b9814f"/><circle cx="214" cy="130" r="8" fill="#b9814f"/><circle cx="194" cy="146" r="2.5" fill="${OUT}"/><circle cx="206" cy="146" r="2.5" fill="${OUT}"/><ellipse cx="200" cy="154" rx="7" ry="5" fill="#e8c9a0"/></g>` +
+    kid(95, 176, { mood: 'sad', arms: 'reachR', shirt: '#3b82f6', hair: '#3a2a22' }) +
+    kid(305, 176, { mood: 'angry', arms: 'reachL', shirt: '#e2574c', style: 'pony', hair: '#7a4a21', flip: false }) +
+    bub(250, 8, 120, 44, 'Mine!', 305, 66) + bub(30, 8, 130, 44, 'No fair!', 95, 66), '兩個小朋友在搶玩具'),
+  angry: () => svgWrap(ground +
+    kid(115, 176, { mood: 'shout', arms: 'up', shirt: '#e2574c', hair: '#2f2420' }) +
+    `<path d="M168 96 l26 -12 M176 124 l32 0 M168 152 l26 12" stroke="#e24c3f" stroke-width="6" stroke-linecap="round"/>` +
+    bub(20, 8, 130, 44, 'AHHH!', 115, 70) +
+    kid(310, 176, { mood: 'sad', shirt: '#2e9e6a', hair: '#7a4a21', style: 'pony' }) +
+    `<g stroke="${OUT}" stroke-width="3" fill="#fff"><ellipse cx="320" cy="42" rx="52" ry="24"/><circle cx="288" cy="80" r="7"/><circle cx="276" cy="94" r="4"/></g><text x="320" y="49" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="20" fill="${OUT}">Alone</text>` +
+    `<path d="M352 222 h32 m-9 -9 l9 9 l-9 9" stroke="${OUT}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`, '一個人大吼，另一個人想走開'),
+  talk: () => svgWrap(sun + ground +
+    kid(100, 176, { mood: 'talk', shirt: '#f08a24', hair: '#2f2420' }) + kid(300, 176, { mood: 'happy', shirt: '#14a39a', flip: true, hair: '#7a4a21', style: 'curly' }) +
+    bub(18, 8, 170, 44, 'I feel sad.', 100, 70) + bub(215, 8, 170, 44, 'I hear you.', 300, 70) + heart(200, 150), '兩個小朋友好好談話'),
+  respect: () => svgWrap(ground +
+    kid(100, 176, { mood: 'talk', shirt: '#8b5cf6', hair: '#2f2420' }) + kid(300, 176, { mood: 'talk', shirt: '#f2b705', flip: true, hair: '#7a4a21', style: 'pony' }) +
+    bub(20, 10, 160, 44, 'Please!', 100, 72) + bub(205, 10, 180, 44, 'I’m sorry.', 300, 72) +
+    `<circle cx="200" cy="150" r="24" fill="#2e9e6a" stroke="${OUT}" stroke-width="3"/><path d="M188 150 l8 9 l16 -18" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`, '用有禮貌的話說'),
+  adult: () => {
+    const cookie = (cx, cy) => `<g stroke="${OUT}" stroke-width="3"><path d="M${cx - 24} ${cy} a24 24 0 0 1 48 0 z" fill="#d9a066"/><circle cx="${cx - 8}" cy="${cy - 10}" r="3" fill="#5a3a1f"/><circle cx="${cx + 9}" cy="${cy - 14}" r="3" fill="#5a3a1f"/><circle cx="${cx + 2}" cy="${cy - 4}" r="2.5" fill="#5a3a1f"/></g>`;
+    return svgWrap(ground + kid(200, 166, { s: 1.2, mood: 'calm', arms: 'out', shirt: '#7c5cc4', hair: '#2a2a2a', skin: '#e0a97c' }) +
+      kid(70, 178, { mood: 'happy', arms: 'reachR', shirt: '#f2b705', style: 'pony', hair: '#7a4a21' }) + kid(335, 178, { mood: 'happy', arms: 'reachL', shirt: '#e2574c', hair: '#2f2420' }) +
+      cookie(138, 150) + cookie(262, 150) + bub(232, 4, 160, 42, 'Let’s share!', 215, 54, 21), '大人幫忙，兩個人各分一半'); },
+  calm: () => svgWrap(ground +
+    kid(200, 176, { s: 1.15, mood: 'calm', shirt: '#14a39a', hair: '#2f2420' }) +
+    `<g stroke="${OUT}" stroke-width="3" fill="#fff"><ellipse cx="318" cy="52" rx="62" ry="28"/><circle cx="268" cy="86" r="8"/><circle cx="256" cy="100" r="4.5"/></g><text x="318" y="60" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="22" fill="${OUT}">In… Out…</text>` +
+    `<g stroke="${OUT}" stroke-width="3"><path d="M30 78 a26 26 0 0 1 52 0" fill="none" stroke-width="6"/><rect x="24" y="72" width="14" height="28" rx="6" fill="#e2574c"/><rect x="74" y="72" width="14" height="28" rx="6" fill="#e2574c"/></g>` +
+    `<g stroke="${OUT}" stroke-width="3"><rect x="36" y="196" width="66" height="44" rx="5" fill="#3b82f6"/><rect x="42" y="190" width="66" height="44" rx="5" fill="#fff"/><path d="M75 190 v44" fill="none"/><path d="M50 204 h18 M50 214 h18 M82 204 h18 M82 214 h18" fill="none" stroke-width="2"/></g>` +
+    `<g stroke="${OUT}" stroke-width="3"><rect x="292" y="168" width="84" height="56" rx="20" fill="#f7b2c4"/><circle cx="296" cy="172" r="4" fill="#fff"/><circle cx="372" cy="172" r="4" fill="#fff"/><circle cx="296" cy="220" r="4" fill="#fff"/><circle cx="372" cy="220" r="4" fill="#fff"/></g>`, '深呼吸、聽音樂、讀書和抱枕都能讓心情平靜'),
+  look: () => svgWrap(ground +
+    kid(100, 176, { mood: 'talk', shirt: '#f08a24', hair: '#2f2420' }) + kid(300, 176, { mood: 'happy', shirt: '#8b5cf6', flip: true, hair: '#7a4a21', style: 'pony' }) +
+    `<path d="M70 44 Q100 16 130 44 Q100 72 70 44Z" fill="#fff" stroke="${OUT}" stroke-width="3"/><circle cx="100" cy="44" r="12" fill="#4a90d9" stroke="${OUT}" stroke-width="3"/><circle cx="100" cy="44" r="5" fill="${OUT}"/>` +
+    `<path d="M300 14 C274 14 270 42 283 54 C290 60 288 70 297 72 C310 74 314 58 322 50 C334 36 326 14 300 14Z" fill="#f2c29b" stroke="${OUT}" stroke-width="3"/><path d="M296 30 C285 30 288 46 299 46" fill="none" stroke="${OUT}" stroke-width="3"/>` +
+    `<path d="M140 108 H260" stroke="${OUT}" stroke-width="4" stroke-dasharray="3 12" stroke-linecap="round"/>` + heart(200, 150), '看著對方、仔細聽'),
+  team: () => svgWrap(sun + ground +
+    kid(88, 178, { mood: 'happy', arms: 'up', shirt: '#f2b705', style: 'pony', hair: '#7a4a21' }) + kid(200, 172, { s: 1.1, mood: 'happy', arms: 'up', shirt: '#e2574c', hair: '#2f2420' }) + kid(312, 178, { mood: 'happy', arms: 'up', shirt: '#3b82f6', style: 'curly', hair: '#3a2a22' }) +
+    star(60, 40, 18) + star(160, 24, 12, '#ff9e9e') + star(250, 30, 14, '#9ad7ff') + bub(120, 44, 160, 44, 'Teamwork!', 200, 84), '大家一起合作，歡呼'),
+  prep: () => svgWrap(ground +
+    `<path d="M50 100 Q125 78 200 104 V222 Q125 198 50 220Z" fill="#fff" stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"/><path d="M350 100 Q275 78 200 104 V222 Q275 198 350 220Z" fill="#fffdf4" stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"/>` +
+    `<path d="M72 126 Q120 112 176 132 M72 148 Q120 134 176 154 M72 170 Q120 156 176 176 M224 132 Q280 112 328 126 M224 154 Q280 134 328 148" stroke="#9aa6c2" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+    `<circle cx="270" cy="160" r="40" fill="#bfe3ff" fill-opacity=".6" stroke="${OUT}" stroke-width="6"/><path d="M300 190 L338 232" stroke="${OUT}" stroke-width="12" stroke-linecap="round"/>` +
+    bub(95, 6, 210, 46, 'I predict…', 200, 98), '書和放大鏡，猜一猜會讀到什麼'),
+  cover: () => svgWrap(`<rect width="400" height="560" fill="#0f857d"/>
+    <circle cx="330" cy="70" r="120" fill="#16a095" opacity=".6"/><circle cx="40" cy="330" r="90" fill="#16a095" opacity=".45"/>
+    <text x="200" y="150" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="62" fill="#fff">Working</text>
+    <text x="200" y="212" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="500" font-size="40" fill="#ffe27a">with</text>
+    <text x="200" y="278" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="68" fill="#fff">Others</text>
+    <text x="200" y="318" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="22" fill="#d9fffa">by Robin Nelson</text>
+    <path d="M0 470 Q100 456 200 470 T400 468 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>` +
+    kid(52, 428, { s: .9, mood: 'happy', arms: 'out', shirt: '#f2b705', style: 'pony', hair: '#7a4a21' }) + kid(126, 428, { s: .9, mood: 'happy', arms: 'out', shirt: '#e2574c', hair: '#2f2420' }) +
+    kid(200, 428, { s: .9, mood: 'happy', arms: 'out', shirt: '#3b82f6', style: 'curly', hair: '#3a2a22' }) + kid(274, 428, { s: .9, mood: 'happy', arms: 'out', shirt: '#8b5cf6', style: 'pony', hair: '#2a2a2a' }) +
+    kid(348, 428, { s: .9, mood: 'happy', arms: 'out', shirt: '#f08a24', hair: '#7a4a21' }) +
+    `<text x="200" y="526" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="20" fill="${OUT}" font-weight="600">Grade 2 · Informational Text</text>`, '封面：大家手牽手', '0 0 400 560'),
+};
+
+/* ============ 狀態 ============ */
+const S = { voiceURI: null, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
+const P = { done: {} };
+const PKEY = 'wwo-ebook-v1';
+function loadP() {
+  try {
+    const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
+    P.done = j.done || {};
+    if (typeof j.i === 'number') S.i = Math.min(Math.max(0, j.i), SPREADS.length - 1);
+    if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI;
+  } catch (e) { }
+}
+function saveP() { try { localStorage.setItem(PKEY, JSON.stringify({ done: P.done, i: S.i, fs: S.fs, auto: S.auto, slow: S.slow, mode: S.mode, voiceURI: S.voiceURI })); } catch (e) { } }
+
+/* ============ 資料前處理 ============ */
+SPREADS.forEach(sp => {
+  if (sp.kind === 'read') {
+    sp.sents = []; let n = 0;
+    sp.left.forEach(b => { if (b.s) b.s.forEach(x => { x.idx = n++; x.key = sp.id + ':' + x.idx; sp.sents.push(x); }); });
+    const alts = sp.vocab.map(v => v[4] || reEsc(v[0])).sort((a, b) => b.length - a.length);
+    sp._re = new RegExp('\\b(?:' + alts.join('|') + ')\\b', 'gi');
+    sp._vre = sp.vocab.map(v => new RegExp('^(?:' + (v[4] || reEsc(v[0])) + ')$', 'i'));
+  }
+});
+const QSTATE = {};
+QS.forEach(q => {
+  SPREADS.push({ id: 'q' + q.no, kind: 'q', label: `第 ${q.no} 題 · ${q.cat}`, q });
+  q.blanks = [...q.frame.matchAll(/\{\{(.+?)\}\}/g)].map(m => m[1]);
+  q.full = q.frame.replace(/\{\{(.+?)\}\}/g, '$1');
+  let seed = q.no * 7919; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  q.shuf = [...q.bank].sort(() => rnd() - .5);
+  QSTATE[q.no] = { fills: q.blanks.map(() => null), hint: {}, done: !!P.done['q' + q.no] };
+});
+const SP = () => SPREADS[S.i];
+const countable = SPREADS.filter(s => s.kind === 'read' || s.kind === 'q');
+
+/* ============ 朗讀（瀏覽器內建語音） ============ */
+let voice = null, token = 0, warned = false;
+const cur = { cancel: null };
+function loadVoices() {
+  try {
+    const vs = speechSynthesis.getVoices(); if (!vs.length) return;
+    const en = vs.filter(v => /^en[-_]US/i.test(v.lang));
+    const pref = ['Samantha', 'Google US English', 'Microsoft Aria', 'Microsoft Jenny', 'Ava', 'Allison', 'Nicky', 'Karen', 'Zira'];
+    const good = en.filter(v => /premium|enhanced|高級|強化/i.test(v.name));
+    voice = vs.find(v => v.voiceURI === S.voiceURI) || pref.map(p => good.find(v => v.name.includes(p))).find(Boolean) || good[0] || pref.map(p => en.find(v => v.name.includes(p))).find(Boolean) || en[0] || vs.find(v => /^en/i.test(v.lang)) || null;
+  } catch (e) { }
+}
+try { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } catch (e) { }
+const rate = () => S.slow ? 0.65 : 0.95;
+function speakText(text) {
+  return new Promise(res => {
+    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+      if (!warned) { warned = true; toast('這個瀏覽器沒有朗讀功能，請改用 Chrome 或 Safari。'); }
+      res(); return;
+    }
+    let done = false; const fin = () => { if (!done) { done = true; clearTimeout(tm); res(); } };
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; if (voice) u.voice = voice; u.rate = rate();
+    u.onend = fin; u.onerror = fin;
+    const tm = setTimeout(fin, Math.max(3500, text.length * 200 / rate()));
+    cur.cancel = () => { try { speechSynthesis.cancel(); } catch (e) { } fin(); };
+    try { speechSynthesis.speak(u); } catch (e) { fin(); }
+  });
+}
+function playBlob(blob) {
+  return new Promise(res => {
+    const url = URL.createObjectURL(blob); const a = new Audio(url); let done = false;
+    const fin = () => { if (!done) { done = true; URL.revokeObjectURL(url); res(); } };
+    a.onended = fin; a.onerror = fin;
+    cur.cancel = () => { try { a.pause(); } catch (e) { } fin(); };
+    a.play().catch(fin);
+  });
+}
+function stopAll() {
+  token++;
+  if (cur.cancel) { const c = cur.cancel; cur.cancel = null; c(); }
+  try { speechSynthesis.cancel(); } catch (e) { }
+  setNow(null); S.playing = false; updDock();
+}
+async function playItems(items, opts = {}) {
+  const { mark = true, useMine = true } = opts;
+  stopAll(); const my = token; S.playing = true; updDock(); await sleep(160);
+  for (const it of items) {
+    if (my !== token) return false;
+    if (mark && it.idx != null) setNow(it.idx);
+    const blob = (useMine && S.mode === 'mine' && it.key) ? await recGet(it.key) : null;
+    if (my !== token) return false;
+    if (blob) await playBlob(blob); else await speakText(it.text ?? it.en);
+  }
+  if (my !== token) return false;
+  S.playing = false; setNow(null); updDock(); return true;
+}
+function setNow(idx) {
+  $$('.now').forEach(e => e.classList.remove('now'));
+  if (idx == null) return;
+  const a = $('#s-' + idx), b = $('#t-' + idx);
+  if (a) { a.classList.add('now'); a.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  if (b) { b.classList.add('now'); b.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
+
+/* ============ 錄音（存在這台裝置的瀏覽器裡） ============ */
+const DB = { db: null, mem: new Map(), keys: new Set() };
+function idb() { return new Promise((res, rej) => { try { const r = indexedDB.open('wwo-ebook', 1); r.onupgradeneeded = () => r.result.createObjectStore('rec'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
+async function recInit() {
+  try {
+    DB.db = await idb();
+    const keys = await new Promise((res, rej) => { const q = DB.db.transaction('rec').objectStore('rec').getAllKeys(); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+    keys.forEach(k => DB.keys.add(k));
+  } catch (e) { DB.db = null; }
+}
+function recGet(k) {
+  if (!DB.db) return Promise.resolve(DB.mem.get(k) || null);
+  return new Promise(res => { try { const q = DB.db.transaction('rec').objectStore('rec').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); } catch (e) { res(null); } });
+}
+function recSet(k, blob) {
+  DB.keys.add(k);
+  if (!DB.db) { DB.mem.set(k, blob); return Promise.resolve(); }
+  return new Promise(res => { try { const tx = DB.db.transaction('rec', 'readwrite'); tx.objectStore('rec').put(blob, k); tx.oncomplete = res; tx.onerror = res; } catch (e) { DB.mem.set(k, blob); res(); } });
+}
+function recDel(k) {
+  DB.keys.delete(k); DB.mem.delete(k);
+  if (!DB.db) return Promise.resolve();
+  return new Promise(res => { try { const tx = DB.db.transaction('rec', 'readwrite'); tx.objectStore('rec').delete(k); tx.oncomplete = res; tx.onerror = res; } catch (e) { res(); } });
+}
+const REC = { mr: null, stream: null, blocked: false };
+async function toggleRec(key) {
+  if (REC.mr) { REC.mr.stop(); return; }
+  stopAll();
+  if (!REC.blocked && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+      const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); const chunks = [];
+      mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      mr.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+        REC.mr = null; S.recKey = null;
+        if (blob.size > 800) { await recSet(key, blob); toast('錄好了！按「聽我的」就能聽到自己的聲音'); } else toast('錄音太短了，再試一次');
+        afterRecChange();
+      };
+      REC.mr = mr; S.recKey = key; mr.start(); updDock(); toast('錄音中⋯⋯說完請按「停止錄音」');
+      return;
+    } catch (e) { REC.blocked = true; }
+  } else REC.blocked = true;
+  S.uploadKey = key;
+  toast('這個頁面目前不能直接用麥克風。請先用手機或平板的「錄音機」錄好，再選擇檔案。', 4800);
+  $('#upl').value = ''; $('#upl').click();
+}
+$('#upl').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f || !S.uploadKey) return;
+  await recSet(S.uploadKey, f); S.uploadKey = null; toast('已存好這段聲音'); afterRecChange();
+});
+function afterRecChange() {
+  const sp = SP();
+  if (sp.kind === 'read') $$('.sent').forEach(e => { const x = sp.sents[+e.dataset.i]; e.classList.toggle('rec', !!(x && DB.keys.has(x.key))); });
+  updDock();
+}
+async function playMine(key) {
+  const blob = await recGet(key); if (!blob) { toast('這裡還沒有錄音'); return false; }
+  stopAll(); const my = token; S.playing = true; updDock(); await playBlob(blob);
+  if (my === token) { S.playing = false; updDock(); } return true;
+}
+
+/* ============ 畫面小幫手 ============ */
+let toastTm;
+function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTm); toastTm = setTimeout(() => t.classList.remove('show'), ms); }
+function starsHtml(n) { return ICON.star.replace('class="star"', 'class="star' + (n ? ' on' : '') + '"'); }
+function updStars() {
+  const n = countable.filter(s => P.done[s.id]).length;
+  $('#starCount').innerHTML = ICON.star.replace('class="star"', 'class="star on"') + `<span>${n} / ${countable.length}</span>`;
+}
+function award(id) { if (!P.done[id]) { P.done[id] = 1; saveP(); updStars(); toast('得到一顆星星！'); } }
+
+/* ============ 左頁：課文 ============ */
+function sentHtml(x, sp, extra = '') {
+  const html = esc(x.en).replace(sp._re, m => { const k = sp._vre.findIndex(r => r.test(m)); return `<span class="vw" data-act="vw" data-k="${k}">${m}</span>`; });
+  return `<span class="sent${DB.keys.has(x.key) ? ' rec' : ''}${S.sel === x.idx ? ' sel' : ''}${extra}" id="s-${x.idx}" data-act="sent" data-i="${x.idx}" tabindex="0" role="button">${html}</span>`;
+}
+function leftRead(sp) {
+  let h = `<div class="art">${ART[sp.art]()}</div><div class="read">`, inUl = false;
+  const closeUl = () => { if (inUl) { h += '</ul>'; inUl = false; } };
+  sp.left.forEach(b => {
+    if (b.k !== 'li') closeUl();
+    if (b.k === 'title') h += `<h2 class="title">${sentHtml(b.s[0], sp)}</h2><p class="by">${esc(b.by)}</p>`;
+    else if (b.k === 'h') h += `<h3>${sentHtml(b.s[0], sp)}</h3>`;
+    else if (b.k === 'label') h += `<div class="label">${esc(b.text)}</div>`;
+    else if (b.k === 'p') h += `<p>${b.s.map(x => sentHtml(x, sp)).join(' ')}</p>`;
+    else if (b.k === 'li') { if (!inUl) { h += '<ul>'; inUl = true; } h += `<li>${b.s.map(x => sentHtml(x, sp)).join(' ')}</li>`; }
+    else if (b.k === 'words') h += `<div class="chipsrow">${b.s.map(x => `<span class="sent pw${DB.keys.has(x.key) ? ' rec' : ''}" id="s-${x.idx}" data-act="sent" data-i="${x.idx}" tabindex="0" role="button">${esc(x.en)}</span>`).join('')}</div>`;
+  });
+  closeUl(); h += '</div><div class="dock" id="dock"></div>';
+  return h;
+}
+function updDock() {
+  const d = $('#dock'); if (!d) return;
+  const sp = SP();
+  if (sp.kind === 'read') {
+    const x = S.sel != null ? sp.sents[S.sel] : null, key = x && x.key, has = key && DB.keys.has(key), isRec = S.recKey && S.recKey === key;
+    d.innerHTML = `
+      ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="playpage">${ICON.play}朗讀本頁</button>`}
+      <div class="seg" role="group" aria-label="朗讀用哪個聲音"><button data-act="mode" data-m="tts" aria-pressed="${S.mode === 'tts'}">標準朗讀</button><button data-act="mode" data-m="mine" aria-pressed="${S.mode === 'mine'}">我的聲音</button></div>
+      <span class="sep"></span>
+      ${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec" ${x ? '' : 'disabled'}>${ICON.mic}錄這句</button>`}
+      <button class="btn" data-act="mine" ${has ? '' : 'disabled'}>${ICON.play}聽我的</button>
+      <button class="btn sm" data-act="delrec" ${has ? '' : 'disabled'} aria-label="刪除這句的錄音">${ICON.trash}</button>
+      <div class="hint">${x ? '選取的句子：' + esc(x.en.length > 34 ? x.en.slice(0, 34) + '…' : x.en) : '點一句課文，就能聽、能錄那一句。虛線單字可以點來看中文。'}</div>`;
+  } else if (sp.kind === 'q') {
+    const q = sp.q, st = QSTATE[q.no], key = 'q' + q.no, has = DB.keys.has(key), isRec = S.recKey === key, ok = st.done || S.reveal[q.no];
+    d.innerHTML = `
+      ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="qans" ${ok ? '' : 'disabled'}>${ICON.spk}聽完整答案</button>`}
+      ${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec">${ICON.mic}錄我的回答</button>`}
+      <button class="btn" data-act="mine" ${has ? '' : 'disabled'}>${ICON.play}聽我的</button>
+      <button class="btn" data-act="compare" ${has && ok ? '' : 'disabled'}>對照：標準 → 我的</button>
+      <button class="btn sm" data-act="delrec" ${has ? '' : 'disabled'} aria-label="刪除我的回答">${ICON.trash}</button>
+      <div class="hint">${ok ? '先聽標準答案，再大聲說一遍並錄下來。' : '先把句子填完，就能聽完整答案。'}</div>`;
+  }
+}
+
+/* ============ 右頁：教師手冊 ============ */
+const isReg = (b, p, pp) => p === pp && (p === b + 'ed' || p === b + 'd' || (b.endsWith('y') && p === b.slice(0, -1) + 'ied') || p === b + b.slice(-1) + 'ed');
+function rightRead(sp) {
+  let h = `<div class="rh"><h2>教師手冊</h2><span>${esc(sp.label)}</span></div>`;
+  h += `<div class="sec parent"><h3>家長怎麼帶 <small>不需要懂英文也能做</small></h3><p>${esc(sp.parent)}</p></div>`;
+  h += `<div class="sec"><h3>中英對照翻譯 <small>點一句可以聽</small></h3>${sp.sents.map(x => `<button class="tr" id="t-${x.idx}" data-act="sent" data-i="${x.idx}"><span class="en">${esc(x.en)}</span><span class="zh">${esc(x.zh)}</span></button>`).join('')}</div>`;
+  h += `<div class="sec"><h3>重點單字 <small>點卡片聽單字和例句</small></h3><div class="vgrid">${sp.vocab.map(v => `<button class="vcard" data-act="vspeak" data-w="${esc(v[0])}" data-ex="${esc(v[3])}"><div class="w">${ICON.spk}${esc(v[0])}</div><div class="ipa">/${esc(v[1])}/</div><div class="zh">${esc(v[2])}</div><div class="ex">${esc(v[3])}</div></button>`).join('')}</div></div>`;
+  h += `<div class="sec"><h3>片語與搭配詞</h3><ul class="plist">${sp.phrases.map(p => `<li><span class="e">${esc(p[0])}</span><span class="z">${esc(p[1])}</span></li>`).join('')}</ul></div>`;
+  h += `<div class="sec"><h3>句型結構 <small>顏色幫你看懂句子</small></h3><div class="legend"><span class="r-S">S 主詞（誰）</span><span class="r-V">V 動詞（做什麼）</span><span class="r-O">O 受詞（做的對象）</span><span class="r-X">其他補充</span></div>${sp.patterns.map(p => `<div class="pat"><div class="pt">${esc(p[0])}</div><div class="row">${p[1].map(x => `<span class="r-${x[1]}">${esc(x[0])}</span>`).join('')}</div><div class="note">${esc(p[2])}</div></div>`).join('')}</div>`;
+  h += `<div class="sec"><h3>動詞三態 <small>點一列聽三種變化</small></h3><div class="vtwrap"><table class="vt"><thead><tr><th>原形</th><th>過去式</th><th>過去分詞</th><th>中文</th></tr></thead><tbody>${sp.verbs.map(v => { const irr = !isReg(v[0], v[1], v[2]); return `<tr data-act="vrow" data-t="${esc([v[0], v[1], v[2]].join(', ').replace(/ \/ /g, ', '))}"><td>${esc(v[0])}</td><td class="${irr ? 'irr' : ''}">${esc(v[1])}</td><td class="${irr ? 'irr' : ''}">${esc(v[2])}</td><td class="z">${esc(v[3])}</td></tr>`; }).join('')}</tbody></table></div><div class="legend2"><b>紅色</b>是不規則變化，要特別背。</div></div>`;
+  h += `<div class="sec exam"><h3>考試重點提醒</h3><p>${esc(sp.exam)}</p></div>`;
+  return h;
+}
+
+/* ============ 封面與說明 ============ */
+function leftCover() { return `<div class="art">${ART.cover()}</div>`; }
+function rightCover() {
+  return `<div class="rh"><h2>歡迎翻開這本書</h2><span>給孩子，也給家長</span></div>
+  <div class="sec"><h3>怎麼使用</h3><ol class="steps">
+   <li><span>左頁是課文。翻到新的一頁會自動朗讀，被唸到的句子會變成黃色。</span></li>
+   <li><span>點任何一句，可以單獨再聽一次。虛線的單字點一下，會出現中文意思。</span></li>
+   <li><span>右頁是教師手冊：中英對照、單字、片語、句型、動詞三態、考試重點。</span></li>
+   <li><span>選一句課文，按「錄這句」，錄下自己的聲音。之後選「我的聲音」，翻頁時就會播放孩子自己的朗讀。</span></li>
+   <li><span>最後 12 頁是考前練習，就是段考口試的十一題。填完句子就能得到星星。</span></li>
+  </ol></div>
+  <div class="sec parent"><h3>給家長的一週練習法</h3>
+   <p><b>第 1 天：</b>聽。每頁自動朗讀，孩子手指著字跟讀。</p>
+   <p><b>第 2 天：</b>讀。孩子錄下自己唸的課文，只需要鼓勵，不用糾正發音。</p>
+   <p><b>第 3 天：</b>填。完成考前練習的句子填空。</p>
+   <p><b>第 4 天：</b>說。孩子對著家長說出十一題答案，並錄下來聽一聽。</p></div>
+  <div class="sec"><h3>關於錄音與朗讀</h3>
+   <p>朗讀使用裝置內建的英文語音，之後可以換成老師提供的真人音檔。錄音只存在這台裝置的瀏覽器裡，不會上傳到網路，換裝置或清除瀏覽資料就會消失。若瀏覽器不允許使用麥克風，錄音按鈕會改成讓你選擇用手機錄好的音檔。</p></div>
+  <div class="sec exam"><h3>閱讀順序</h3><div class="jumps"><button class="btn" data-act="goto" data-id="prep">課前準備</button><button class="btn" data-act="goto" data-id="r1">從課文開始</button><button class="btn" data-act="goto" data-id="tp">直接去考前練習</button></div></div>`;
+}
+
+/* ============ 考前練習 ============ */
+function leftTp() {
+  return `<div class="read"><h3 style="margin-top:0">Test Prep 考前練習</h3>
+  <p style="font-size:.6em;font-family:var(--f-ui);line-height:1.7">段考口試的十一題。每一題先看中文提示、再把英文句子填完整，最後大聲說出來並錄下來。</p></div>
+  <div class="tpgrid" style="font-family:var(--f-ui)">${QS.map(q => `<button class="tpitem" data-act="goto" data-id="q${q.no}"><span class="n">${q.no}</span><span class="t"><b>${esc(q.cat)}</b><small>${esc(q.zh)} · ${esc(q.qzh)}</small></span>${starsHtml(P.done['q' + q.no])}</button>`).join('')}</div>`;
+}
+function rightTp() {
+  return `<div class="rh"><h2>口試小抄</h2><span>十一題的開頭句</span></div>
+  <div class="sec exam"><h3>四步驟練習法</h3><ol class="steps">
+    <li><span><b>看：</b>讀中文題目和中文答案提示。</span></li>
+    <li><span><b>填：</b>點選正確的單字，把英文句子填完。填錯的單字會抖一下，不用擔心。</span></li>
+    <li><span><b>說：</b>按「聽完整答案」，跟著唸三遍，再自己說一遍。</span></li>
+    <li><span><b>錄：</b>錄下自己的回答，和標準答案比一比。</span></li></ol></div>
+  <div class="sec"><h3>每一題怎麼開頭</h3><ul class="plist">${QS.map(q => `<li><span class="e">Q${q.no}　${esc(q.ans.replace(/\n.*/s, '').split(' ').slice(0, 7).join(' '))} …</span><span class="z">${esc(q.zh)}</span></li>`).join('')}</ul></div>
+  <div class="sec"><h3>三個萬用句型</h3><ul class="plist">
+    <li><span class="e">I know because ...</span><span class="z">我知道是因為…</span></li>
+    <li><span class="e">The author’s purpose is to ...</span><span class="z">作者的目的是…</span></li>
+    <li><span class="e">such as A, B, or C</span><span class="z">例如 A、B 或 C</span></li></ul></div>
+  <div class="sec parent"><h3>家長怎麼帶</h3><p>不需要懂每個字。只要請孩子先說中文，再跟著按鈕唸英文。一次練習一題，孩子能完整說出一題就給他一個擊掌。</p></div>`;
+}
+function frameHtml(q) {
+  const st = QSTATE[q.no]; let bi = 0; const firstEmpty = st.fills.findIndex(f => f == null);
+  return q.frame.split('\n').map(line => {
+    const m = line.match(/^(Beginning|Middle|End):\s*/); let lab = '';
+    if (m) { lab = `<span class="lab">${m[1]}</span>`; line = line.slice(m[0].length); }
+    const html = line.split(/(\{\{.+?\}\})/).map(part => {
+      const mm = part.match(/^\{\{(.+?)\}\}$/);
+      if (!mm) return esc(part);
+      const b = bi++, f = st.fills[b];
+      if (f) return `<button class="blank ok" data-act="blank" data-b="${b}">${esc(f)}</button>`;
+      return `<button class="blank${b === firstEmpty ? ' cur' : ''}" data-act="blank" data-b="${b}" aria-label="空格">${st.hint[b] ? `<span class="h">${esc(mm[1][0])}…</span>` : '&nbsp;&nbsp;&nbsp;&nbsp;'}</button>`;
+    }).join('');
+    return `<span class="ln">${lab}${html}</span>`;
+  }).join('');
+}
+function bankHtml(q) {
+  const st = QSTATE[q.no];
+  return q.shuf.map(w => `<button class="chip${st.fills.includes(w) ? ' used' : ''}" data-act="chip" data-w="${esc(w)}">${esc(w)}</button>`).join('');
+}
+function winHtml(q) {
+  const st = QSTATE[q.no]; if (!st.done) return '';
+  return `<div class="win">太棒了！完整的句子是：<div class="ans" style="margin-top:6px;font-weight:700">${nl(q.full)}</div><div style="margin-top:8px;font-weight:500">現在換你大聲說一遍，再按「錄我的回答」。</div></div>`;
+}
+function leftQ(sp) {
+  const q = sp.q;
+  return `<div class="qbadge">第 ${q.no} 題 · ${esc(q.cat)} ${esc(q.zh)}</div>
+  <p class="qtext" style="font-family:var(--f-read)">${esc(q.q)}</p>
+  <p class="qzh">${esc(q.qzh)}</p>
+  <div style="margin-bottom:14px"><button class="btn sm" data-act="qspeak">${ICON.spk}聽題目</button></div>
+  <div class="hintbox"><b>中文答案提示（看中文，說英文）</b>${nl(q.azh)}</div>
+  <div class="frame" id="frame" style="font-family:var(--f-read)">${frameHtml(q)}</div>
+  <div class="bank" id="bank">${bankHtml(q)}</div>
+  <div id="win">${winHtml(q)}</div>
+  <div class="dock" id="dock"></div>`;
+}
+function rightQ(sp) {
+  const q = sp.q, ok = S.reveal[q.no] || QSTATE[q.no].done;
+  const lines = q.ans.split('\n'), zl = q.azh.split('\n');
+  let h = `<div class="rh"><h2>考試手冊</h2><span>第 ${q.no} 題 · ${esc(q.cat)}</span></div>`;
+  h += `<div class="sec"><h3>標準答案 <small>先自己試試看再偷看</small></h3>`;
+  if (!ok) h += `<button class="btn reveal" data-act="reveal">顯示答案</button>`;
+  else h += lines.map((l, i) => `<button class="tr" data-act="qline" data-l="${i}"><span class="en">${nl(l)}</span><span class="zh">${nl(zl[i] || '')}</span></button>`).join('');
+  h += `</div>`;
+  h += `<div class="sec parent"><h3>家長怎麼帶</h3><p>${esc(q.parent)}</p></div>`;
+  h += `<div class="sec"><h3>教師引導小撇步</h3><p>${esc(q.tip)}</p></div>`;
+  h += `<div class="sec"><h3>關鍵單字 <small>點一下聽發音</small></h3><div class="vgrid">${q.words.map(w => `<button class="vcard" data-act="vspeak" data-w="${esc(w[0])}" data-ex=""><div class="w">${ICON.spk}${esc(w[0])}</div><div class="zh">${esc(w[1])}</div></button>`).join('')}</div></div>`;
+  h += `<div class="sec"><h3>句型提醒</h3><p>${esc(q.pat)}</p></div>`;
+  h += `<div class="sec exam"><h3>去哪裡找答案</h3><div class="jumps">${q.jump.map(id => { const s = SPREADS.find(x => x.id === id); return `<button class="btn" data-act="goto" data-id="${id}">${esc(s.label)}</button>`; }).join('')}</div></div>`;
+  return h;
+}
+
+/* ============ 繪製整個畫面 ============ */
+function render(dir = 0) {
+  const sp = SP(), L = $('#pgL'), R = $('#pgR'), book = $('#book');
+  L.className = 'page left'; $('#pgL').scrollTop = 0; R.scrollTop = 0;
+  S.sel = null;
+  if (sp.kind === 'cover') { L.className = 'page left coverpg'; L.innerHTML = leftCover(); R.innerHTML = rightCover(); }
+  else if (sp.kind === 'read') { L.innerHTML = leftRead(sp); R.innerHTML = rightRead(sp); }
+  else if (sp.kind === 'tpintro') { L.innerHTML = leftTp(); R.innerHTML = rightTp(); }
+  else { L.innerHTML = leftQ(sp); R.innerHTML = rightQ(sp); }
+  updDock(); updStars();
+  book.dataset.side = S.side;
+  $$('#tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.side === S.side));
+  $('#pn').innerHTML = `<b>${S.i + 1}</b> / ${SPREADS.length}　${esc(sp.label)}`;
+  $('#bPrev').disabled = S.i === 0; $('#bNext').disabled = S.i === SPREADS.length - 1;
+  $('#bAuto').setAttribute('aria-pressed', S.auto); $('#bSlow').setAttribute('aria-pressed', S.slow);
+  document.documentElement.style.setProperty('--fs', S.fs);
+  if (dir) { book.classList.remove('turn-next', 'turn-prev'); void book.offsetWidth; book.classList.add(dir > 0 ? 'turn-next' : 'turn-prev'); setTimeout(() => book.classList.remove('turn-next', 'turn-prev'), 450); }
+  saveP();
+}
+async function goTo(i, dir) {
+  if (i < 0 || i >= SPREADS.length) return;
+  if (REC.mr) REC.mr.stop();
+  stopAll(); S.i = i; S.side = 'L'; render(dir != null ? dir : 0);
+  const sp = SP();
+  if (S.auto && sp.kind === 'read') {
+    await sleep(550); if (SP() !== sp) return;
+    const ok = await playItems(sp.sents); if (ok) award(sp.id);
+  } else if (S.auto && sp.kind === 'q') {
+    await sleep(450); if (SP() !== sp) return; playItems([{ text: sp.q.q }], { mark: false, useMine: false });
+  }
+}
+const go = d => goTo(S.i + d, d);
+
+/* ============ 目錄 ============ */
+function openToc() {
+  const grp = (t, ids) => `<h4>${t}</h4>` + ids.map(sp => { const idx = SPREADS.indexOf(sp); return `<button class="toc-item${idx === S.i ? ' cur' : ''}" data-act="tocgo" data-i="${idx}"><span class="t">${esc(sp.label)}</span>${(sp.kind === 'read' || sp.kind === 'q') ? starsHtml(P.done[sp.id]) : ''}</button>`; }).join('');
+  $('#tocPanel').innerHTML = `<h2>目錄</h2><button class="btn sm" data-act="tocclose" style="margin-bottom:6px">關閉</button>` +
+    grp('封面', SPREADS.filter(s => s.kind === 'cover')) + grp('課前準備與課文', SPREADS.filter(s => s.kind === 'read')) + grp('考前練習（口試十一題）', SPREADS.filter(s => s.kind === 'tpintro' || s.kind === 'q'));
+  $('#toc').hidden = false;
+}
+
+function openVoices() {
+  let vs = []; try { vs = speechSynthesis.getVoices().filter(v => /^en/i.test(v.lang)); } catch (e) { }
+  $('#tocPanel').innerHTML = `<h2>朗讀聲音</h2><button class="btn sm" data-act="tocclose" style="margin-bottom:10px">關閉</button>
+  <p style="line-height:1.7">點名字就會試聽並選用。名字有 Premium（高級）或 Enhanced（強化）的聲音比較清楚。</p>
+  <p style="line-height:1.7">清單裡沒有的話，請到 iPad「設定 › 輔助使用 › 朗讀內容 › 聲音 › 英文」，下載 Ava（高級）或 Samantha（強化），再回到這裡重新整理頁面。</p>` +
+    (vs.length ? vs.map(v => `<button class="toc-item${voice && voice.voiceURI === v.voiceURI ? ' cur' : ''}" data-act="voicepick" data-u="${esc(v.voiceURI)}"><span class="t">${esc(v.name)} · ${esc(v.lang)}</span></button>`).join('') : '<p>這個瀏覽器沒有提供英文聲音。</p>');
+  $('#toc').hidden = false;
+}
+/* ============ 事件 ============ */
+function showGloss(el, v, word) {
+  const g = $('#gloss'); g.innerHTML = `${esc(v[2])}<i>/${esc(v[1])}/</i>`; g.hidden = false;
+  const r = el.getBoundingClientRect(), gw = g.offsetWidth;
+  g.style.left = Math.min(Math.max(8, r.left + r.width / 2 - gw / 2), innerWidth - gw - 8) + 'px';
+  g.style.top = Math.max(8, r.top - g.offsetHeight - 8) + 'px';
+  clearTimeout(showGloss.t); showGloss.t = setTimeout(() => { g.hidden = true; }, 2600);
+}
+async function onChip(w) {
+  const sp = SP(), q = sp.q, st = QSTATE[q.no], b = st.fills.findIndex(f => f == null);
+  if (b < 0) return;
+  if (q.blanks[b] === w) {
+    st.fills[b] = w; $('#frame').innerHTML = frameHtml(q); $('#bank').innerHTML = bankHtml(q);
+    if (st.fills.every(f => f != null)) {
+      st.done = true; $('#win').innerHTML = winHtml(q); award(sp.id); $('#pgR').innerHTML = rightQ(sp); updDock();
+      playItems([{ text: q.full.replace(/\n/g, ' ').replace(/^(Beginning|Middle|End):\s*/g, '') }], { mark: false, useMine: false });
+    } else { speakQuick(w); }
+  } else {
+    const el = $$('#bank .chip').find(c => c.dataset.w === w); if (el) { el.classList.add('bad'); setTimeout(() => el.classList.remove('bad'), 450); }
+    toast('再試試看，想一想這個空格要填什麼', 1800);
+  }
+}
+function speakQuick(t) { stopAll(); setTimeout(() => speakText(t), 160); }
+
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-act]'); if (!t) { if (!e.target.closest('.vw')) $('#gloss').hidden = true; return; }
+  const a = t.dataset.act, sp = SP();
+  switch (a) {
+    case 'vw': { const v = sp.vocab[+t.dataset.k]; if (v) showGloss(t, v); e.stopPropagation(); speakQuick(t.textContent); break; }
+    case 'sent': { const i = +t.dataset.i; S.sel = i; $$('.sent.sel').forEach(x => x.classList.remove('sel')); const s = $('#s-' + i); if (s) s.classList.add('sel'); updDock(); playItems([sp.sents[i]]); break; }
+    case 'playpage': { const ok = await playItems(sp.sents); if (ok) award(sp.id); break; }
+    case 'stop': stopAll(); break;
+    case 'mode': S.mode = t.dataset.m; saveP(); updDock(); toast(S.mode === 'mine' ? '朗讀時，有錄音的句子會播放我的聲音' : '朗讀時使用標準聲音'); break;
+    case 'rec': { const key = sp.kind === 'q' ? 'q' + sp.q.no : (S.sel != null ? sp.sents[S.sel].key : null); if (key) toggleRec(key); break; }
+    case 'mine': { const key = sp.kind === 'q' ? 'q' + sp.q.no : sp.sents[S.sel].key; playMine(key); break; }
+    case 'delrec': { const key = sp.kind === 'q' ? 'q' + sp.q.no : sp.sents[S.sel].key; await recDel(key); afterRecChange(); toast('已刪除這段錄音'); break; }
+    case 'vspeak': { stopAll(); await sleep(60); const my = token; await speakText(t.dataset.w); if (my === token && t.dataset.ex) { await sleep(250); if (my === token) await speakText(t.dataset.ex); } break; }
+    case 'vrow': speakQuick(t.dataset.t.replace(/,/g, '. ')); break;
+    case 'goto': { const i = SPREADS.findIndex(s => s.id === t.dataset.id); goTo(i, i > S.i ? 1 : -1); break; }
+    case 'tocgo': $('#toc').hidden = true; goTo(+t.dataset.i, +t.dataset.i > S.i ? 1 : -1); break;
+    case 'voicepick': { const v = speechSynthesis.getVoices().find(x => x.voiceURI === t.dataset.u); if (v) { voice = v; S.voiceURI = v.voiceURI; saveP(); $$('[data-act="voicepick"]').forEach(b => b.classList.toggle('cur', b === t)); speakQuick('Hello! Let us read together.'); } break; }
+    case 'tocclose': $('#toc').hidden = true; break;
+    case 'qspeak': playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break;
+    case 'qans': playItems([{ text: sp.q.full.replace(/\n/g, ' ').replace(/(Beginning|Middle|End):\s*/g, '') }], { mark: false, useMine: false }); break;
+    case 'qline': { const l = sp.q.ans.split('\n')[+t.dataset.l]; playItems([{ text: l.replace(/^(Beginning|Middle|End):\s*/, '') }], { mark: false, useMine: false }); break; }
+    case 'reveal': S.reveal[sp.q.no] = true; $('#pgR').innerHTML = rightQ(sp); updDock(); break;
+    case 'chip': onChip(t.dataset.w); break;
+    case 'blank': {
+      const q = sp.q, st = QSTATE[q.no], b = +t.dataset.b;
+      if (st.done) break;
+      if (st.fills[b]) { st.fills[b] = null; } else { st.hint[b] = true; }
+      $('#frame').innerHTML = frameHtml(q); $('#bank').innerHTML = bankHtml(q); break;
+    }
+    case 'compare': {
+      const q = sp.q, text = q.full.replace(/\n/g, ' ').replace(/(Beginning|Middle|End):\s*/g, '');
+      const ok = await playItems([{ text }], { mark: false, useMine: false });
+      if (ok) await playMine('q' + q.no); break;
+    }
+  }
+});
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.sent')) { e.preventDefault(); e.target.click(); return; }
+  if (e.target.matches && e.target.matches('input,textarea')) return;
+  if (e.key === 'ArrowRight') go(1); else if (e.key === 'ArrowLeft') go(-1);
+});
+$('#bNext').onclick = () => go(1);
+$('#bPrev').onclick = () => go(-1);
+$('#bToc').onclick = openToc;
+$('#bVoice').onclick = openVoices;
+$('#toc').addEventListener('click', e => { if (e.target.id === 'toc') $('#toc').hidden = true; });
+$('#bAuto').onclick = () => { S.auto = !S.auto; $('#bAuto').setAttribute('aria-pressed', S.auto); saveP(); toast(S.auto ? '翻到新的一頁會自動朗讀' : '翻頁後不會自動朗讀'); };
+$('#bSlow').onclick = () => { S.slow = !S.slow; $('#bSlow').setAttribute('aria-pressed', S.slow); saveP(); toast(S.slow ? '慢速朗讀' : '正常速度朗讀'); };
+$('#bSmall').onclick = () => { S.fs = Math.max(.8, +(S.fs - .1).toFixed(1)); document.documentElement.style.setProperty('--fs', S.fs); saveP(); };
+$('#bBig').onclick = () => { S.fs = Math.min(1.6, +(S.fs + .1).toFixed(1)); document.documentElement.style.setProperty('--fs', S.fs); saveP(); };
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; S.side = b.dataset.side; $('#book').dataset.side = S.side; $$('#tabs button').forEach(x => x.setAttribute('aria-pressed', x === b)); });
+let tx = 0, ty = 0;
+$('#book').addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+$('#book').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) > 90 && Math.abs(dy) < 50) go(dx < 0 ? 1 : -1); }, { passive: true });
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopAll(); });
+
+/* ============ 開始 ============ */
+(async function start() {
+  loadP();
+  QS.forEach(q => { QSTATE[q.no].done = !!P.done['q' + q.no]; if (QSTATE[q.no].done) QSTATE[q.no].fills = [...q.blanks]; });
+  await recInit();
+  render();
+})();
+</script>
+</body></html>
