@@ -1,6 +1,5 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Working with Others 電子書</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<title>靜心小二英文閱讀書櫃</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -221,6 +220,39 @@ table.vt tr:hover td{background:var(--accent-soft)}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paperL);padding:10px 18px;border-radius:999px;font-weight:500;z-index:60;max-width:92vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
 
+
+[hidden]{display:none!important}
+/* shelf */
+.shelf{flex:1;min-height:0;overflow:auto;border-radius:18px;background:var(--paperL);box-shadow:var(--shadow);padding:clamp(18px,3vw,36px)}
+.shelf-in{max-width:1000px;margin:0 auto}
+.shelf h1{font-family:var(--f-display);font-weight:600;font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 6px}
+.shelf p{color:var(--ink2);margin:0 0 22px;line-height:1.6}
+.shelf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.bk{display:flex;flex-direction:column;gap:12px;text-align:left;border:3px solid var(--line);background:var(--card);border-radius:20px;padding:14px;min-width:0}
+.bk:hover,.bk:focus-visible{border-color:var(--accent);outline:none}
+.bk .art{margin:0 auto;width:fit-content}
+.bk .art svg{height:clamp(220px,40vh,340px)}
+.bk .bt{display:flex;flex-direction:column;gap:3px}
+.bk .bt b{font-family:var(--f-display);font-size:1.25rem;font-weight:600}
+.bk .bt .zh{font-size:1.05rem;font-weight:700}
+.bk .bt small{color:var(--ink2)}
+.bk .bp{display:inline-flex;align-items:center;gap:6px;font-weight:700;margin-top:4px}
+.bk .bp .star{width:20px;height:20px}
+/* extra */
+.who{font-family:var(--f-ui);font-size:.48em;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:2px 8px;margin-right:6px;vertical-align:middle;letter-spacing:.02em}
+.nt{border-bottom:1px dashed var(--line);padding:9px 0}
+.nt:last-child{border-bottom:0}
+.nt b{display:block;font-size:.95rem;margin-bottom:3px;color:var(--accent)}
+.nt p{margin:0;line-height:1.7}
+.lab2{font-family:var(--f-ui);font-size:.9rem;font-weight:700;color:var(--accent);margin:4px 0 8px}
+.tray{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:76px;border:3px dashed var(--accent);border-radius:16px;padding:10px 12px;margin:0 0 14px;background:var(--accent-soft)}
+.tray.wrong{animation:shake .35s;border-color:var(--red);background:var(--coral-soft)}
+.tray .ph{color:var(--ink2);font-family:var(--f-ui);font-size:1rem}
+.tile{font-family:var(--f-read);font-weight:700;font-size:calc(var(--fs)*1.3rem);border:2px solid var(--accent);background:var(--card);color:var(--ink);border-radius:14px;padding:6px 16px;min-height:52px}
+.tile.placed{background:var(--hl);color:var(--hl-ink);border-color:var(--accent)}
+.tile.used{opacity:.25;pointer-events:none}
+.tctl{display:flex;gap:8px;margin:0 0 12px;font-family:var(--f-ui)}
+
 @media (max-width:900px){
   .book{grid-template-columns:1fr}
   .book::after{display:none}
@@ -253,10 +285,11 @@ table.vt tr:hover td{background:var(--accent-soft)}
   <header class="top">
     <div class="brand">
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v15h5.5c.8 0 1.5-.7 1.5-1.5z"/></svg></div>
-      <div><b>Working with Others</b><small>by Robin Nelson · 課本 pp.228–238</small></div>
+      <div><b id="brandTitle">Working with Others</b><small id="brandSub">by Robin Nelson · 課本 pp.228–238</small></div>
     </div>
     <div class="tools">
       <span class="stars" id="starCount" title="已得到的星星"></span>
+      <button class="tb" id="bShelf" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="5" height="16" rx="1"/><rect x="11" y="4" width="5" height="16" rx="1"/><path d="m18 6 3 .8-3.2 12.6-2.8-.8"/></svg><span class="lbl">書櫃</span></button>
       <button class="tb" id="bToc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span class="lbl">目錄</span></button>
       <button class="tb" id="bAuto" aria-pressed="true" title="翻到新的一頁就自動朗讀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg><span class="lbl">翻頁自動朗讀</span></button>
       <button class="tb" id="bSlow" aria-pressed="false" title="慢速朗讀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 8v5l3 2"/></svg><span class="lbl">慢速</span></button>
@@ -269,6 +302,7 @@ table.vt tr:hover td{background:var(--accent-soft)}
     <section class="page left" id="pgL" aria-label="課文頁"></section>
     <section class="page right" id="pgR" aria-label="教師手冊頁"></section>
   </main>
+  <section class="shelf" id="shelf" hidden></section>
   <nav class="pager">
     <button class="flip" id="bPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg><span>上一頁</span></button>
     <div class="mid">
@@ -284,9 +318,9 @@ table.vt tr:hover td{background:var(--accent-soft)}
 <input type="file" id="upl" accept="audio/*" hidden>
 <script>
 /* ============ BOOK DATA (每週新增文章時，只要照這個格式新增資料) ============ */
-const T = (en, zh) => ({ en, zh });
+const T = (en, zh, who) => ({ en, zh, who });
 
-const SPREADS = [
+const SPREADS1 = [
 /* ---------------------------------- 封面 ---------------------------------- */
 { id:'cover', kind:'cover', label:'封面與使用說明' },
 
@@ -646,7 +680,7 @@ const SPREADS = [
 ];
 
 /* 11 題口試模擬 */
-const QS = [
+const QS1 = [
  { no:1, cat:'Genre', zh:'文體', q:'What is the genre of this text? How do you know?', qzh:'這篇文章的文體是什麼？你怎麼知道？',
    frame:'The genre is {{informational}} text. I know because it gives {{facts}} about a topic, has {{headings}} that stand out, and uses real {{photographs}}.',
    bank:['informational','facts','headings','photographs','fiction','stories'],
@@ -746,6 +780,1224 @@ const QS = [
    words:[['calmed down','已經冷靜下來'],['respectful','有禮貌的'],['listen carefully','仔細聽'],['take turns','輪流'],['apologize','道歉']],
    pat:'列舉三個以上用逗號，最後一個前面加 or 或 and：A, B, C, or D。',
    jump:['r3','r4','r5','r7'], parent:'每個孩子至少挑 3 個方法就夠了，不用全部背！' },
+];
+/* ============ 第二課：Big Red Lollipop（pp.204–224）前半 ============ */
+const SPREADS2 = [
+{ id:'cover', kind:'cover', label:'封面與使用說明' },
+
+/* ---------- 課前準備 p.206 ---------- */
+{ id:'prep', kind:'read', label:'課前準備 · p.206', art:'prep',
+  left:[
+    {k:'h', s:[T('Prepare to Read','準備閱讀')]},
+    {k:'label', text:'Genre Study 文體學習'},
+    {k:'p', s:[T('Realistic fiction stories are made up but could happen in real life.','寫實小說的故事雖然是虛構的，但可能發生在現實生活中。'),
+            T('As you read Big Red Lollipop, look for:','閱讀《Big Red Lollipop》時，請留意：')]},
+    {k:'li', s:[T('characters who act and talk like real people','行為和說話像真人一樣的角色')]},
+    {k:'li', s:[T('a lesson the main character learns','主角所學到的教訓／道理')]},
+    {k:'li', s:[T('problems that real people might have','現實生活中人們可能會遇到的難題')]},
+    {k:'label', text:'Set a Purpose 設定閱讀目的'},
+    {k:'p', s:[T('As you read, stop and think if you don’t understand something.','閱讀時，若遇到不懂的地方請停下來思考。'),
+            T('Reread, ask yourself questions, use what you already know, and look for visual clues to help you understand the text.','透過重讀、自問自答、運用既有知識，以及觀察插圖線索來幫助理解課文。')]},
+    {k:'label', text:'Power Words 重點單字'},
+    {k:'words', s:[T('invited','邀請（被邀請）'),T('screams','尖叫、大喊'),T('plead','懇求、央求'),T('musical','音樂的'),T('shove','猛推、亂塞'),T('scoots','迅速移動、挪動'),T('greedy','貪心的、貪吃的'),T('scurries','急匆匆地跑')]},
+  ],
+  vocab:[
+    ['realistic','ˌriəˈlɪstɪk','寫實的、逼真的','The story is realistic.','realistic'],
+    ['fiction','ˈfɪkʃən','虛構的故事、小說','Fiction is made up.','fiction'],
+    ['lesson','ˈlɛsn','教訓、道理','She learns a lesson.','lesson'],
+    ['invited','ɪnˈvaɪtɪd','邀請（invite 的過去式）','She invited me to her party.','invited'],
+    ['scream','skrim','尖叫、大喊','The baby screams loudly.','screams?'],
+    ['plead','plid','懇求、央求（比 ask 更強烈）','I plead with you to stay.','plead'],
+    ['musical','ˈmjuzɪkl','音樂的','Musical chairs is a game.','musical'],
+    ['shove','ʃʌv','猛推、亂塞','Don’t shove in line.','shove'],
+    ['scoot','skut','迅速移動、挪動','He scoots over to make room.','scoots?'],
+    ['greedy','ˈɡridi','貪心的、貪吃的','Don’t be greedy. Share the candy.','greedy'],
+    ['scurry','ˈskɝi','急匆匆地跑、疾走','The mouse scurries away.','scurries'],
+  ],
+  phrases:[
+    ['made up','虛構的、編出來的'],['real life','現實生活'],['look for ...','留意、尋找…'],['visual clues','視覺線索（看圖找線索）'],
+    ['reread','重讀'],['ask yourself questions','問自己問題'],['Set a Purpose','設定閱讀目的'],
+  ],
+  patterns:[
+    ['Look for characters who act and talk like real people.',[['Look for','V'],['characters','O'],['who act and talk like real people.','X']],'who 後面說明是哪一種角色：會像真人一樣行動和說話的角色。'],
+    ['Reread, ask yourself questions, and use what you already know.',[['Reread,','V'],['ask','V'],['yourself questions,','O'],['and use','V'],['what you already know.','O']],'一連串的建議，都是用動詞開頭的祈使句，最後一個前面加 and。'],
+  ],
+  verbs:[['invite','invited','invited','邀請'],['scream','screamed','screamed','尖叫'],['plead','pleaded','pleaded','懇求'],['shove','shoved','shoved','猛推'],['scoot','scooted','scooted','迅速移動'],['scurry','scurried','scurried','急匆匆地跑'],['learn','learned','learned','學到'],['think','thought','thought','想'],['know','knew','known','知道'],['look','looked','looked','看、尋找']],
+  exam:'Q1 文體：寫實小說（realistic fiction）的三個線索就在這一頁：像真人的角色、主角學到教訓、真實會遇到的問題。',
+  parent:'先不要急著讀故事。請孩子聽懂八個 Power Words 的中文意思就好，點每個字旁邊的虛線單字可以看中文。其中 greedy（貪心）和 scurries（急忙跑）後面的故事會用到。'
+},
+
+/* ---------- Meet Me Halfway 1 pp.204–205 ---------- */
+{ id:'m1', kind:'read', label:'各退一步 1 · pp.204–205', art:'leash',
+  left:[
+    {k:'h', s:[T('Meet Me Halfway','各退一步（折衷妥協）')]},
+    {k:'p', s:[T('What does it mean when people say, “Let’s meet in the middle”?','當人們說「讓我們在中間會合（各退一步）」時，是什麼意思呢？'),
+            T('They are talking about compromise, or a way to end a disagreement.','他們是在談論「妥協（折衷）」，也就是一種結束意見不合的方法。'),
+            T('When people compromise, they each give up a little of what they want.','當人們妥協時，雙方都會各自放棄一點自己原本想要的東西。'),
+            T('These comic strips show examples of compromise.','以下這些連環漫畫展示了妥協的例子。')]},
+    {k:'label', text:'Comic 1 漫畫一（遛狗牽繩）'},
+    {k:'li', s:[T('I want to hold the leash.','男孩：我想握著牽繩。','Boy')]},
+    {k:'li', s:[T('I want to hold it!','女孩：我也想握！','Girl')]},
+    {k:'li', s:[T('What if I hold the leash going TO the park?','男孩：如果去公園的路上由我握牽繩呢？','Boy')]},
+    {k:'li', s:[T('Then I can hold the leash going HOME.','女孩：那回家的路上就可以由我握牽繩了。','Girl')]},
+    {k:'li', s:[T('Meeting in the middle made us both happy.','女孩：各退一步讓我們兩個都很開心。','Girl')]},
+    {k:'li', s:[T('We should compromise more often!','男孩：我們應該更常互相妥協！','Boy')]},
+  ],
+  vocab:[
+    ['compromise','ˈkɑmprəˌmaɪz','妥協、互相讓步','We compromise.','compromising|compromise'],
+    ['disagreement','ˌdɪsəˈɡrimənt','意見不合、爭執','They have a disagreement.','disagreement'],
+    ['middle','ˈmɪdl','中間','Meet in the middle.','middle|halfway'],
+    ['comic strip','ˈkɑmɪk strɪp','連環漫畫','I read a comic strip.','comic strips?'],
+    ['example','ɪɡˈzæmpl','例子','This is an example.','examples?'],
+    ['leash','liʃ','（狗）牽繩','He holds the leash.','leash'],
+    ['give up','ɡɪv ʌp','放棄、讓出','Give up a little.','give up'],
+    ['often','ˈɔfn','經常','We should share more often.','often'],
+  ],
+  phrases:[
+    ['meet in the middle','各退一步、折衷'],['a way to + 動詞','…的方法'],['give up a little of what they want','放棄一點自己想要的'],
+    ['What if ...?','如果…怎麼樣？要不然…好嗎？'],['more often','更常'],['make us both happy','讓我們兩個都開心'],
+  ],
+  patterns:[
+    ['They are talking about compromise.',[['They','S'],['are talking about','V'],['compromise,','O'],['or a way to end a disagreement.','X']],'be + V-ing 現在進行式，表示「正在談論」。or 後面用另一種說法解釋 compromise。'],
+    ['What if I hold the leash going TO the park?',[['What if','X'],['I','S'],['hold','V'],['the leash','O'],['going TO the park?','X']],'What if + 一句話？＝ 如果…怎麼樣？用來提出建議。大寫的 TO 表示說話時要加重語氣，和後面的 HOME 做對比。'],
+    ['We should compromise more often!',[['We','S'],['should compromise','V'],['more often!','X']],'should + 原形動詞 ＝ 應該…。'],
+  ],
+  verbs:[['compromise','compromised','compromised','妥協'],['hold','held','held','握住、拿著'],['want','wanted','wanted','想要'],['show','showed','shown','展示'],['give','gave','given','給、讓出'],['make','made','made','使、讓'],['say','said','said','說'],['talk','talked','talked','談論'],['meet','met','met','見面、會合']],
+  notes:[['What if...?','意思是「如果……怎麼樣？」或「要不然……好嗎？」，用來提出一個折衷的點子。'],['大寫的 TO 和 HOME','漫畫或戲劇台詞中，把字寫成大寫，是為了模擬真人說話時「加重音、暗示對比」的語氣：去公園（TO）的路上我握，回家（HOME）的路上換你握。']],
+  exam:'Q3「人們如何解決爭執」和 Q4「Let’s meet in the middle 是什麼意思」的答案都在這一頁：compromise＝雙方各退讓一點點。',
+  parent:'問孩子：「你和兄弟姊妹都想玩同一個玩具的時候，怎麼辦？」引導他說出「輪流」或「各玩一半的時間」，這就是 compromise。'
+},
+
+/* ---------- Meet Me Halfway 2 pp.206–207 ---------- */
+{ id:'m2', kind:'read', label:'各退一步 2 · 漫畫二與思考題', art:'room',
+  left:[
+    {k:'label', text:'Comic 2 漫畫二（整理房間）'},
+    {k:'li', s:[T('Please clean your room now.','媽媽：現在請把你的房間整理乾淨。','Mom')]},
+    {k:'li', s:[T('This is such a good book!','Mario：這本書太好看了！','Mario')]},
+    {k:'li', s:[T('Mom, can I finish this chapter first and then clean my room?','Mario：媽媽，我可以先看完這一章，然後再去整理房間嗎？','Mario')]},
+    {k:'li', s:[T('Okay, Mario, that is a good compromise.','媽媽：好吧，Mario，這是個很棒的折衷辦法。','Mom')]},
+    {k:'label', text:'Think About It 想一想'},
+    {k:'p', s:[T('Think about this situation, and then tell how the children could compromise.','想一想這個情況，然後說說看這兩個孩子可以怎麼妥協。')]},
+    {k:'li', s:[T('I want to play soccer.','男孩：我想踢足球。','Boy')]},
+    {k:'li', s:[T('No, let’s go to the playground.','女孩：不要，我們去遊樂場吧。','Girl')]},
+    {k:'label', text:'Sample Answer 參考解答'},
+    {k:'p', s:[T('They can play soccer for twenty minutes, and then go to the playground for twenty minutes.','他們可以先踢 20 分鐘的足球，再去遊樂場玩 20 分鐘。')]},
+  ],
+  vocab:[
+    ['clean','klin','打掃、整理乾淨','Clean your room.','clean'],
+    ['chapter','ˈtʃæptɚ','（書的）章節','I read one chapter.','chapter'],
+    ['finish','ˈfɪnɪʃ','完成、結束','Finish your homework.','finish'],
+    ['situation','ˌsɪtʃuˈeɪʃən','情況、狀況','Think about this situation.','situation'],
+    ['soccer','ˈsɑkɚ','足球','I play soccer.','soccer'],
+    ['playground','ˈpleɪˌɡraʊnd','遊樂場、操場','Let’s go to the playground.','playground'],
+    ['minute','ˈmɪnɪt','分鐘','Wait for ten minutes.','minutes?'],
+    ['such','sʌtʃ','如此的、真是（such + 名詞）','Such a good book!','such'],
+  ],
+  phrases:[
+    ['clean your room','整理房間'],['finish this chapter','看完這一章'],['first and then ...','先…，再…'],['a good compromise','很好的折衷辦法'],
+    ['play soccer','踢足球'],['go to the playground','去遊樂場'],['for twenty minutes','為時二十分鐘'],
+  ],
+  patterns:[
+    ['This is such a good book!',[['This','S'],['is','V'],['such a good book!','O']],'such + a/an + 形容詞 + 名詞 ＝ 真是一個…的…。核心是名詞 book，所以用 such。'],
+    ['Can I finish this chapter first and then clean my room?',[['Can','X'],['I','S'],['finish','V'],['this chapter','O'],['first','X'],['and then clean my room?','X']],'Can I ...? ＝ 我可以…嗎？first and then ＝ 先…再…，就是一種「妥協」的說法。'],
+    ['Let’s go to the playground.',[['Let’s go','V'],['to the playground.','X']],'Let’s + 原形動詞 ＝ 我們一起…吧。（Let’s ＝ Let us）'],
+  ],
+  verbs:[['clean','cleaned','cleaned','打掃'],['finish','finished','finished','完成'],['play','played','played','玩、踢'],['go','went','gone','去'],['think','thought','thought','想'],['tell','told','told','告訴、說說看'],['want','wanted','wanted','想要'],['compromise','compromised','compromised','妥協']],
+  notes:[['such 與 so 的比較','such + (a/an) + 形容詞 + 名詞：核心是名詞時用 such。\nThis is such a good book!（這真是一本如此好的書！）\n\nso + 形容詞／副詞（後面沒有名詞）：\nThis book is so good!（這本書好好看！）\n\n只要看後面有沒有「名詞」，就能馬上分辨。']],
+  exam:'Q3、Q4 都在考 compromise。這一頁的「先看完這一章，再整理房間」和「先踢足球，再去遊樂場」，都是很好的例子。Q5 個人經驗也可以拿類似的妥協經驗來回答。',
+  parent:'問孩子：「你寫完功課再玩，是一種妥協嗎？」讓他用 first ... and then ... 說一個自己的例子。'
+},
+
+/* ---------- 故事 1：p.208 ---------- */
+{ id:'b1', kind:'read', label:'故事 1 · p.208', art:'bday',
+  left:[
+    {k:'title', s:[T('Big Red Lollipop','大紅棒棒糖')], by:'by Rukhsana Khan'},
+    {k:'p', s:[T('I’m so excited I run all the way home from school.','我太興奮了，從學校一路跑回家。')]},
+    {k:'p', s:[T('“Ami! I’ve been invited to a birthday party! There’s going to be games and toys, cake and ice cream! Can I go?”','「媽媽（Ami）！我受邀去參加一個生日派對！那裡會有遊戲和玩具，還有蛋糕和冰淇淋！我可以去嗎？」'),
+            T('Sana screams, “I wanna go too!”','Sana 尖叫著說：「我也要去！」'),
+            T('Ami says, “What’s a birthday party?”','媽媽說：「什麼是生日派對？」'),
+            T('“It’s when they celebrate the day they were born.”','「就是大家慶祝自己出生那一天的活動。」'),
+            T('“Why do they do that?”','「他們為什麼要這麼做？」'),
+            T('“They just do! Can I go?”','「他們就是會這樣慶祝嘛！我可以去嗎？」')]},
+  ],
+  vocab:[
+    ['excited','ɪkˈsaɪtɪd','興奮的','I am excited.','excited'],
+    ['invited','ɪnˈvaɪtɪd','被邀請（invite 的過去分詞）','I’ve been invited.','invited'],
+    ['birthday party','ˈbɝθˌdeɪ ˈpɑrti','生日派對','A birthday party is fun.','birthday party'],
+    ['celebrate','ˈsɛləˌbreɪt','慶祝','We celebrate her birthday.','celebrate'],
+    ['born','bɔrn','出生（be born）','The day they were born.','born'],
+    ['scream','skrim','尖叫、大喊','Sana screams.','screams?'],
+    ['wanna','ˈwɑnə','want to 的口語寫法','I wanna go.','wanna'],
+    ['ice cream','aɪs krim','冰淇淋','I love ice cream.','ice cream'],
+  ],
+  phrases:[
+    ['all the way','一路上、全程'],['run home','跑回家'],['I’ve been invited to ...','我受邀參加…'],['There’s going to be ...','將會有…'],
+    ['the day they were born','他們出生的那一天'],['I wanna go too','我也想去'],['They just do!','他們就是會這樣！'],
+  ],
+  patterns:[
+    ['I run all the way home from school.',[['I','S'],['run','V'],['all the way home','X'],['from school.','X']],'all the way ＝ 一路上；from school ＝ 從學校。'],
+    ['There’s going to be games and toys.',[['There’s going to be','V'],['games and toys.','S']],'There’s going to be ＝ 將會有…（口語常用單數 There’s，後面不論單數複數）。'],
+    ['Can I go?',[['Can','X'],['I','S'],['go?','V']],'Can I + 原形動詞？ ＝ 我可以…嗎？用來請求許可。'],
+  ],
+  verbs:[['run','ran','run','跑'],['scream','screamed','screamed','尖叫'],['invite','invited','invited','邀請'],['celebrate','celebrated','celebrated','慶祝'],['say','said','said','說'],['go','went','gone','去'],['be','was / were','been','是']],
+  notes:[['all the way','一路上、一直、全程。'],['There is（There’s）與 be going to','There is 表示「有……」；be going to 表示「將會、打算」（未來式）。後面明明有很多東西（games, toys...），為什麼用單數的 There’s？標準文法應該用 There are going to be，但日常口語中，母語人士為了唸起來順口，無論後面是單數還是複數，幾乎都會直接縮寫成 There’s going to be。'],['wanna','wanna 是 want to（想要）的口語連音縮寫。']],
+  exam:'Q2 視角：整篇故事都用 I（我）來說，是第一人稱。Q7 背景：故事從學校和 Rubina 的家開始。Q11 主要角色：Rubina（我）、Sana（妹妹）、Ami（媽媽）。',
+  parent:'請孩子圈出本頁的「I」，再說：「是誰在說故事？」答案是 Rubina，這就是第一人稱（Q2）。注意 Sana 一直在喊 I wanna go too!，後面會一再出現。'
+},
+
+/* ---------- 故事 2：p.209 ---------- */
+{ id:'b2', kind:'read', label:'故事 2 · p.209', art:'talk2',
+  left:[
+    {k:'p', s:[T('Sana screams, “I wanna go too!”','Sana 尖叫著說：「我也要去！」'),
+            T('“I can’t take her! She’s not invited.”','「我不能帶她去！她又沒有受邀。」'),
+            T('“Why not?” says Ami.','「為什麼不行？」媽媽說。'),
+            T('“They don’t do that here!”','「這裡（這個國家）的人不會那樣做啦！」')]},
+    {k:'p', s:[T('Ami says, “Well that’s not fair. You call up your friend and ask if you can bring Sana, or else you can’t go.”','媽媽說：「嗯，那樣不公平。你打電話給你的朋友，問問看能不能帶 Sana 一起去，不然你就不能去。」'),
+            T('“But Ami! They’ll laugh at me! They’ll never invite me to another party again!”','「可是媽媽！他們會笑我的！他們以後再也不會邀請我去任何派對了！」'),
+            T('Sana screams, “I wanna go too!”','Sana 尖叫著說：「我也要去！」')]},
+  ],
+  vocab:[
+    ['fair','fɛr','公平的','That’s not fair.','fair'],
+    ['call up','kɔl ʌp','打電話給…','Call up your friend.','call up'],
+    ['bring','brɪŋ','帶來、帶去','Bring your sister.','bring'],
+    ['laugh at','læf æt','嘲笑','Don’t laugh at me.','laugh at'],
+    ['never','ˈnɛvɚ','從不、絕不','I never give up.','never'],
+    ['another','əˈnʌðɚ','另一個、再一個','Another party.','another'],
+    ['invite','ɪnˈvaɪt','邀請','Invite me again.','invite'],
+    ['or else','ɔr ɛls','否則、不然的話','Hurry, or else you’ll be late.','or else'],
+  ],
+  phrases:[
+    ['call up + 人','打電話給某人'],['or else','否則、不然'],['laugh at ...','嘲笑…'],['never ... again','再也不…'],
+    ['another party','另一場派對'],['Why not?','為什麼不行？'],['That’s not fair.','那不公平。'],
+  ],
+  patterns:[
+    ['You call up your friend and ask if you can bring Sana.',[['You','S'],['call up','V'],['your friend','O'],['and ask','V'],['if you can bring Sana.','O']],'call up ＝ 打電話給…；ask if ＝ 問是不是可以…。'],
+    ['They’ll never invite me to another party again!',[['They’ll','S'],['never invite','V'],['me','O'],['to another party again!','X']],'never ... again ＝ 再也不…。They’ll ＝ They will。'],
+    ['She’s not invited.',[['She','S'],['’s not invited.','V']],'be + 過去分詞 ＝ 被動：她「沒有被」邀請。'],
+  ],
+  verbs:[['take','took','taken','帶（去）、拿'],['call','called','called','打電話'],['ask','asked','asked','問'],['bring','brought','brought','帶來'],['laugh','laughed','laughed','笑'],['invite','invited','invited','邀請'],['say','said','said','說'],['go','went','gone','去']],
+  notes:[['call up','call up 是片語動詞，意思是「打電話給……」。'],['or else','「or else」意思是「否則」、「不然的話」。'],['never ... again','never ... again ＝「再也不……」。'],['another 和 other','another 的意思是「（眾多之中的）另一個、再一個」，後面固定接單數可數名詞（這裡的 party 是單數）。如果用 other，後面通常要接複數名詞（例如 other parties）。']],
+  exam:'Q3 解決爭執／Q10 開頭（Beginning）：媽媽要求 Rubina 打電話問能不能帶 Sana，Rubina 很不情願，這是故事衝突的開始。',
+  parent:'問孩子：「如果媽媽叫你帶妹妹去朋友的派對，你會怎麼想？」讓孩子體會 Rubina 的心情（害怕被笑）。'
+},
+
+/* ---------- 故事 3：pp.210–211 ---------- */
+{ id:'b3', kind:'read', label:'故事 3 · pp.210–211', art:'party',
+  left:[
+    {k:'p', s:[T('I say, “Look, Sana, one day you’ll get invited to your own friends’ parties. Wouldn’t you like that better?”','我說：「聽著，Sana，有一天你也會受邀去參加你自己朋友的派對。那樣不是更好嗎？」'),
+            T('“No! I wanna go now!”','「不要！我現在就要去！」')]},
+    {k:'p', s:[T('I beg and plead, but Ami won’t listen.','我苦苦哀求，但媽媽就是不聽。'),
+            T('I have no choice.','我別無選擇。'),
+            T('I have to call.','我只好打電話。'),
+            T('Sally says, “All right.”','Sally 說：「好吧。」'),
+            T('But it doesn’t sound all right.','但聽起來一點都不「好」。'),
+            T('I know she thinks I’m weird.','我知道她一定覺得我很奇怪。')]},
+    {k:'p', s:[T('At the party, I’m the only one who brought her little sister.','在派對上，只有我一個人帶了妹妹來。'),
+            T('Sana has to win all the games, and when she falls down during musical chairs, she cries like a baby.','Sana 每個遊戲都非贏不可，而且在玩大風吹跌倒時，她還像個小寶寶一樣大哭大鬧。')]},
+  ],
+  vocab:[
+    ['beg','bɛɡ','懇求','I beg you.','beg'],
+    ['plead','plid','哀求、苦求','He pleads for help.','plead'],
+    ['choice','tʃɔɪs','選擇','I have no choice.','choice'],
+    ['weird','wɪrd','怪怪的、奇怪的','That is weird.','weird'],
+    ['musical chairs','ˈmjuzɪkl tʃɛrz','大風吹（搶椅子遊戲）','We play musical chairs.','musical chairs'],
+    ['fall down','fɔl daʊn','跌倒、摔倒','Don’t fall down.','falls down'],
+    ['cry','kraɪ','哭','Babies cry.','cries'],
+    ['better','ˈbɛtɚ','更好','That is better.','better'],
+  ],
+  phrases:[
+    ['one day','有一天'],['get invited','被邀請、受邀'],['no choice','別無選擇'],['have to + 動詞','必須、不得不'],
+    ['all right','好吧、沒問題'],['the only one who ...','唯一…的人'],['little sister','小妹妹'],['cry like a baby','像寶寶一樣大哭'],
+  ],
+  patterns:[
+    ['I have no choice.',[['I','S'],['have','V'],['no choice.','O']],'have no choice ＝ 別無選擇。'],
+    ['But it doesn’t sound all right.',[['But','X'],['it','S'],['doesn’t sound','V'],['all right.','X']],'sound + 形容詞 ＝ 聽起來…。sound 是感官動詞。'],
+    ['I’m the only one who brought her little sister.',[['I','S'],['’m','V'],['the only one','O'],['who brought her little sister.','X']],'the only one who ... ＝ 唯一…的人。who 後面說明是哪一種人。'],
+  ],
+  verbs:[['say','said','said','說'],['beg','begged','begged','懇求'],['plead','pleaded','pleaded','哀求'],['listen','listened','listened','聽'],['have','had','had','有、必須'],['know','knew','known','知道'],['think','thought','thought','認為'],['bring','brought','brought','帶來'],['win','won','won','贏'],['fall','fell','fallen','跌倒'],['cry','cried','cried','哭']],
+  notes:[
+    ['Look','Look 在這裡不是「看」，而是口語中用來引起對方注意、準備認真講道理的語氣詞，意思是「聽著」、「你看啊」。'],
+    ['get invited 與 be invited','get invited：口語、非正式（日常聊天、漫畫極常見），強調「狀態的轉變」（從沒受邀變成受邀），較生動，常帶有意外、幸運的感覺。\nbe invited：正式、中性（書面文章、考試標準用法），強調「客觀事實」，較冷靜客觀。'],
+    ['friends’ parties','「朋友」是複數（friends），以 s 結尾的複數名詞要表達「…的」時，只需要在字尾加上一撇 ’（寫作 friends’），不需要再多加 s。friends’ parties ＝ 朋友們的派對。'],
+    ['Wouldn’t you like that better?','Wouldn’t ＝ Would not 的縮寫，是「難道不會…嗎？」的委婉反問語氣。better 是 well 的比較級，意思是「更、比較」。'],
+    ['beg 和 plead','beg（懇求）和 plead（哀求、苦求）是同義詞。'],
+    ['won’t listen','won’t 不是單純的「未來不會」，而是表達「主觀上拒絕、就是不肯」的固執語氣：Ami 就是不肯聽。'],
+    ['weird 與 strange','strange：不熟悉、反常的，語氣較溫和，也可以指「陌生的」（a strange city）。\nweird：詭異、離奇，語氣較強烈、口語化；形容人時有「怪胎、令人難以理解」的意味。'],
+    ['musical chairs','musical chairs 是西方派對最經典的遊戲「搶椅子（大風吹）」。during 是介系詞，意思是「在……期間」。'],
+  ],
+  exam:'Q10 開頭（Beginning）：Rubina 被迫帶 Sana 去派對，Sana 在派對上大哭大鬧。Q9 主題：姊妹之間的相處。',
+  parent:'問孩子：「Rubina 為什麼覺得 Sally 認為她 weird（怪）？」用中文說就好，引導孩子看出人物的感受。'
+},
+
+/* ---------- 故事 4：pp.212–213 ---------- */
+{ id:'b4', kind:'read', label:'故事 4 · pp.212–213', art:'bag',
+  left:[
+    {k:'p', s:[T('Before we leave the party, Sally’s mom gives us little bags.','在我們離開派對前，Sally 的媽媽給了我們每人一個小禮物袋。'),
+            T('Inside there are chocolates and candies, a whistle, a ruby ring, and a big red lollipop!','裡面有巧克力和糖果、一個哨子、一只紅寶石戒指，還有一支大紅棒棒糖！'),
+            T('Sana eats her big red lollipop on the way home in the car.','Sana 在回家的車上就把她的大紅棒棒糖吃掉了。'),
+            T('I save mine for later.','我則把我的留著晚點再吃。')]},
+    {k:'p', s:[T('Sana doesn’t know how to make things last.','Sana 不懂得珍惜東西、慢慢享用。'),
+            T('By bedtime, her candies are all gone, her whistle is broken, and the ruby in her ring is missing.','到了睡覺時間，她的糖果全吃光了，哨子弄壞了，戒指上的紅寶石也不見了。'),
+            T('I put my big red lollipop on the top shelf of the fridge to have in the morning.','我把我的大紅棒棒糖放在冰箱最上層的架子上，打算早上再吃。'),
+            T('All night I dream about how good it will taste.','整個晚上，我都在夢裡想著它吃起來會有多美味。')]},
+  ],
+  vocab:[
+    ['whistle','ˈwɪsl','哨子','Blow the whistle.','whistle'],
+    ['ruby','ˈrubi','紅寶石','A ruby is red.','ruby'],
+    ['save','seɪv','保留、留著','Save some for later.','save'],
+    ['last','læst','持續、耐用（動詞）','Make it last.','last'],
+    ['broken','ˈbroʊkən','壞掉的、斷掉的','The whistle is broken.','broken'],
+    ['missing','ˈmɪsɪŋ','遺失的、不見的','My ring is missing.','missing'],
+    ['shelf','ʃɛlf','架子、層架','The top shelf.','shelf'],
+    ['taste','teɪst','嚐起來','It tastes good.','taste'],
+  ],
+  phrases:[
+    ['on the way home','在回家的路上'],['save ... for later','留著…晚點再用'],['make things last','讓東西能維持久一點'],['by bedtime','到睡覺時間之前'],
+    ['all gone','全沒了、吃光了'],['top shelf','最上層的架子'],['all night','整個晚上'],['dream about ...','夢到、夢想…'],
+  ],
+  patterns:[
+    ['Sana doesn’t know how to make things last.',[['Sana','S'],['doesn’t know','V'],['how to make things last.','O']],'know how to + 原形動詞 ＝ 知道怎麼…。make things last ＝ 讓東西撐得久一些。'],
+    ['Her candies are all gone, her whistle is broken, and the ruby is missing.',[['Her candies','S'],['are all gone,','V'],['her whistle','S'],['is broken,','V'],['and the ruby','S'],['is missing.','V']],'排比句：A is …, B is …, and C is …。gone、broken、missing 都是形容詞，說明東西的狀態。'],
+    ['I dream about how good it will taste.',[['I','S'],['dream about','V'],['how good it will taste.','O']],'how + 形容詞 + 主詞 + 動詞 ＝ 多麼…。感嘆的重點 how good 放在最前面。'],
+  ],
+  verbs:[['leave','left','left','離開'],['give','gave','given','給'],['eat','ate','eaten','吃'],['save','saved','saved','保留'],['know','knew','known','知道'],['put','put','put','放（三態相同）'],['dream','dreamed / dreamt','dreamed / dreamt','夢想、夢到'],['taste','tasted','tasted','嚐起來'],['be','was / were','been','是']],
+  notes:[
+    ['save ... for later','save 在這裡不是「拯救」或「存錢」，而是「保留、留著（先不吃／先不用）」。for later 是「留到晚一點、留到以後」。'],
+    ['know how to + 原形動詞','doesn’t know how to + 原形動詞 ＝ 不知道如何…、不懂得怎麼…。last 在這裡不是「最後的」，而是動詞，意思是「持續、維持、耐用」。'],
+    ['make + 受詞 + 原形動詞','英文規定 make + 受詞 + 原形動詞（讓某人／某物做某事）。所以在 make things last 中，last 必須保持原形（不加 s 也不加 to）。'],
+    ['By bedtime','By 放在時間前面，表示「到了……的時候」、「在……之前（就已經）」，強調動作或狀態在某個時間點之前已經完成。'],
+    ['to have','I put it ... to have in the morning：to have 表示目的，在這裡代指「吃」。'],
+    ['how good it will taste','英文習慣「重點形容詞先講」：how good（多麼好吃）＋ it（它）＋ will taste（將會嚐起來）。\nhow good it will taste ↔ 它嚐起來會有多好吃\nhow happy she is ↔ 她有多開心\nhow big this dog is ↔ 這隻狗有多大隻\n看到這種結構時，在心裡把順序倒過來，就能秒懂意思。'],
+  ],
+  exam:'Q10 中間（Middle）會用到這一頁的情節：Sana 一下子就吃完所有東西，Rubina 把自己的棒棒糖留到早上。Q11 角色：Sana 不懂得珍惜，Rubina 懂得等待。',
+  parent:'問孩子：「你會馬上吃掉糖果，還是留著慢慢吃？」讓他用 I save ... for later. 或 I eat it now. 回答。'
+},
+];
+/* ============ 第二課：後半（故事 5～11、口說、寫作、考前練習） ============ */
+SPREADS2.push(
+{ id:'b5', kind:'read', label:'故事 5 · p.214', art:'fridge',
+  left:[
+    {k:'p', s:[T('In the morning, I get up early to have it.','早上我一大早就起床要去吃棒棒糖。'),
+            T('Sana’s already up.','Sana 已經醒了。'),
+            T('When she sees me, she runs away.','她一看到我就跑走了。'),
+            T('I open the fridge door.','我打開冰箱門。'),
+            T('All that’s left of my lollipop is a triangle stuck to a stick.','我的棒棒糖只剩下黏在棍子上的一個小小三角形。'),
+            T('“SANA!”','「SANA！」')]},
+  ],
+  vocab:[
+    ['get up','ɡɛt ʌp','起床','I get up early.','get up'],
+    ['already','ɔlˈrɛdi','已經','She is already up.','already'],
+    ['early','ˈɝli','早、提早','Come early.','early'],
+    ['fridge','frɪdʒ','冰箱（refrigerator 的簡稱）','Put it in the fridge.','fridge'],
+    ['triangle','ˈtraɪˌæŋɡl','三角形','A triangle has three sides.','triangle'],
+    ['stuck','stʌk','黏住的、卡住的','The candy is stuck.','stuck'],
+    ['stick','stɪk','棍子、小木棒','A lollipop has a stick.','stick'],
+    ['left','lɛft','剩下的','Nothing is left.','left'],
+  ],
+  phrases:[['get up early','很早起床'],['run away','跑走、逃走'],['open the door','打開門'],['all that’s left','唯一剩下的'],['stuck to a stick','黏在棍子上']],
+  patterns:[
+    ['When she sees me, she runs away.',[['When she sees me,','X'],['she','S'],['runs away.','V']],'When + 句子, 句子 ＝ 當…的時候，…。主詞是 she（第三人稱單數），所以動詞 sees、runs 都要加 s。'],
+    ['All that’s left of my lollipop is a triangle.',[['All that’s left of my lollipop','S'],['is','V'],['a triangle stuck to a stick.','O']],'All that’s left ＝ 所有剩下的東西，也就是「唯一剩下的」。'],
+  ],
+  verbs:[['get','got','got / gotten','得到、變得'],['run','ran','run','跑'],['see','saw','seen','看見'],['open','opened','opened','打開'],['leave','left','left','留下（left 是剩下的）'],['stick','stuck','stuck','黏住']],
+  notes:[['All that’s left','「所有剩下的東西」、「唯一僅存的部分」。left 不是「左邊」，而是動詞 leave（留下）的過去分詞當形容詞，意思是「剩下的、遺留的」。'],['stuck to a stick','stuck to a stick 用來修飾前面的三角形，意思是「黏在一根棒子上的」。stuck 是動詞 stick（黏住）的過去分詞。作者在這裡玩了文字遊戲：stuck 和 stick 長得很像，唸起來很有節奏感，把棒棒糖慘不忍睹的樣子描寫得很傳神。']],
+  exam:'Q10 中間（Middle）、Q8 作者目的：作者用「只剩一個三角形」的幽默描寫，逗讀者開心（entertain）。',
+  parent:'請孩子看圖：冰箱門打開後，Rubina 的表情是什麼？用 angry、sad 或 surprised 說說看。'
+},
+
+{ id:'b6', kind:'read', label:'故事 6 · p.215', art:'closet',
+  left:[
+    {k:'p', s:[T('I hear a sound in the front hall closet.','我聽到前廳衣櫃裡傳來聲音。'),
+            T('I should have known.','我早該知道的。'),
+            T('That’s where she always hides.','她每次都躲在那裡。'),
+            T('I shove aside the coats and boots.','我用力推開外套和靴子。'),
+            T('“I’m going to get you!”','「我一定要抓到你！」'),
+            T('Quick as a rat, she scoots through my legs and runs around and around the living room, the dining room, the kitchen, yelling, “Ami! Ami! Help! Help!”','她像老鼠一樣敏捷，從我的雙腿間鑽了過去，繞著客廳、餐廳和廚房不停地跑，一邊大喊：「媽媽！媽媽！救命啊！救命啊！」')]},
+  ],
+  vocab:[
+    ['closet','ˈklɑzɪt','衣櫃、壁櫥','Hide in the closet.','closet'],
+    ['hide','haɪd','躲藏','She likes to hide.','hides'],
+    ['shove','ʃʌv','用力推、亂塞（比 push 更粗魯急促）','Don’t shove me.','shove'],
+    ['aside','əˈsaɪd','到旁邊','Move aside.','aside'],
+    ['boots','buts','靴子','Wear your boots.','boots'],
+    ['quick','kwɪk','快速的','Be quick.','quick'],
+    ['scoot','skut','迅速溜走、竄過去','She scoots away.','scoots'],
+    ['yell','jɛl','大喊','Don’t yell.','yelling'],
+  ],
+  phrases:[['front hall closet','前廳的衣櫃'],['should have known','早該知道'],['shove aside','用力推到一旁'],['quick as a rat','像老鼠一樣快'],['around and around','一圈又一圈'],['living room / dining room','客廳／餐廳'],['I’m going to get you!','我一定要抓到你！']],
+  patterns:[
+    ['I should have known.',[['I','S'],['should have known.','V']],'should have + 過去分詞 ＝ 早該…（事後諸葛，有點後悔或自責）。Rubina 懊惱自己早該猜到 Sana 會躲在那裡。'],
+    ['She runs around the living room, yelling, “Help!”',[['She','S'],['runs around','V'],['the living room,','O'],['yelling, “Help!”','X']],'逗號後面加 V-ing ＝ 一邊…一邊…，兩個動作同時發生。'],
+    ['I shove aside the coats and boots.',[['I','S'],['shove aside','V'],['the coats and boots.','O']],'shove aside ＝ 把…用力推到一旁。'],
+  ],
+  verbs:[['hear','heard','heard','聽見'],['know','knew','known','知道'],['hide','hid','hidden','躲藏'],['shove','shoved','shoved','用力推'],['get','got','got / gotten','抓到'],['scoot','scooted','scooted','迅速移動'],['run','ran','run','跑'],['yell','yelled','yelled','大喊']],
+  notes:[
+    ['should have + 過去分詞','「事後諸葛、早知如此」的無奈與自責語氣。主角在懊惱自己早該猜到 Sana 會偷吃並躲起來。'],
+    ['shove aside','shove 比普通的 push（推）更粗魯、更急促，帶有生氣、不耐煩的情緒，完美呈現主角發現棒棒糖被偷吃後怒氣沖沖的樣子。aside 是「到旁邊」，shove aside ＝ 把…用力推到一旁。'],
+    ['(As) quick as a rat','(As) quick as a rat 是省略寫法，意思是「像老鼠一樣快／敏捷」。'],
+    ['scoots','前面學過 scoot over（往旁邊挪），在這裡是「迅速溜走、疾馳、竄過去」。'],
+    ['around and around','重複兩次 around，意思是「一圈又一圈地、繞來繞去」。'],
+    ['逗號後面加 V-ing','原本的寫法：She runs around the room and she yells, “Help!”\n簡化後：She runs around the room, yelling, “Help!”\n把重複的主詞（she）和連接詞（and）拿掉，把第二個動詞加上 -ing 放在逗號後面，句子更緊湊，也更有電影畫面感。'],
+    ['Ami','Ami 在烏爾都語（Urdu，巴基斯坦與北印度常用的語言）中就是「媽媽」的意思。'],
+  ],
+  exam:'Q8 作者目的：這頁用追逐的畫面逗讀者笑。Q7 背景：場景都在 Rubina 的家（衣櫃、客廳、餐廳、廚房）。',
+  parent:'一起把 around and around 的畫面演出來：用手指在空中畫圈圈，邊畫邊說 around and around，孩子會記得很牢。'
+},
+
+{ id:'b7', kind:'read', label:'故事 7 · p.216', art:'ami3',
+  left:[
+    {k:'p', s:[T('Ami comes out, rubbing her eyes.','媽媽揉著眼睛走了出來。'),
+            T('Sana runs behind Ami, where I can’t get her.','Sana 跑到媽媽身後，讓我抓不到她。'),
+            T('“What’s going on out here?” says Ami.','「外面發生什麼事了？」媽媽問。'),
+            T('Sana says, “Rubina’s trying to get me!”','Sana 說：「Rubina 想抓我！」')]},
+    {k:'p', s:[T('Ami puts her hands on her hips.','媽媽雙手叉腰。'),
+            T('“Are you trying to get your little sister again?”','「你又想欺負你妹妹了嗎？」'),
+            T('“She ate my lollipop! The greedy thing! She ate it!”','「她把我的棒棒糖吃掉了！這個貪心鬼！她把它吃掉了！」'),
+            T('Ami says, “For shame! It’s just a lollipop! Can’t you share with your little sister?”','媽媽說：「真丟臉！不過就是一支棒棒糖！你不能跟妹妹分享嗎？」'),
+            T('I want to cry, but I don’t.','我好想哭，但我忍住了。')]},
+  ],
+  vocab:[
+    ['rub','rʌb','揉、搓','Rub your eyes.','rubbing'],
+    ['hips','hɪps','腰側、臀部兩側','Hands on hips.','hips'],
+    ['greedy','ˈɡridi','貪心的','A greedy thing.','greedy'],
+    ['share','ʃɛr','分享','Share with your sister.','share'],
+    ['shame','ʃeɪm','羞恥、丟臉','For shame!','shame'],
+    ['lollipop','ˈlɑliˌpɑp','棒棒糖','A big red lollipop.','lollipop'],
+    ['again','əˈɡɛn','又、再一次','Try again.','again'],
+    ['cry','kraɪ','哭','I want to cry.','cry'],
+  ],
+  phrases:[['come out','走出來'],['rub her eyes','揉眼睛'],['What’s going on?','發生什麼事了？'],['hands on hips','雙手叉腰'],['For shame!','真丟臉！'],['share with ...','與…分享'],['get your little sister','找妹妹麻煩'],['again','又一次']],
+  patterns:[
+    ['Can’t you share with your little sister?',[['Can’t','X'],['you','S'],['share','V'],['with your little sister?','X']],'Can’t you ...? ＝ 你就不能…嗎？不是真的在問能力，而是帶有責備、不耐煩的語氣。'],
+    ['Are you trying to get your little sister again?',[['Are','X'],['you','S'],['trying to get','V'],['your little sister','O'],['again?','X']],'Are you trying to ...? ＝ 你是不是又想要…？現在進行式的疑問句，帶有質問的語氣。'],
+    ['I want to cry, but I don’t.',[['I','S'],['want','V'],['to cry,','O'],['but I don’t.','X']],'but I don’t ＝ 但我沒有（don’t 後面省略了 cry，避免重複）。'],
+  ],
+  verbs:[['come','came','come','來、走出來'],['rub','rubbed','rubbed','揉'],['run','ran','run','跑'],['say','said','said','說'],['put','put','put','放（三態相同）'],['try','tried','tried','嘗試'],['eat','ate','eaten','吃'],['share','shared','shared','分享'],['want','wanted','wanted','想要'],['cry','cried','cried','哭']],
+  notes:[
+    ['What’s going on?','「發生什麼事了？／這是怎麼回事？／在吵什麼？」What’s ＝ What is。going on 是片語動詞，意思是「正在發生、正在進行」。out here 的字面意思是「在外面這裡」。'],
+    ['hands 和 hips 都要加 s','因為人有兩隻手和兩側腰際，用兩隻手叉腰時兩邊都會用到，所以英文習慣兩個字都用複數（hands、hips）。'],
+    ['get your little sister','這個 get 在口語吵架或追逐的場景中，有「抓到某人、找某人麻煩、整某人、報復某人」的意思。這裡翻成「又想抓（或欺負）你妹妹」最傳神。'],
+    ['Can’t you...?','否定疑問句開頭，帶有強烈責備、不耐煩或催促的語氣，意思是「你就不能……嗎？」。share with + 人 ＝ 與某人分享。'],
+  ],
+  exam:'Q11 角色：Ami 偏心、不公平，Rubina 很委屈。Q10 中間：Ami 逼 Rubina 跟妹妹分享。Q6 中心主旨：公平（fair）與同理心。',
+  parent:'問孩子：「媽媽說 Can’t you share? 你覺得公平嗎？為什麼？」不用英文回答，用中文說出理由也很棒。'
+},
+
+{ id:'b8', kind:'read', label:'故事 8 · p.217', art:'triangle',
+  left:[
+    {k:'p', s:[T('Sana runs to the fridge and brings back the triangle stuck to the stick.','Sana 跑到冰箱那裡，把黏在棍子上的那個小三角形拿了回來。'),
+            T('“Look! I didn’t eat all of your lollipop! I left the triangle for you!”','「你看！我沒有把你的棒棒糖全吃光！我留了這個三角形給你！」'),
+            T('“See?” says Ami.','「看到了嗎？」媽媽說。'),
+            T('“She didn’t eat all of it. She’s sharing with you! Go ahead. Take the triangle.”','「她沒有全吃光，她有跟你分享！拿去吧，把那個三角形拿走。」')]},
+    {k:'p', s:[T('So I have to take it.','所以我只好接了過來。'),
+            T('“Go ahead. Eat the triangle.”','「吃吧，把那個三角形吃掉。」'),
+            T('But I don’t.','但我沒有吃。'),
+            T('With all my might, I throw it across the room.','我用盡全力把它往房間另一頭扔過去。'),
+            T('It skitters under the sofa.','它滑進了沙發底下。'),
+            T('Sana scurries after it and eats that too.','Sana 急忙跑過去撿起來，連那一塊也吃掉了。')]},
+  ],
+  vocab:[
+    ['bring back','brɪŋ bæk','帶回來、拿回來','Bring back my book.','brings back'],
+    ['go ahead','ɡoʊ əˈhɛd','請便、去吧、繼續','Go ahead and eat.','go ahead'],
+    ['might','maɪt','力量、力氣（名詞）','With all my might.','might'],
+    ['throw','θroʊ','丟、扔','Throw the ball.','throw'],
+    ['across','əˈkrɔs','橫越、從一邊到另一邊','Across the room.','across'],
+    ['skitter','ˈskɪtɚ','輕快地滑行、飛快地滾動','It skitters away.','skitters'],
+    ['sofa','ˈsoʊfə','沙發','Under the sofa.','sofa'],
+    ['scurry','ˈskɝi','急忙跑、碎步快跑','She scurries after it.','scurries'],
+  ],
+  phrases:[['bring back','拿回來'],['leave ... for you','留…給你'],['go ahead','請便、拿去吧'],['with all my might','用盡全力'],['across the room','扔過整個房間'],['under the sofa','在沙發底下'],['scurry after ...','急忙追過去撿']],
+  patterns:[
+    ['I left the triangle for you!',[['I','S'],['left','V'],['the triangle','O'],['for you!','X']],'leave + 東西 + for + 人 ＝ 留…給某人。left 是 leave 的過去式。'],
+    ['With all my might, I throw it across the room.',[['With all my might,','X'],['I','S'],['throw','V'],['it','O'],['across the room.','X']],'with all my might ＝ 用盡全力。放在句子最前面，用來加強動作的力道。'],
+    ['Sana scurries after it and eats that too.',[['Sana','S'],['scurries after','V'],['it','O'],['and eats','V'],['that too.','O']],'兩個動作用 and 連接：跑過去撿，然後吃掉。主詞是 Sana（單數），動詞加 s。'],
+  ],
+  verbs:[['run','ran','run','跑'],['bring','brought','brought','帶來'],['leave','left','left','留下'],['see','saw','seen','看見'],['take','took','taken','拿'],['eat','ate','eaten','吃'],['throw','threw','thrown','丟'],['skitter','skittered','skittered','滑行'],['scurry','scurried','scurried','急忙跑']],
+  notes:[
+    ['Go ahead 的三種用法','go（去）+ ahead（向前）。\n1. 叫別人「吃吧、拿吧、用吧」：朋友看著零食問能不能吃，你說 Go ahead!\n2. 請別人「先請、你先說」：兩個人同時要進門，你禮貌地說 Go ahead.\n3. 同意別人「去做吧、開始吧」：對方問「我可以問你一個問題嗎？」，你回答 Sure, go ahead.'],
+    ['With all my might','非常有畫面感的固定片語，意思是「用盡全力」、「使出吃奶的力氣」。might 在這裡不是助動詞「可能」，而是名詞，意思是「力量、力氣」。'],
+    ['throw it across the room','把它扔過整個房間（扔到房間的另一端）。across 表示「橫越、從一邊到另一邊」。skitters 是 skitter 的第三人稱單數，意思是「輕快地滑行、飛快地滾動」，模擬棒棒糖在地板上快速滑過的聲音和畫面。under the sofa ＝ 沙發底下。'],
+    ['scurries','scurry 是「急忙跑、碎步快跑」，第三人稱單數去 y 加 ies。通常形容小動物（老鼠、松鼠）或小孩子急急忙忙竄過去，和前面 Quick as a rat（像老鼠一樣快）前後呼應。'],
+  ],
+  exam:'Q8 作者目的：用三角形、扔棒棒糖這些誇張又好笑的畫面來娛樂讀者（entertain）。Q11 角色：Rubina 生氣但忍住了，Sana 很怕被罵。',
+  parent:'請孩子演出 With all my might, I throw it...（假裝用力丟東西，但不要真的丟！）。動作配上句子，孩子會記得很清楚。'
+},
+
+{ id:'b9', kind:'read', label:'故事 9 · pp.218–219', art:'invite',
+  left:[
+    {k:'p', s:[T('The worst thing is that all the girls at school know if they invite me to their birthday parties, I have to bring Sana.','最糟糕的是，學校裡所有的女生都知道，如果邀請我去參加她們的生日派對，我就一定得帶上 Sana。'),
+            T('I don’t get any invitations for a really long time.','我有好長一段時間再也沒有收到任何派對邀請卡了。')]},
+    {k:'p', s:[T('Then one day Sana comes home waving an invitation.','直到有一天，Sana 揮舞著一張邀請卡回到家。'),
+            T('“Ami! I’ve been invited to a birthday party! There’s going to be games and toys and cake and ice cream! Can I go?”','「媽媽！我受邀去參加一個生日派對！那裡會有遊戲、玩具，還有蛋糕和冰淇淋！我可以去嗎？」'),
+            T('Our little sister Maryam screams, “I wanna go too!”','我們的小妹妹 Maryam 尖叫著說：「我也要去！」'),
+            T('Sana says, “No! I can’t take her! She’s not invited!”','Sana 說：「不要！我不能帶她去！她又沒有受邀！」')]},
+  ],
+  vocab:[
+    ['worst','wɝst','最糟的（bad 的最高級）','The worst thing.','worst'],
+    ['invitation','ˌɪnvɪˈteɪʃən','邀請卡、邀請','I got an invitation.','invitations?'],
+    ['wave','weɪv','揮舞、揮手','She waves a card.','waving'],
+    ['really','ˈrɪli','真的、非常','A really long time.','really'],
+    ['invite','ɪnˈvaɪt','邀請','They invite me.','invite'],
+    ['birthday','ˈbɝθˌdeɪ','生日','Happy birthday!','birthday'],
+    ['girls','ɡɝlz','女孩們','All the girls.','girls'],
+    ['little sister','ˈlɪtl ˈsɪstɚ','妹妹、小妹妹','My little sister.','little sister'],
+  ],
+  phrases:[['the worst thing is that ...','最糟的是…'],['all the girls at school','學校裡所有的女生'],['for a really long time','很長一段時間'],['then one day','然後有一天'],['come home','回到家'],['wave an invitation','揮舞邀請卡']],
+  patterns:[
+    ['The worst thing is that I have to bring Sana.',[['The worst thing','S'],['is','V'],['that I have to bring Sana.','O']],'The worst thing is that + 句子 ＝ 最糟的是…。worst 是 bad 的最高級。'],
+    ['I don’t get any invitations for a really long time.',[['I','S'],['don’t get','V'],['any invitations','O'],['for a really long time.','X']],'not ... any ＝ 一個…也沒有；for a long time ＝ 很長一段時間。'],
+    ['Sana comes home waving an invitation.',[['Sana','S'],['comes home','V'],['waving an invitation.','X']],'V-ing 補充說明她一邊走回家一邊做的動作。'],
+  ],
+  verbs:[['know','knew','known','知道'],['invite','invited','invited','邀請'],['bring','brought','brought','帶來'],['get','got','got / gotten','得到、收到'],['come','came','come','來、回來'],['wave','waved','waved','揮舞'],['scream','screamed','screamed','尖叫'],['take','took','taken','帶（去）']],
+  notes:[
+    ['The worst thing is that...','最高級用法，意思是「最糟糕的事情」、「最慘的是」（worst 是 bad 的最高級）。'],
+    ['all the girls at school','學校裡所有的女生。at school 是地點片語，用來修飾 all the girls。know (that)... 是「知道…」，後面省略了連接詞 that。'],
+    ['if they invite me..., I have to bring Sana','if 引導假設條件（如果她們邀請我…）。their birthday parties 因為主詞 they 是複數，所以 birthday parties 也用複數。have to 表示「不得不、必須」，傳達出 Rubina 在媽媽規定下的無奈。'],
+  ],
+  exam:'Q10 中間（Middle）：Rubina 很長一段時間沒再被邀請，直到 Sana 收到邀請卡。Q9 主題：姊妹之間的相處與公平。',
+  parent:'請孩子找出圖裡「邀請卡」，並問：「這次是誰收到邀請？」對照 p.208，故事開始和這裡很像，只是角色換了。'
+},
+
+{ id:'b10', kind:'read', label:'故事 10 · pp.220–222', art:'fair',
+  left:[
+    {k:'p', s:[T('Ami says, “Well . . . it’s only fair. You went to Rubina’s friend’s party, now Rubina and Maryam can go to your friend’s party.”','媽媽說：「嗯……這樣才公平。你之前去了 Rubina 朋友的派對，現在 Rubina 和 Maryam 也可以去你朋友的派對。」'),
+            T('I say, “Leave me out of it.”','我說：「別把我算進去（這件事不關我的事）。」'),
+            T('Ami says, “Fine then, you have to take Maryam.”','媽媽說：「那好吧，你必須帶 Maryam 去。」')]},
+    {k:'p', s:[T('Now it’s Sana’s turn to beg and plead.','現在輪到 Sana 苦苦哀求了。'),
+            T('Ami won’t listen.','媽媽就是不聽。'),
+            T('Sana’s begging so hard she’s crying, but still Ami won’t listen.','Sana 求到都哭出來了，媽媽還是不聽。'),
+            T('I could just watch her have to take Maryam.','我大可就這樣看著她不得不帶 Maryam 去。'),
+            T('I could just let her make a fool of herself at that party.','我大可讓她在派對上出盡洋相。'),
+            T('I could just let her not be invited to any more parties, but something makes me tap Ami on the shoulder.','我大可讓她以後再也收不到任何派對邀請，但內心有個聲音讓我輕拍了媽媽的肩膀。'),
+            T('“What?”','「什麼事？」'),
+            T('“Don’t make Sana take Maryam to the party.”','「別逼 Sana 帶 Maryam 去派對了。」')]},
+  ],
+  vocab:[
+    ['fair','fɛr','公平的','It’s only fair.','fair'],
+    ['leave out','liv aʊt','把…排除在外','Leave me out of it.','leave me out'],
+    ['turn','tɝn','輪到（機會）','It’s your turn.','turn'],
+    ['fool','ful','傻瓜、出洋相','Don’t make a fool of me.','fool'],
+    ['shoulder','ˈʃoʊldɚ','肩膀','Tap her on the shoulder.','shoulder'],
+    ['tap','tæp','輕拍','Tap me gently.','tap'],
+    ['watch','wɑtʃ','看著','Watch her go.','watch'],
+    ['listen','ˈlɪsn','聽','Please listen.','listen'],
+  ],
+  phrases:[['it’s only fair','這樣才公平'],['Leave me out of it.','別把我算進去'],['have to take ...','必須帶…'],['it’s Sana’s turn to ...','輪到 Sana 去…'],['I could just ...','我大可以…'],['make a fool of herself','讓自己出洋相'],['tap ... on the shoulder','輕拍…的肩膀'],['any more parties','任何更多的派對']],
+  patterns:[
+    ['Now it’s Sana’s turn to beg and plead.',[['Now','X'],['it’s','S'],['Sana’s turn','O'],['to beg and plead.','X']],'It’s + 某人’s turn to + 動詞 ＝ 輪到某人去…。'],
+    ['I could just let her make a fool of herself.',[['I','S'],['could just let','V'],['her','O'],['make a fool of herself.','X']],'let + 人 + 原形動詞 ＝ 讓某人去…（放任她去做）。I could just ... ＝ 我大可以…（但我沒有）。'],
+    ['Don’t make Sana take Maryam to the party.',[['Don’t make','V'],['Sana','O'],['take Maryam to the party.','X']],'make + 人 + 原形動詞 ＝ 逼某人…。Don’t make ... ＝ 不要逼…。'],
+  ],
+  verbs:[['go','went','gone','去'],['take','took','taken','帶（去）'],['leave','left','left','留下、排除'],['beg','begged','begged','懇求'],['listen','listened','listened','聽'],['watch','watched','watched','看著'],['let','let','let','讓（三態相同）'],['make','made','made','使、逼'],['tap','tapped','tapped','輕拍'],['say','said','said','說']],
+  notes:[
+    ['Leave ... out of ...','Leave + 人 + out of + 事物：固定片語，字面意思是「把某人留在某件事的外面」，引申為「把某人排除在外、不讓某人參與或捲入」。'],
+    ['I could just...','I could just ...（我大可以……）：表示「我其實可以這樣做，但我選擇不做」。這裡連續三句，把 Rubina 的掙扎表現得很清楚。'],
+    ['watch + 人 + 原形動詞','感官動詞 watch（看著）後面直接接原形動詞，表示「親眼看著某人做某事（從頭看到尾）」。have to take Maryam 強調她是「被迫」的。'],
+    ['let + 人 + 原形動詞','使役動詞 let ＝「放任某人做某事、隨便她去」。'],
+    ['make a fool of oneself','「出洋相、出醜、讓自己看起來像個傻瓜」。'],
+    ['tap Ami on the shoulder','道地的身體接觸片語，「輕拍 Ami 的肩膀」，通常用來禮貌地引起對方注意，表示「我有話想說」。'],
+  ],
+  exam:'Q6 中心主旨：這一頁是故事的轉折。Rubina 本來可以報復，卻選擇替 Sana 說話，表現出同理心（empathy）。Q10 中間（Middle）：Sana 被要求帶 Maryam。',
+  parent:'問孩子：「如果你是 Rubina，你會讓 Sana 出洋相嗎？」這題沒有標準答案，孩子說出自己的想法，也是在練習 Q5 的個人經驗。'
+},
+
+{ id:'b11', kind:'read', label:'故事 11 · pp.223–224', art:'friends',
+  left:[
+    {k:'p', s:[T('“No?” says Ami.','「不要嗎？」媽媽問。'),
+            T('“No,” I say.','「不要。」我說。'),
+            T('Ami thinks for a moment, then says, “Okay.”','媽媽想了一會兒，然後說：「好吧。」'),
+            T('So Sana gets to go by herself.','於是 Sana 得以自己一個人去參加派對。')]},
+    {k:'p', s:[T('After the party, I hear a knock on my door.','派對結束後，我聽到有人敲我的房門。'),
+            T('“What do you want?” I ask Sana.','「你想幹嘛？」我問 Sana。'),
+            T('“Here.” She hands me a big green lollipop.','「給你。」她遞給我一支大綠棒棒糖。'),
+            T('“This is for you.”','「這是給你的。」'),
+            T('“Thanks,” I say.','「謝謝。」我說。'),
+            T('After that we’re friends.','從那以後，我們就成了好朋友。')]},
+  ],
+  vocab:[
+    ['moment','ˈmoʊmənt','一會兒、片刻','Wait a moment.','moment'],
+    ['by herself','baɪ hɝˈsɛlf','她自己一個人','She goes by herself.','by herself'],
+    ['knock','nɑk','敲（門）','Knock on the door.','knock'],
+    ['hand','hænd','遞給（動詞）','She hands me a card.','hands'],
+    ['green','ɡrin','綠色的','A green lollipop.','green'],
+    ['thanks','θæŋks','謝謝','Thanks a lot.','thanks'],
+    ['friends','frɛndz','朋友','We are friends.','friends'],
+    ['party','ˈpɑrti','派對','After the party.','party'],
+  ],
+  phrases:[['for a moment','一會兒'],['get to + 動詞','得以、有機會做…'],['by herself','她自己一個人'],['knock on my door','敲我的門'],['hand me ...','遞給我…'],['This is for you.','這是給你的。'],['After that','從那以後']],
+  patterns:[
+    ['She hands me a big green lollipop.',[['She','S'],['hands','V'],['me','O'],['a big green lollipop.','O']],'hand + 人 + 物 ＝ 遞給某人某物（和 give 一樣的句型）。注意形容詞順序：big（大小）在 green（顏色）前面。'],
+    ['So Sana gets to go by herself.',[['So','X'],['Sana','S'],['gets to go','V'],['by herself.','X']],'get to + 原形動詞 ＝ 得以、有機會去做…。by herself ＝ 她自己一個人。'],
+    ['After that we’re friends.',[['After that','X'],['we','S'],['’re','V'],['friends.','O']],'After that ＝ 從那以後。we’re ＝ we are。'],
+  ],
+  verbs:[['think','thought','thought','想'],['say','said','said','說'],['get','got','got / gotten','得到、得以'],['hear','heard','heard','聽見'],['ask','asked','asked','問'],['hand','handed','handed','遞給'],['want','wanted','wanted','想要'],['knock','knocked','knocked','敲']],
+  exam:'Q10 結尾（End）：Sana gives Rubina a green lollipop，兩人成為朋友。Q6 中心主旨：妥協與同理心能解決問題。',
+  parent:'一起說這頁最後的三個詞：Here. / Thanks. / We’re friends. 請孩子想想：這支綠棒棒糖為什麼很特別？'
+},
+
+/* ---------- 口說五題 ---------- */
+{ id:'say', kind:'read', notesTitle:'五題的題目與句型指導', label:'口說五題 · Speaking', art:'chat',
+  left:[
+    {k:'h', s:[T('Speaking Frames','口說五題擬答')]},
+    {k:'label', text:'1. Central Idea and Topic 中心思想與主題'},
+    {k:'p', s:[T('The story is mainly about sibling relationships, sharing, and learning to forgive.','這故事主要是關於手足關係、分享與學會原諒。'),
+            T('It shows that although sisters might argue or ruin things, they can still learn to understand and care for each other.','它展現了雖然姐妹之間可能會爭吵或搞砸事情，但她們依然能學會互相理解與關心。')]},
+    {k:'label', text:'2. Setting 故事背景'},
+    {k:'p', s:[T('The story takes place at Rubina’s home, her school, and Sally’s house for the birthday party.','故事背景發生在 Rubina 的家、學校，以及 Sally 家的生日派對。'),
+            T('The events happen over a long period, from Rubina’s first party invitation to when her sister Sana gets invited to a party.','時間跨越了很長一段日子，從 Rubina 第一次收到派對邀請，直到妹妹 Sana 也收到派對邀請。')]},
+    {k:'label', text:'3. Author’s Purpose 作者寫作目的'},
+    {k:'p', s:[T('The author wrote this story to entertain readers with a relatable family story.','作者寫這個故事是為了用一個貼近生活的家庭故事娛樂讀者。'),
+            T('The author also wants to teach us how family members learn to be fair and forgive each other after making mistakes.','同時，作者也想教導我們家庭成員如何在犯錯後學會公平對待與互相原諒。')]},
+    {k:'label', text:'4. Summarize 摘要／總結'},
+    {k:'p', s:[T('In the beginning, Rubina was forced to take her sister Sana to a birthday party, and Sana ruined her big red lollipop.','開始時，Rubina 被迫帶妹妹 Sana 去參加生日派對，而且 Sana 還偷吃了她的大紅棒棒糖。'),
+            T('Next, Rubina stopped getting invited to parties for a long time.','接著，Rubina 很長一段時間都沒有再收到派對邀請。'),
+            T('Then, when Sana got invited to a party and Ami wanted her to take Maryam, Rubina spoke up for Sana.','然後，當 Sana 收到派對邀請且媽媽要她帶 Maryam 去時，Rubina 幫 Sana 說話。'),
+            T('In the end, Sana gave Rubina a green lollipop to thank her, and they became friends.','最後，Sana 給了 Rubina 一支綠色棒棒糖表示感謝，她們成了好朋友。')]},
+    {k:'label', text:'5. Characters 角色／人物'},
+    {k:'p', s:[T('The main characters are Rubina, Sana, Maryam, and Ami.','主要角色有 Rubina、Sana、Maryam 和 Ami（媽媽）。'),
+            T('At first, Rubina was very upset with Sana for eating her lollipop.','起初，Rubina 因為 Sana 吃了她的棒棒糖而非常生氣。'),
+            T('But later, she showed kindness and empathy by stopping Ami from forcing Sana to bring Maryam to a party, which made them become friends.','但後來，她展現了善良與同理心，阻止媽媽強迫 Sana 帶 Maryam 去派對，這讓她們最終成為了朋友。')]},
+  ],
+  vocab:[
+    ['sibling','ˈsɪblɪŋ','兄弟姊妹（手足）','My sibling is kind.','sibling'],
+    ['forgive','fɚˈɡɪv','原諒','Please forgive me.','forgive'],
+    ['relatable','rɪˈleɪtəbl','貼近生活、能引起共鳴的','A relatable story.','relatable'],
+    ['entertain','ˌɛntɚˈteɪn','娛樂、使人開心','Stories entertain us.','entertain'],
+    ['empathy','ˈɛmpəθi','同理心','Show empathy.','empathy'],
+    ['upset','ʌpˈsɛt','難過的、生氣的','She is upset.','upset'],
+    ['kindness','ˈkaɪndnəs','善良、親切','Show kindness.','kindness'],
+    ['force','fɔrs','強迫','Don’t force me.','forcing|forced'],
+  ],
+  phrases:[['is mainly about ...','主要是關於…'],['It shows that ...','它展現了…'],['takes place at ...','發生在…'],['The author wrote this story to ...','作者寫這個故事是為了…'],['In the beginning, / Next, / Then, / In the end,','開始時，／接著，／然後，／最後，'],['At first, ... But later, ...','起初…，但後來…'],['speak up for ...','為…發聲、替…說話'],['care for each other','互相關心']],
+  patterns:[
+    ['The story is mainly about sharing.',[['The story','S'],['is','V'],['mainly about sharing.','O']],'句型起手式：The story is mainly about ... ＝ 故事主要是關於…（回答主題 Topic）。'],
+    ['The story takes place at Rubina’s home.',[['The story','S'],['takes place','V'],['at Rubina’s home.','X']],'句型起手式：The story takes place in/at ... ＝ 故事發生在…（回答背景 Setting）。'],
+    ['The author wrote this story to entertain readers.',[['The author','S'],['wrote','V'],['this story','O'],['to entertain readers.','X']],'句型起手式：The author wrote this story to ... ＝ 作者寫這個故事是為了…（回答作者目的）。'],
+  ],
+  verbs:[['show','showed','shown','展現'],['argue','argued','argued','爭吵'],['learn','learned','learned','學會'],['forgive','forgave','forgiven','原諒'],['force','forced','forced','強迫'],['become','became','become','變成'],['stop','stopped','stopped','停止、阻止'],['speak','spoke','spoken','說話'],['write','wrote','written','寫'],['give','gave','given','給']],
+  notes:[
+    ['1. 中心思想與主題','Question：What is the main idea or topic of the story Big Red Lollipop?（故事的主題或中心思想是什麼？）\nSentence Frame：The story is mainly about... ／ It shows that...'],
+    ['2. 故事背景','Question：Where and when does this story take place?\nSentence Frame：The story takes place in/at... ／ The events happen over...'],
+    ['3. 作者寫作目的','Question：Why did the author write Big Red Lollipop?\nSentence Frame：The author wrote this story to... ／ The author wants to teach us that...'],
+    ['4. 摘要／總結','Question：Can you summarize what happened in the story?\nSentence Frame：In the beginning,... ／ Next,... ／ Then,... ／ In the end,...'],
+    ['5. 角色／人物','Question：Who are the main characters in the story, and how did Rubina change?\nSentence Frame：The main characters are... ／ At first, Rubina felt... but later, she decided to...'],
+    ['老師貼心小提醒','陪孩子練習時，先引導孩子看著 Sentence Frame（句型）唸一遍，再把後面的細節補上。只要掌握「開頭句型」，孩子在口試時就能自信、平穩地說出完整的句子！'],
+  ],
+  exam:'這五題就是口說的五個面向：中心思想與主題、背景、作者目的、摘要、角色。11 題重組練習裡，都有用到這裡的句型。',
+  parent:'每次只練一題：先聽整段、再跟著唸，最後只看句型起手式（Sentence Frame）自己說。孩子能說出開頭，後面就容易接下去了。'
+},
+
+/* ---------- 寫作 ---------- */
+{ id:'wr', kind:'read', notesTitle:'寫作指導與題目說明', label:'寫作題目 · Writing', art:'write',
+  left:[
+    {k:'h', s:[T('Writing Prompts','寫作題目')]},
+    {k:'label', text:'Prompt 1 題目一'},
+    {k:'p', s:[T('A Time We Met in the Middle: How I Solved a Disagreement','我的「各退一步」大作戰：我如何解決一次爭執'),
+            T('Think about a time you had a disagreement with a family member or friend.','想一想你和家人或朋友發生意見不合的一次經驗。'),
+            T('How did you compromise so both of you were happy?','你們怎麼妥協，讓兩個人都開心？')]},
+    {k:'label', text:'Prompt 2 題目二'},
+    {k:'p', s:[T('The Day I Was Invited to a Crazy Party!','我受邀去一場失控派對的那一天！'),
+            T('Imagine you are invited to a birthday party, and someone acts greedy or causes trouble.','想像你受邀去一場生日派對，有人表現得很貪心或惹出麻煩。'),
+            T('What happens, and how does the story end?','發生了什麼事？故事怎麼結束？')]},
+    {k:'label', text:'Prompt 3 題目三'},
+    {k:'p', s:[T('Sana’s Secret Diary: How Might the Story Be Different?','Sana 的秘密日記：故事可能會有什麼不同？'),
+            T('Pretend you are Sana from “Big Red Lollipop.”','假裝你是《Big Red Lollipop》裡的 Sana。'),
+            T('Write a diary entry explaining why you took the lollipop and how you decided to compromise and become friends with Rubina.','寫一篇日記，說明你為什麼拿走棒棒糖，以及你怎麼決定妥協並和 Rubina 成為朋友。')]},
+    {k:'label', text:'Prompt 4 題目四'},
+    {k:'p', s:[T('What Do the Visual Clues Tell Us?','視覺線索告訴了我們什麼？'),
+            T('Look at a picture where two children want the same toy or pet.','看一張兩個孩子想要同一個玩具或寵物的圖片。'),
+            T('Use visual clues to describe their disagreement and write how they can meet in the middle.','運用視覺線索描述他們的意見不合，並寫出他們可以怎麼各退一步。')]},
+  ],
+  vocab:[
+    ['disagreement','ˌdɪsəˈɡrimənt','意見不合','We had a disagreement.','disagreement'],
+    ['compromise','ˈkɑmprəˌmaɪz','妥協','We compromise.','compromise'],
+    ['imagine','ɪˈmædʒɪn','想像','Imagine a party.','imagine'],
+    ['greedy','ˈɡridi','貪心的','She is greedy.','greedy'],
+    ['trouble','ˈtrʌbl','麻煩','He causes trouble.','trouble'],
+    ['diary','ˈdaɪri','日記','I write in my diary.','diary'],
+    ['pretend','prɪˈtɛnd','假裝','Pretend you are Sana.','pretend'],
+    ['clue','klu','線索','Look for a clue.','clues?'],
+  ],
+  phrases:[['meet in the middle','各退一步'],['a time when ...','…的一次經驗'],['cause trouble','惹麻煩'],['act greedy','表現得貪心'],['write a diary entry','寫一篇日記'],['visual clues','視覺線索（表情、動作）'],['How might ...?','…可能會怎麼樣？']],
+  patterns:[
+    ['First, we argued. Next, we met in the middle.',[['First,','X'],['we','S'],['argued.','V'],['Next,','X'],['we','S'],['met','V'],['in the middle.','X']],'用 First, Next, Then, In the end 把事情的順序寫清楚，這是寫作最好用的轉折詞。'],
+    ['I felt upset because my brother took my toy.',[['I','S'],['felt','V'],['upset','O'],['because my brother took my toy.','X']],'I felt + 形容詞 + because ... ＝ 我覺得…，因為…。'],
+    ['In the end, we became friends.',[['In the end,','X'],['we','S'],['became','V'],['friends.','O']],'最後兩句要讓角色學會「分享、同理心或妥協」，文章就有深度。'],
+  ],
+  verbs:[['argue','argued','argued','爭吵'],['share','shared','shared','分享'],['feel','felt','felt','覺得'],['become','became','become','變成'],['meet','met','met','見面、會合'],['write','wrote','written','寫'],['imagine','imagined','imagined','想像'],['solve','solved','solved','解決']],
+  notes:[
+    ['老師給孩子的「十句話作文」過關小祕訣','交卷前，請自己當小老師檢查這三件事：\n1. 單字變身檢查（詞性與時態）：過去發生的故事，記得把動詞變成過去式（例如 scoot → scooted、scurry → scurried、invite → invited）；如果是現在的事實或習慣，第三人稱單數記得加 s（例如 He screams）。\n2. 句子骨架完整：每一句話都要有「誰（主詞）」＋「做什麼（動詞）」，不能只寫單字片語。\n3. 緊扣文旨（Main Idea）：故事的最後兩句，一定要讓角色學會「分享（share）」、「同理心（empathy）」或「妥協（compromise）」，文章就會非常有深度。'],
+    ['題目一：我的「各退一步」大作戰','生活經驗記敘文，緊扣核心文旨 Compromise。寫一次你和家人或朋友發生「意見不合」的經驗。你們是怎麼各退一步、達成「妥協」的？'],
+    ['題目二：一場失控的派對','情境想像與續寫，結合課文 Big Red Lollipop 的情節。想像你受邀去生日派對，有人很貪心或惹麻煩，後來發生了什麼事？故事怎麼結束？'],
+    ['題目三：如果我是故事裡的妹妹 Sana','視角改寫，結合課本 p.226 寫作任務與 Q-Matrix 的 How might?。假設你是 Sana，寫一篇日記，說說你為什麼會做出那些舉動，後來又是怎麼決定用「妥協」與「分享」跟姊姊 Rubina 和好。'],
+    ['題目四：無聲圖片大偵探','看圖說故事與推論，結合閱讀策略 Visual Clues。觀察生活或課本漫畫中「兩個人搶同一樣東西」的畫面，運用「視覺線索（臉部表情、動作）」推論發生了什麼事，並寫出他們如何解決衝突。'],
+  ],
+  exam:'寫作會考的三件事：動詞時態對不對、每句有沒有主詞和動詞、結尾有沒有緊扣文旨（分享、同理心、妥協）。',
+  parent:'孩子寫完後，不用逐字改文法。請他用上面三個檢查點，自己當小老師唸給你聽，聽到不通順的地方再請他自己修改。'
+},
+
+{ id:'tp', kind:'tpintro', label:'Test Prep · 考前練習' }
+);
+
+/* ---------- 11 題口試模擬（句子重組） ---------- */
+const QS2 = [
+ { no:1, cat:'Genre', zh:'文體', q:'What is the genre of this text? How do you know?', qzh:'這篇文章的文體（類型）是什麼？你是怎麼知道的？',
+   tiles:['realistic fiction','.','the genre','is','because','act','characters','real people','like'],
+   target:'The genre is realistic fiction because characters act like real people.',
+   azh:'文體是寫實小說，因為裡面的角色表現得像真實的人。',
+   tip:'realistic（寫實的）的字根是 real（真實的），加上字尾變成形容詞，用來修飾後面的名詞 fiction（小說）。act 是「表現、行為舉止」。回到 p.206 的 Genre Study：像真人的角色、主角學到教訓、現實生活中會遇到的難題。',
+   words:[['realistic','寫實的'],['fiction','虛構小說'],['genre','文體'],['act','表現、行為'],['real people','真實的人']],
+   pat:'The genre is ____ because ____. ＝ 文體是…，因為…。',
+   parts:[['The genre','S'],['is','V'],['realistic fiction','O'],['because characters act like real people.','X']],
+   jump:['prep','b1'], parent:'先問中文：「這個故事是真的還是編的？可能發生在現實生活嗎？」再把答案排成英文。' },
+ { no:2, cat:'Point of View', zh:'敘事視角', q:'What point of view is this story told from?', qzh:'這個故事是用哪一種人稱視角來敘述的？',
+   tiles:['from','told','point of view','first-person','the','is','the story','.'],
+   target:'The story is told from the first-person point of view.',
+   azh:'這個故事是用第一人稱的視角來敘述的。',
+   tip:'told 是 tell 的過去分詞；first-person 是用連字號把兩個字連在一起當形容詞用；point of view（簡稱 POV）是「觀點、視角」。be 動詞 is + 過去分詞 told 是「被動語態」，因為故事不會自己說話，而是「被」主角 Rubina 說出來的！課文裡滿滿的 I, me, my，就能推測是第一人稱。',
+   words:[['told','被說出（tell 的過去分詞）'],['first-person','第一人稱的'],['point of view','觀點、視角'],['story','故事'],['from','從']],
+   pat:'be 動詞 + 過去分詞 ＝ 被動語態。The story is told ＝ 故事「被」說出來。',
+   parts:[['The story','S'],['is told','V'],['from the first-person point of view.','X']],
+   jump:['b1','b4'], parent:'請孩子在 p.208 圈出所有的 I。看到 I、me、my 很多，就是第一人稱。' },
+ { no:3, cat:'Working Out Disagreements', zh:'解決爭執的方法', q:'How can people work out disagreements?', qzh:'人們要如何解決意見不合（爭執）？',
+   tiles:['compromising','work out','by','people','disagreements','can','.'],
+   target:'People can work out disagreements by compromising.',
+   azh:'人們可以透過妥協來解決爭執。',
+   tip:'work out 是「解決、想出辦法」。disagreements 拆字魔法：dis-（否定字首，不）＋ agree（同意）＋ -ment（名詞字尾）＝ 不同意的事情！英文裡看到 by + V-ing，通常就是在回答 How（如何、透過什麼方法）。',
+   words:[['work out','解決、想出辦法'],['disagreements','爭執、意見不合'],['compromising','妥協（V-ing）'],['by','透過、用（方法）'],['people','人們']],
+   pat:'by + V-ing ＝ 透過…（回答 How 的方法）。can + 原形動詞 ＝ 可以、能夠。',
+   parts:[['People','S'],['can work out','V'],['disagreements','O'],['by compromising.','X']],
+   jump:['m1','m2','b10'], parent:'問孩子：「怎麼解決兩個人想玩同一個玩具？」答案說出來，就是 by compromising。' },
+ { no:4, cat:'Idiom Meaning', zh:'片語含義', q:'What does it mean when people say, “Let’s meet in the middle”?', qzh:'當人們說「讓我們在中間見面」時，是什麼意思？',
+   tiles:['give up','to','means','a little','it','both sides','compromise','where','.'],
+   target:'It means to compromise where both sides give up a little.',
+   azh:'意思是妥協，也就是雙方各退讓一點點。',
+   tip:'means 是「意思是…」，主詞是單數 It，所以動詞要加 s。both sides 是「雙方」，give up 是「放棄、退讓」。where 引導出一個補充說明的句子，解釋「妥協」到底是什麼情況。',
+   words:[['means','意思是'],['both sides','雙方'],['give up','放棄、退讓'],['a little','一點點'],['compromise','妥協']],
+   pat:'It means to + 原形動詞 ＝ 它的意思是要…。where 後面接一句話，補充說明是什麼情況。',
+   parts:[['It','S'],['means','V'],['to compromise','O'],['where both sides give up a little.','X']],
+   jump:['m1'], parent:'請孩子用兩隻手比出「從兩邊靠近到中間」的動作，再說這句英文。' },
+ { no:5, cat:'Personal Connection', zh:'個人經驗連結', q:'Have you hurt your friend’s feelings before? How did you become friends again?', qzh:'你曾經傷害過朋友的感情嗎？你們後來是怎麼和好的？',
+   tiles:['I','sorry','said','shared','and','snack','my',',','yes','.'],
+   target:'Yes, I said sorry and shared my snack.',
+   azh:'有，我說了對不起，也分享了我的點心。',
+   tip:'said 是 say 的過去式，shared 是 share 的過去式。因為問題用 did 問的是過去發生的事，所以連接詞 and 前後的兩個動詞 said 和 shared 都要穿「過去式」的衣服，這叫做時態一致！這題是你自己的經驗，可以換成自己做過的事。',
+   words:[['said sorry','說對不起'],['shared','分享了'],['snack','點心、零食'],['hurt feelings','傷了感情'],['become friends','成為朋友']],
+   pat:'Yes, I + 過去式動詞 + and + 過去式動詞。＝ 有，我…而且…。',
+   parts:[['Yes,','X'],['I','S'],['said sorry','V'],['and','X'],['shared my snack.','V']],
+   jump:['b11'], parent:'先聽孩子用中文說自己的真實經驗，再看能不能換成 I said sorry / I shared my ... 的句子。' },
+ { no:6, cat:'Central Idea', zh:'中心主旨', q:'What is the central idea of the text?', qzh:'這篇文章的中心主旨是什麼？',
+   tiles:['solve','empathy','and','problems','compromise','the central idea','is that','.'],
+   target:'The central idea is that compromise and empathy solve problems.',
+   alts:['The central idea is that empathy and compromise solve problems.'],
+   azh:'中心主旨是妥協與同理心能解決問題。',
+   tip:'central 是「中心的、核心的」（字根是 center 中心）。empathy 是「同理心」，能夠站在別人的角度想，就像 Rubina 想到妹妹去派對會出糗一樣。that 就像一座橋，把前面的「中心主旨是……」和後面完整的句子連接起來。',
+   words:[['central','中心的'],['empathy','同理心'],['solve','解決'],['problems','問題'],['compromise','妥協']],
+   pat:'The central idea is that + 一個完整的句子。 ＝ 中心主旨是…',
+   parts:[['The central idea','S'],['is','V'],['that compromise and empathy solve problems.','O']],
+   jump:['b10','b11'], parent:'問孩子：「Rubina 為什麼不讓 Sana 出洋相？」答案就是 empathy（同理心）。' },
+ { no:7, cat:'Setting', zh:'故事背景', q:'What is the setting of the story?', qzh:'這個故事的背景（時間與地點）是什麼？',
+   tiles:['at','takes place','Sally’s party','and','Rubina’s house','the story','.'],
+   target:'The story takes place at Rubina’s house and Sally’s party.',
+   alts:['The story takes place at Sally’s party and Rubina’s house.'],
+   azh:'故事發生在 Rubina 的家和 Sally 的派對。',
+   tip:'takes place 是「發生、舉行」，等同於 happens；主詞 The story 是單數，所以 take 要加 s。Rubina’s、Sally’s 是所有格：名字後面加 ’s 表示「……的」。看到小地點（家、派對），介系詞用 at。',
+   words:[['takes place','發生、舉行'],['setting','背景'],['house','房子、家'],['party','派對'],['at','在（小地點）']],
+   pat:'The story takes place at + 地點。 ＝ 故事發生在…',
+   parts:[['The story','S'],['takes place','V'],['at Rubina’s house and Sally’s party.','X']],
+   jump:['b1','b3'], parent:'請孩子說說故事去過哪些地方：家、學校、Sally 家的派對。' },
+ { no:8, cat:'Author’s Purpose', zh:'作者寫作目的', q:'What is the author’s purpose for writing this text? How do you know?', qzh:'作者寫這篇文章的目的是什麼？你是怎麼知道的？',
+   tiles:['a funny story','with','to entertain','is','the author’s purpose','readers','.'],
+   target:'The author’s purpose is to entertain readers with a funny story.',
+   azh:'作者的目的是用一個有趣的故事來娛樂讀者。',
+   tip:'author 是作者，purpose 是目的，entertain 是「娛樂、使人快樂」，還記得 P.I.E. 嗎？E 就是 Entertain！readers 是 read（閱讀）加上 -er，變成「閱讀的人」。',
+   words:[['author','作者'],['purpose','目的'],['entertain','娛樂'],['readers','讀者'],['funny','好笑的']],
+   pat:'The author’s purpose is to + 原形動詞。 ＝ 作者的目的是要…。P.I.E. ＝ Persuade、Inform、Entertain。',
+   parts:[['The author’s purpose','S'],['is','V'],['to entertain readers','O'],['with a funny story.','X']],
+   jump:['b5','b8'], parent:'用 P.I.E. 玩猜謎：這個故事讓你笑了嗎？有，就是 Entertain。' },
+ { no:9, cat:'Topic', zh:'文章主題', q:'What is the topic of this text? How do you know?', qzh:'這篇文章的主題是什麼？你是怎麼知道的？',
+   tiles:['sisters','getting along','is','the topic','about','and','compromise','.'],
+   target:'The topic is about compromise and sisters getting along.',
+   alts:['The topic is about sisters getting along and compromise.'],
+   azh:'主題是關於妥協，以及姊妹之間的相處。',
+   tip:'topic 是「主題」（用漏斗過濾法找出大方向）。get along 是「相處融洽」，放在介系詞 about 後面，動詞要變成 getting。',
+   words:[['topic','主題'],['sisters','姊妹'],['getting along','相處融洽'],['about','關於'],['compromise','妥協']],
+   pat:'The topic is about + 名詞片語。 ＝ 主題是關於…。介系詞後面的動詞要加 -ing。',
+   parts:[['The topic','S'],['is','V'],['about compromise and sisters getting along.','X']],
+   jump:['b1','b11'], parent:'提醒孩子：Topic 是一個短語，Central Idea 才是完整的一句話。' },
+ { no:10, cat:'Plot', zh:'情節：開頭、中間、結尾', q:'What happens at the beginning, middle, and end of the story?', qzh:'故事的開頭、經過和結尾分別發生了什麼事？',
+   tiles:['gives','a green lollipop','in the end','Rubina','Sana',',','.'],
+   target:'In the end, Sana gives Rubina a green lollipop.',
+   ans:'At the beginning, Sana eats Rubina’s red lollipop.\nIn the middle, Sana is invited to a party.\nIn the end, Sana gives Rubina a green lollipop.',
+   azh:'一開始，Sana 吃了 Rubina 的紅棒棒糖。\n中間，Sana 受邀去參加派對。\n最後，Sana 給了 Rubina 一支綠色的棒棒糖。',
+   tip:'At the beginning / In the middle / In the end 是說故事最棒的「時間順序轉折詞」，幫讀者把故事切成三塊！is invited 是被動動詞（被邀請）。最後一句：give + 人 + 物 是英文裡超級重要的「授與動詞」句型（給某人某物），也就是 Sana 給了 Rubina 一支綠色棒棒糖。這裡的排列題只考最後一句，完整答案是三段。',
+   words:[['at the beginning','一開始'],['in the middle','在中間'],['in the end','最後'],['gives','給（三單）'],['is invited','被邀請']],
+   pat:'give + 人 + 物 ＝ 給某人某物。In the end, ... ＝ 最後，…（時間順序轉折詞）。',
+   parts:[['In the end,','X'],['Sana','S'],['gives','V'],['Rubina','O'],['a green lollipop.','O']],
+   jump:['b3','b9','b11'], parent:'用三根手指：開頭、中間、結尾，孩子每指一根就說一句。' },
+ { no:11, cat:'Main Characters', zh:'主要角色', q:'Who are the main characters in the story?', qzh:'故事中的主要角色是誰？',
+   tiles:['and','the main','characters','Rubina',',','are','Sana',',','Ami','.'],
+   target:'The main characters are Rubina, Sana, and Ami.',
+   azh:'主要角色是 Rubina、Sana 和 Ami。',
+   tip:'main 是「主要的」，characters 是「故事中的角色」，因為有三位，所以字尾一定要加 s。標點符號小祕密：英文裡列出三個以上的東西（A, B, and C）時，前面兩個用逗號隔開，最後一個前面要加上 and（美式英文裡，and 前面通常也會放一個逗號）。',
+   words:[['main','主要的'],['characters','角色（複數）'],['Rubina','主角，也是說故事的人'],['Sana','妹妹'],['Ami','媽媽（烏爾都語）']],
+   pat:'列舉三個以上用逗號：A, B, and C。 複數主詞 The main characters + 複數 be 動詞 are。',
+   parts:[['The main characters','S'],['are','V'],['Rubina, Sana, and Ami.','O']],
+   jump:['b1','b7'], parent:'請孩子說出每個角色是誰：Rubina（姊姊）、Sana（妹妹）、Ami（媽媽）。' },
+];
+/* 第 11 題：三個人名可以任意順序 */
+(() => {
+  const q = QS2[10], n = ['Rubina','Sana','Ami'], out = [];
+  const perm = (a, b = []) => a.length ? a.forEach((x, i) => perm(a.filter((_, j) => j !== i), [...b, x])) : out.push(b);
+  perm(n); q.alts = out.map(p => `The main characters are ${p[0]}, ${p[1]}, and ${p[2]}.`).filter(s => s !== q.target);
+})();
+/* ============ 第三課：Gingerbread for Liberty!（pp.242–260） ============ */
+const SPREADS3 = [
+{ id:'cover', kind:'cover', label:'封面與使用說明' },
+
+/* ---------- 課前準備 p.242 ---------- */
+{ id:'prep', kind:'read', label:'課前準備 · p.242', art:'prep',
+  left:[
+    {k:'h', s:[T('Prepare to Read','準備閱讀')]},
+    {k:'label', text:'Genre Study 文體學習'},
+    {k:'p', s:[T('Biographies tell about real people’s lives.','傳記是在講述真實人物的人生。'),
+            T('As you read Gingerbread for Liberty!, look for:','閱讀《為了自由的薑餅！》時，請留意：')]},
+    {k:'li', s:[T('information about why this person is important','這個人為什麼重要的資訊')]},
+    {k:'li', s:[T('the place where the person lived, worked, or traveled','這個人居住、工作或旅行的地方')]},
+    {k:'li', s:[T('ways the person has made a difference','這個人如何帶來改變、做出貢獻')]},
+    {k:'label', text:'Set a Purpose 設定閱讀目的'},
+    {k:'p', s:[T('Read to find out the most important ideas in each part.','閱讀時，找出每個部分最重要的想法。'),
+            T('Then synthesize, or put together these ideas in your mind, to find out what the text really means to you.','接著進行統整，也就是把這些想法在腦中組合起來，找出這篇文章真正想告訴你的意思。')]},
+    {k:'label', text:'Power Words 重點單字'},
+    {k:'words', s:[T('booming','洪亮的、轟隆作響的'),T('skill','技巧、本領'),T('threatening','威脅（要…）'),T('persuade','說服')]},
+    {k:'label', text:'Meet the Author 認識作者'},
+    {k:'p', s:[T('Meet Mara Rockliff.','認識作者 Mara Rockliff。')]},
+  ],
+  vocab:[
+    ['biography','baɪˈɑɡrəfi','傳記','I read a biography of a leader.','biographies|biography'],
+    ['genre','ˈʒɑnrə','文體、類型','The genre is biography.','genre'],
+    ['booming','ˈbumɪŋ','洪亮的、轟隆響的','He has a booming voice.','booming'],
+    ['skill','skɪl','技巧、本領','Baking takes skill.','skill'],
+    ['threaten','ˈθrɛtn','威脅','The storm threatens the town.','threatening|threaten'],
+    ['persuade','pɚˈsweɪd','說服','I persuade my friend to share.','persuade'],
+    ['synthesize','ˈsɪnθəˌsaɪz','統整、綜合','Synthesize the ideas in your mind.','synthesize'],
+    ['difference','ˈdɪfrəns','差別；改變','You can make a difference.','difference'],
+  ],
+  phrases:[
+    ['make a difference','帶來改變、做出貢獻'],['real people’s lives','真實人物的人生'],['look for ...','尋找…'],
+    ['put together','組合、拼湊起來'],['find out','找出、查明'],['what the text really means','文章真正的意思'],
+  ],
+  patterns:[
+    ['Biographies tell about real people’s lives.',[['Biographies','S'],['tell about','V'],['real people’s lives.','O']],'tell about ＝ 講述、描寫。real people’s lives ＝ 真人的人生（所有格 ’s）。'],
+    ['Read to find out the most important ideas.',[['Read','V'],['to find out','X'],['the most important ideas.','O']],'to + 原形動詞 ＝ 為了…。這裡說明「為什麼要閱讀」。'],
+  ],
+  verbs:[['tell','told','told','告訴、講述'],['read','read','read','閱讀（三態拼法一樣，過去式唸 /rɛd/）'],['find','found','found','找到'],['make','made','made','做、使'],['live','lived','lived','居住'],['work','worked','worked','工作'],['travel','traveled','traveled','旅行']],
+  exam:'Q1 文體：biography（傳記）就在這一頁，記住三個找線索：這個人為什麼重要、地點、做了什麼貢獻。Q5 作者目的：先複習 P.I.E.。',
+  parent:'問孩子：「傳記是在寫真人真事，還是編出來的故事？」答案是「真人真事」。再請他記住三個字：biography。'
+},
+
+/* ---------- 課文 1：pp.243–246 ---------- */
+{ id:'g1', kind:'read', label:'課文 1 · pp.243–246', art:'bakery',
+  left:[
+    {k:'title', s:[T('Gingerbread for Liberty!','為了自由的薑餅！')], by:'by Mara Rockliff · illustrated by Vincent X. Kirsch'},
+    {k:'p', s:[T('Everyone in Philadelphia knew the gingerbread baker.','費城的每個人都認識那位做薑餅的麵包師傅。'),
+            T('His honest face … his booming laugh …','他誠實的臉龐……他洪亮的笑聲……')]},
+    {k:'p', s:[T('And, of course, his gingerbread—the best in all the thirteen colonies.','當然還有他的薑餅——是十三個殖民地裡最棒的。'),
+            T('His big, floury hands turned out castles and queens, horses and cows and hens—each detail drawn in sweet, buttery icing with the greatest skill and care.','他沾滿麵粉的大手做出城堡和皇后、馬、牛和母雞——每個細節都用甜甜的奶油糖霜畫出來，既有高超的技巧，又非常細心。'),
+            T('And yet, despite his care, there always seemed to be some broken pieces for the hungry children who followed their noses to the spicy-smelling shop.','不過，儘管他很細心，總是會有一些破掉的碎片，留給那些循著香味走進這間飄著香料味的小店的飢餓孩子。'),
+            T('“No empty bellies here!” the baker bellowed.','「這裡沒有空空的肚子！」麵包師傅大聲說。','Baker'),
+            T('“Not in my America!”','「在我的美國，不可以！」','Baker')]},
+    {k:'p', s:[T('For once upon a time, he had been young and hungry too.','因為很久很久以前，他自己也曾經年輕又挨餓。'),
+            T('And he had followed his own nose to this New World, where a hard-working young man could open his own bakery and always have enough to eat.','他也曾循著自己的鼻子來到這個新世界，在這裡，努力工作的年輕人可以開自己的麵包店，而且永遠都有足夠的食物可以吃。')]},
+  ],
+  vocab:[
+    ['honest','ˈɑnɪst','誠實的','He has an honest face.','honest'],
+    ['booming','ˈbumɪŋ','洪亮的','A booming laugh.','booming'],
+    ['colony','ˈkɑləni','殖民地','There were thirteen colonies.','colonies|colony'],
+    ['floury','ˈflaʊri','沾滿麵粉的','His hands are floury.','floury'],
+    ['skill','skɪl','技巧、本領','It takes skill to bake.','skill'],
+    ['icing','ˈaɪsɪŋ','糖霜','Sweet icing is on the cake.','icing'],
+    ['bellow','ˈbɛloʊ','大聲吼叫','He bellows across the room.','bellowed|bellow'],
+    ['empty belly','ˈɛmpti ˈbɛli','空空的肚子（挨餓）','No empty bellies here.','empty bellies|empty belly'],
+    ['bakery','ˈbeɪkɚi','麵包店','The bakery smells good.','bakery'],
+  ],
+  phrases:[
+    ['the best in all the thirteen colonies','十三個殖民地裡最棒的'],['turn out','做出、生產出'],['with the greatest skill and care','以最高的技巧與最細心的態度'],
+    ['despite his care','儘管他很細心'],['follow one’s nose','循著氣味走'],['once upon a time','很久很久以前'],
+    ['enough to eat','足夠吃的食物'],['No empty bellies here!','這裡沒有人挨餓！'],
+  ],
+  patterns:[
+    ['Everyone in Philadelphia knew the gingerbread baker.',[['Everyone in Philadelphia','S'],['knew','V'],['the gingerbread baker.','O']],'Everyone 是單數，但意思是「所有人」。knew 是 know 的過去式。'],
+    ['His big, floury hands turned out castles and queens.',[['His big, floury hands','S'],['turned out','V'],['castles and queens.','O']],'turn out ＝ 做出、生產出。big, floury 是兩個形容詞，中間用逗號。'],
+    ['“No empty bellies here!” the baker bellowed.',[['“No empty bellies here!”','X'],['the baker','S'],['bellowed.','V']],'引號裡是說的話，後面接「誰 + 說話動詞」。bellow（大聲吼）比 say 更有力。'],
+    ['He had followed his own nose to this New World.',[['He','S'],['had followed','V'],['his own nose','O'],['to this New World.','X']],'had + 過去分詞（followed）＝ 過去完成式，表示「在更早以前就做過的事」。'],
+  ],
+  verbs:[['know','knew','known','知道、認識'],['turn','turned','turned','轉；做出'],['draw','drew','drawn','畫、擠出'],['follow','followed','followed','跟隨'],['bellow','bellowed','bellowed','大聲吼叫'],['open','opened','opened','開（店）'],['have','had','had','有'],['be','was / were','been','是'],['seem','seemed','seemed','似乎']],
+  notes:[['despite 的用法','despite ＋ 名詞 ＝ 儘管…。例：despite his care ＝ 儘管他很細心。後面不能直接接完整句子。'],['“No empty bellies here!”','這是整篇故事反覆出現的一句話，也是麵包師傅的人生信念：不讓任何人挨餓。請孩子記住，後面三次出現時都要聽出來。']],
+  exam:'Q1 文體：this person（這個麵包師傅）是真人，所以是傳記。Q4 背景：Philadelphia（費城）、thirteen colonies（十三個殖民地）都在這一頁。Q6 主題：gingerbread（薑餅）。Q8 人物：the baker 是主角。',
+  parent:'請孩子找一找，這頁的重複句子是哪一句？（No empty bellies here! Not in my America!）。然後問：「麵包師傅為什麼不想讓別人挨餓？」答案在最後一段：他自己也曾經挨餓。'
+},
+
+/* ---------- 課文 2：pp.247–248 ---------- */
+{ id:'g2', kind:'read', label:'課文 2 · pp.247–248', art:'wife',
+  left:[
+    {k:'p', s:[T('But now, something was in the air (besides the smell of baking gingerbread).','但是現在，空氣中有別的味道（除了烤薑餅的香氣之外）。'),
+            T('Newspapers shouted REVOLUTION! INDEPENDENCE! LIBERTY!','報紙大喊：革命！獨立！自由！'),
+            T('Boys rolled up blankets, shouldered guns, and kissed mothers goodbye.','男孩們捲起毯子、扛起槍，親吻媽媽道別。')]},
+    {k:'p', s:[T('The baker hung his apron up.','麵包師傅把圍裙掛起來。'),
+            T('He dusted flour off his hands.','他拍掉手上的麵粉。'),
+            T('“Where are you going?” asked his wife.','「你要去哪裡？」他的太太問。'),
+            T('“To fight for my America!” he said.','「去為我的美國戰鬥！」他說。'),
+            T('“I was a soldier once.”','「我以前當過兵。」'),
+            T('“That was long ago and far away,” she said.','「那是很久以前、很遠的地方的事了，」她說。'),
+            T('“You are a baker now, and you are old and fat.”','「你現在是麵包師傅，而且你又老又胖。」')]},
+    {k:'p', s:[T('The baker knew his wife was right.','麵包師傅知道太太說得對。'),
+            T('But he knew also that he loved his country.','但他也知道，自己深愛這個國家。'),
+            T('Somehow, he had to find a way to help.','不管怎樣，他都得想辦法幫上忙。'),
+            T('He packed his bags and went to join General Washington.','他收拾行李，去加入華盛頓將軍。')]},
+  ],
+  vocab:[
+    ['revolution','ˌrɛvəˈluʃən','革命','The revolution began in 1775.','revolution'],
+    ['independence','ˌɪndɪˈpɛndəns','獨立','They wanted independence.','independence'],
+    ['liberty','ˈlɪbɚti','自由','Liberty means being free.','liberty'],
+    ['shoulder','ˈʃoʊldɚ','扛在肩上','He shouldered his bag.','shouldered|shoulder'],
+    ['apron','ˈeɪprən','圍裙','He wears an apron.','apron'],
+    ['soldier','ˈsoʊldʒɚ','士兵','My grandpa was a soldier.','soldiers?'],
+    ['country','ˈkʌntri','國家','He loves his country.','country'],
+    ['join','dʒɔɪn','加入','I join the team.','join'],
+    ['General','ˈdʒɛnrəl','將軍','The general leads the army.','General'],
+  ],
+  phrases:[
+    ['something was in the air','空氣中有某種氣氛（有大事要發生）'],['roll up','捲起來'],['kiss ... goodbye','親吻道別'],
+    ['hang up','掛起來'],['dust off','拍掉（灰塵、麵粉）'],['long ago and far away','很久以前、很遠的地方'],
+    ['find a way to + 動詞','想辦法做…'],['pack one’s bags','收拾行李'],
+  ],
+  patterns:[
+    ['Newspapers shouted REVOLUTION! INDEPENDENCE! LIBERTY!',[['Newspapers','S'],['shouted','V'],['REVOLUTION! INDEPENDENCE! LIBERTY!','O']],'報紙不會真的喊叫，這是比喻：報紙上到處都是這些大字標題。'],
+    ['Boys rolled up blankets, shouldered guns, and kissed mothers goodbye.',[['Boys','S'],['rolled up blankets, shouldered guns, and kissed mothers goodbye.','V']],'一個主詞接三個動作，用逗號連接，最後一個前面加 and：A, B, and C。'],
+    ['You are a baker now, and you are old and fat.',[['You','S'],['are','V'],['a baker now,','O'],['and you are old and fat.','X']],'兩個完整的句子用 and 連接。old and fat 是兩個形容詞。'],
+    ['Somehow, he had to find a way to help.',[['Somehow,','X'],['he','S'],['had to find','V'],['a way to help.','O']],'had to + 原形動詞 ＝ 不得不、必須。a way to help ＝ 幫忙的方法。'],
+  ],
+  verbs:[['shout','shouted','shouted','大喊'],['roll','rolled','rolled','捲、滾'],['kiss','kissed','kissed','親吻'],['hang','hung','hung','掛'],['ask','asked','asked','問'],['say','said','said','說'],['go','went','gone','去'],['pack','packed','packed','打包'],['love','loved','loved','愛'],['know','knew','known','知道']],
+  exam:'Q8 人物：the baker 和 his wife 出現了。Q7 開頭：革命開始，麵包師傅決定去幫忙。Q3 主旨：他說 find a way to help，因為他愛他的國家。',
+  parent:'問孩子：「太太說他又老又胖，那他放棄了嗎？」答案：沒有，他想辦法用自己的方式幫忙。這就是這篇故事的重點。'
+},
+
+/* ---------- 課文 3：pp.249–250 ---------- */
+{ id:'g3', kind:'read', label:'課文 3 · pp.249–250', art:'washington',
+  left:[
+    {k:'p', s:[T('“The men are threatening to leave!”','「士兵們威脅說要離開了！」','Voices'),
+            T('“They say the food is terrible!”','「他們說食物難吃死了！」','Voices'),
+            T('“And there isn’t enough of it!”','「而且根本不夠吃！」','Voices')]},
+    {k:'p', s:[T('General Washington did not say the baker was old and fat.','華盛頓將軍沒有說麵包師傅又老又胖。'),
+            T('General Washington was too polite.','華盛頓將軍太有禮貌了。'),
+            T('Anyway, he had other troubles on his mind.','而且，他心裡還有別的麻煩事。')]},
+    {k:'p', s:[T('The baker rolled up his sleeves.','麵包師傅捲起袖子。'),
+            T('“No empty bellies here,” he told General Washington.','「這裡沒有空空的肚子，」他對華盛頓將軍說。','Baker'),
+            T('“Not in my America!”','「在我的美國，不可以！」','Baker'),
+            T('But bigger trouble was on the way.','但是，更大的麻煩正在路上。'),
+            T('Across the ocean . . .','在大海的另一邊……')]},
+  ],
+  vocab:[
+    ['threaten','ˈθrɛtn','威脅','They threaten to leave.','threatening|threaten'],
+    ['leave','liv','離開','I do not want to leave.','leave'],
+    ['terrible','ˈtɛrəbl','很糟的、可怕的','The food is terrible.','terrible'],
+    ['polite','pəˈlaɪt','有禮貌的','She is very polite.','polite'],
+    ['trouble','ˈtrʌbl','麻煩、困難','We have trouble.','troubles|trouble'],
+    ['sleeve','sliv','袖子','Roll up your sleeves.','sleeves'],
+    ['ocean','ˈoʊʃən','海洋','The ship crossed the ocean.','ocean'],
+    ['enough','ɪˈnʌf','足夠的','There is not enough food.','enough'],
+  ],
+  phrases:[
+    ['threaten to + 動詞','威脅要…'],['not enough of it','不夠（吃）'],['too polite','太有禮貌了'],
+    ['on one’s mind','放在心上、掛心'],['roll up one’s sleeves','捲起袖子（準備努力做事）'],['on the way','在路上、即將到來'],
+    ['across the ocean','在海的另一邊'],
+  ],
+  patterns:[
+    ['The men are threatening to leave!',[['The men','S'],['are threatening','V'],['to leave!','O']],'are + V-ing ＝ 現在進行式，表示「正在發生」。threaten to leave ＝ 威脅說要離開。'],
+    ['There isn’t enough of it!',[['There','X'],['isn’t','V'],['enough of it!','S']],'There is / There isn’t ＝ 有／沒有。enough of it ＝ 足夠的量。'],
+    ['General Washington was too polite.',[['General Washington','S'],['was','V'],['too polite.','X']],'too + 形容詞 ＝ 太…了。這裡是用幽默的口氣，說他太客氣，所以沒有說「又老又胖」。'],
+    ['But bigger trouble was on the way.',[['But','X'],['bigger trouble','S'],['was','V'],['on the way.','X']],'bigger 是 big 的比較級，意思是「更大的」。on the way ＝ 正在來的路上。'],
+  ],
+  verbs:[['threaten','threatened','threatened','威脅'],['say','said','said','說'],['leave','left','left','離開'],['tell','told','told','告訴'],['roll','rolled','rolled','捲'],['be','was / were','been','是'],['have','had','had','有']],
+  exam:'Q9 生氣的人會怎麼做：士兵因為食物太少而 threatening to leave（威脅要離開）。Q8 人物：General Washington 出場。Q7 中間：麵包師傅開始幫忙。',
+  parent:'問孩子：「士兵們為什麼生氣？」（食物很難吃，而且不夠吃。）這也是 Q9 可以用的答案。'
+},
+
+/* ---------- 課文 4：pp.251–252 ---------- */
+{ id:'g4', kind:'read', label:'課文 4 · pp.251–252', art:'king',
+  left:[
+    {k:'p', s:[T('“Your Majesty, those Americans think they can beat your Redcoats!”','「陛下，那些美國人以為他們打得贏您的紅衣軍！」'),
+            T('“Ha ha ha ha ha”','「哈哈哈哈哈」'),
+            T('“Hmmph. What if they’re right?”','「哼。如果他們是對的呢？」'),
+            T('“Ha ha ha—”','「哈哈哈——」'),
+            T('“Huh?”','「嗯？」')]},
+    {k:'p', s:[T('The king of England wrote to other rulers and hired THEIR armies to help him squash the revolution.','英國國王寫信給其他統治者，雇用「他們的」軍隊來幫他鎮壓這場革命。')]},
+    {k:'p', s:[T('When the ships sailed into sight, even General Washington turned pale.','當船隊駛進視線時，連華盛頓將軍的臉色都變得蒼白。'),
+            T('Who had ever seen such an army?','誰看過這樣的軍隊？'),
+            T('“Not me.”','「我沒有。」'),
+            T('“Not me.”','「我沒有。」'),
+            T('“Definitely not me!”','「我絕對沒有！」'),
+            T('“I have.”','「我看過。」')]},
+  ],
+  vocab:[
+    ['Majesty','ˈmædʒɪsti','陛下（對國王的尊稱）','Your Majesty, welcome.','Majesty'],
+    ['Redcoats','ˈrɛdˌkoʊts','紅衣軍（英國士兵）','The Redcoats wore red.','Redcoats'],
+    ['beat','bit','打敗','Our team can beat them.','beat'],
+    ['hire','haɪr','雇用','The king hired armies.','hired|hire'],
+    ['rulers','ˈrulɚz','統治者','Rulers lead countries.','rulers?'],
+    ['squash','skwɑʃ','鎮壓、壓扁','They want to squash the revolution.','squash'],
+    ['pale','peɪl','蒼白的','She turned pale.','pale'],
+    ['army','ˈɑrmi','軍隊','An army has many soldiers.','army|armies'],
+    ['definitely','ˈdɛfɪnətli','絕對地、肯定地','I definitely agree.','Definitely'],
+  ],
+  phrases:[
+    ['What if ...?','如果…怎麼辦？'],['turn pale','臉色變蒼白'],['sail into sight','駛進視線'],
+    ['even General Washington','連華盛頓將軍都…'],['such an army','這麼大（這樣）的軍隊'],['squash the revolution','鎮壓革命'],
+    ['hire their armies','雇用他們的軍隊'],
+  ],
+  patterns:[
+    ['The king of England wrote to other rulers.',[['The king of England','S'],['wrote','V'],['to other rulers.','X']],'write to ＝ 寫信給…。wrote 是 write 的過去式。'],
+    ['He hired THEIR armies to help him squash the revolution.',[['He','S'],['hired','V'],['THEIR armies','O'],['to help him squash the revolution.','X']],'to help ＝ 為了幫助…。大寫的 THEIR 表示「是他們的（不是英國自己的）」，要用力唸出來。'],
+    ['What if they’re right?',[['What if','X'],['they','S'],['’re (are)','V'],['right?','X']],'What if ... ? ＝ 萬一…怎麼辦？用來表達擔心或假設。'],
+    ['Who had ever seen such an army?',[['Who','S'],['had ever seen','V'],['such an army?','O']],'had + 過去分詞（seen）＝ 過去完成式。such an army ＝ 這麼驚人的軍隊。'],
+  ],
+  verbs:[['write','wrote','written','寫'],['hire','hired','hired','雇用'],['help','helped','helped','幫助'],['sail','sailed','sailed','航行'],['turn','turned','turned','變成'],['see','saw','seen','看見'],['think','thought','thought','想、認為'],['beat','beat','beaten','打敗']],
+  exam:'Q9 生氣會怎麼做：英國國王生氣了，他選擇用軍隊打仗（squash the revolution）。Q7 中間：麵包師傅面對更大的麻煩。Q8 人物：the king of England 是另一位角色。',
+  parent:'請孩子猜一猜：最後一句 “I have.” 是誰說的？（麵包師傅。因為他來自那些士兵的家鄉。下一頁會說明。）讓孩子自己發現線索。'
+},
+
+/* ---------- 課文 5：pp.254–255 ---------- */
+{ id:'g5', kind:'read', label:'課文 5 · pp.254–255', art:'rowboat',
+  left:[
+    {k:'p', s:[T('“These soldiers come from the land where I was born,” the baker told General Washington.','「這些士兵來自我出生的地方，」麵包師傅對華盛頓將軍說。','Baker'),
+            T('“Let me go speak to them.','「讓我去跟他們談談。'),
+            T('Perhaps I can persuade them we are not their enemies.','也許我能說服他們，我們不是他們的敵人。'),
+            T('Perhaps I can even persuade them to switch sides!”','也許我甚至能說服他們換邊站！」')]},
+    {k:'p', s:[T('“If you are caught, you will be killed,” Washington warned.','「如果你被抓到，你會被殺掉，」華盛頓警告他。','Washington'),
+            T('The baker smiled.','麵包師傅笑了笑。'),
+            T('“Then I must not be caught.”','「那我就不能被抓到。」','Baker')]},
+    {k:'p', s:[T('In the darkest hour of the night, he rowed across the bay.','在夜裡最黑暗的時刻，他划船渡過海灣。'),
+            T('With each dip of his oars, he thought of words to win the soldiers over to the American cause.','每划一下槳，他就想出一些話，好把士兵們爭取到美國這一邊。'),
+            T('REVOLUTION! (splash) Befreiung!','革命！（嘩啦）Befreiung！（德文：解放）'),
+            T('INDEPENDENCE! (splash) Unabhängigkeit!','獨立！（嘩啦）Unabhängigkeit！（德文：獨立）'),
+            T('LIBERTY! (splash, splash) Freiheit!','自由！（嘩啦、嘩啦）Freiheit！（德文：自由）')]},
+  ],
+  vocab:[
+    ['persuade','pɚˈsweɪd','說服','Can you persuade him?','persuade'],
+    ['enemy','ˈɛnəmi','敵人','They are not our enemies.','enemies|enemy'],
+    ['switch sides','swɪtʃ saɪdz','換邊站','Some soldiers switch sides.','switch sides'],
+    ['caught','kɔt','被抓到（catch 的過去分詞）','The thief was caught.','caught'],
+    ['warn','wɔrn','警告','I warn you.','warned|warn'],
+    ['row','roʊ','划（船）','We row the boat.','rowed|row'],
+    ['bay','beɪ','海灣','The ship is in the bay.','bay'],
+    ['oar','ɔr','船槳','Use the oars.','oars?'],
+    ['cause','kɔz','理念、事業','They fight for a cause.','cause'],
+  ],
+  phrases:[
+    ['come from the land where I was born','來自我出生的地方'],['Let me + 動詞','讓我來…'],['switch sides','換邊站'],
+    ['If you are caught','如果你被抓到'],['in the darkest hour of the night','在夜裡最黑暗的時刻'],['with each dip of his oars','每划一下槳'],
+    ['win ... over to','把…爭取到（我方）'],['the American cause','美國的獨立理念'],
+  ],
+  patterns:[
+    ['Perhaps I can persuade them we are not their enemies.',[['Perhaps','X'],['I','S'],['can persuade','V'],['them','O'],['we are not their enemies.','X']],'Perhaps ＝ 也許。can + 原形動詞 ＝ 能夠。persuade 後面接人，再接要說服的內容。'],
+    ['If you are caught, you will be killed.',[['If you are caught,','X'],['you','S'],['will be killed.','V']],'If ... , ... will ... ＝ 如果…就會…。are caught 和 will be killed 都是被動語態（be + 過去分詞）。'],
+    ['Then I must not be caught.',[['Then','X'],['I','S'],['must not be caught.','V']],'must not ＝ 絕對不可以。must not be caught ＝ 不可以被抓到。'],
+    ['He rowed across the bay.',[['He','S'],['rowed','V'],['across the bay.','X']],'row ＝ 划船。across ＝ 橫越、穿過。'],
+  ],
+  verbs:[['persuade','persuaded','persuaded','說服'],['catch','caught','caught','抓到'],['kill','killed','killed','殺死'],['warn','warned','warned','警告'],['smile','smiled','smiled','微笑'],['row','rowed','rowed','划（船）'],['think','thought','thought','想'],['win','won','won','贏、爭取'],['bear','bore','born / borne','生（出生用 be born）']],
+  notes:[['Perhaps I can ...','Perhaps ＝ Maybe ＝ 也許。用來提出一個可能的方法，語氣客氣。回答 Q10、Q11 時，可以用 Perhaps … 來說「也許可以先…」。'],['三個德文單字','Befreiung、Unabhängigkeit、Freiheit 是德文的「解放、獨立、自由」。這說明麵包師傅是從德國那邊來的，所以他能用士兵們的語言說話。']],
+  exam:'Q3 主旨：麵包師傅用 persuade（說服）而不是打仗來幫助國家。Q10 為什麼要冷靜：他在夜裡冷靜地想好要說的話。Q11 冷靜之後怎麼辦：talk to them（去跟他們談）。',
+  parent:'請孩子用中文說：「麵包師傅想去做什麼？」（去說服敵方的士兵換邊。）再問：「他用武器嗎？」（沒有，他用的是語言。）'
+},
+
+/* ---------- 課文 6：pp.256–257 ---------- */
+{ id:'g6', kind:'read', label:'課文 6 · pp.256–257', art:'soldiers',
+  left:[
+    {k:'p', s:[T('But when he looked into their hungry faces, all his fine words slipped away.','但是當他看著他們飢餓的臉，所有漂亮的話都溜走了。'),
+            T('What could he say?','他還能說什麼？'),
+            T('“I have a bakeshop . . .” he began.','「我有一間麵包店……」他開口說。','Baker')]},
+    {k:'p', s:[T('As the baker spoke, the soldiers seemed to see the fragrant steam rising from his ovens.','麵包師傅一邊說，士兵們好像看見了他烤箱裡飄出來的香噴噴熱氣。'),
+            T('They could almost smell the spicy gingerbread, and taste the sweet, buttery icing on their tongues.','他們幾乎可以聞到香料薑餅的氣味，也嚐到舌尖上甜甜的奶油糖霜。')]},
+    {k:'p', s:[T('“And you always have enough to eat?” the soldiers asked.','「你們那裡總是有足夠的食物可以吃嗎？」士兵們問。','Soldiers'),
+            T('“No empty bellies here,” the baker told them.','「這裡沒有空空的肚子，」麵包師傅告訴他們。','Baker'),
+            T('“Not in my America!”','「在我的美國，不可以！」','Baker'),
+            T('Across the ocean . . .','在大海的另一邊……')]},
+  ],
+  vocab:[
+    ['slip away','slɪp əˈweɪ','溜走、消失','His words slipped away.','slipped away|slip away'],
+    ['fine','faɪn','精采的、漂亮的','He has fine words.','fine'],
+    ['bakeshop','ˈbeɪkʃɑp','麵包店','I have a bakeshop.','bakeshop'],
+    ['fragrant','ˈfreɪɡrənt','香噴噴的','Fragrant bread smells good.','fragrant'],
+    ['steam','stim','蒸氣','Steam rises from the oven.','steam'],
+    ['oven','ˈʌvn','烤箱','The oven is hot.','ovens?'],
+    ['spicy','ˈspaɪsi','有香料味的','The cookie is spicy.','spicy'],
+    ['tongue','tʌŋ','舌頭','Taste it on your tongue.','tongues?'],
+    ['hungry','ˈhʌŋɡri','飢餓的','The hungry soldiers eat.','hungry'],
+  ],
+  phrases:[
+    ['look into their faces','看著他們的臉'],['slip away','溜走、消失'],['seem to + 動詞','似乎…'],
+    ['almost','幾乎'],['on their tongues','在他們的舌尖上'],['enough to eat','足夠吃的東西'],
+    ['As the baker spoke','麵包師傅一邊說的時候'],
+  ],
+  patterns:[
+    ['But when he looked into their hungry faces, all his fine words slipped away.',[['But when he looked into their hungry faces,','X'],['all his fine words','S'],['slipped away.','V']],'when ＝ 當…的時候，引導出時間。主句是 all his fine words slipped away。'],
+    ['The soldiers seemed to see the fragrant steam.',[['The soldiers','S'],['seemed to see','V'],['the fragrant steam.','O']],'seem to + 原形動詞 ＝ 好像、似乎…。他們其實沒有真的看到，只是想像。'],
+    ['They could almost smell the spicy gingerbread.',[['They','S'],['could almost smell','V'],['the spicy gingerbread.','O']],'could ＝ 能夠（can 的過去式）。almost ＝ 幾乎。放在動詞前面。'],
+    ['And you always have enough to eat?',[['And','X'],['you','S'],['always have','V'],['enough to eat?','O']],'always 放在 have 前面，表示「總是」。這是用語調變成問句的直述句。'],
+  ],
+  verbs:[['look','looked','looked','看'],['slip','slipped','slipped','滑、溜走'],['begin','began','begun','開始'],['speak','spoke','spoken','說話'],['see','saw','seen','看見'],['smell','smelled','smelled','聞、有味道'],['taste','tasted','tasted','嚐'],['eat','ate','eaten','吃'],['rise','rose','risen','上升']],
+  exam:'Q3 主旨：麵包師傅沒有講大道理，而是用自己的真實故事和薑餅，感動了士兵。Q11 冷靜之後怎麼辦：talk（談話）、listen（聽彼此）、share（分享）。Q6 主題：gingerbread。',
+  parent:'問孩子：「為什麼士兵們聽著聽著就被打動了？」答案：因為他們餓，而且麵包師傅說的是溫暖、真實的事（有東西吃）。請孩子聞一聞廚房裡的食物，想像一下那種感覺。'
+},
+
+/* ---------- 課文 7：pp.258–260 ---------- */
+{ id:'g7', kind:'read', label:'課文 7 · pp.258–260', art:'crumb',
+  left:[
+    {k:'p', s:[T('“Your Majesty, we just don’t understand!”','「陛下，我們真的不明白！」'),
+            T('“These hired armies seem to . . . disappear!”','「這些雇來的軍隊好像……消失了！」')]},
+    {k:'p', s:[T('Many, many loaves—and battles!—later . . .','很多很多條麵包——和很多場戰役——之後……'),
+            T('THE BRITISH HAVE SURRENDERED! THE REVOLUTION IS OVER! WE WON!','英國人投降了！革命結束了！我們贏了！'),
+            T('“My work is done!” the baker cried.','「我的工作完成了！」麵包師傅大喊。','Baker'),
+            T('Washington said, “Not quite.”','華盛頓說：「還沒有完全。」','Washington')]},
+    {k:'p', s:[T('Did he bake the British soldiers gingerbread for their dessert?','他有沒有烤薑餅給英國士兵當甜點呢？'),
+            T('We’ll never know . . .','我們永遠不會知道……'),
+            T('They didn’t leave a crumb.','因為他們一點碎屑都沒有留下。'),
+            T('“A gift from General Washington”','「華盛頓將軍的禮物」'),
+            T('“and his baker”','「和他的麵包師傅送的」')]},
+  ],
+  vocab:[
+    ['disappear','ˌdɪsəˈpɪr','消失','The cookie disappears.','disappear'],
+    ['loaf','loʊf','一條麵包（loaves 是複數）','He baked a loaf.','loaves|loaf'],
+    ['battle','ˈbætl','戰役','They won the battle.','battles?'],
+    ['surrender','səˈrɛndɚ','投降','The army surrendered.','surrendered|surrender'],
+    ['British','ˈbrɪtɪʃ','英國的','The British soldiers left.','British'],
+    ['dessert','dɪˈzɝt','甜點','We eat cake for dessert.','dessert'],
+    ['crumb','krʌm','碎屑','Not a crumb is left.','crumb'],
+    ['gift','ɡɪft','禮物','This is a gift.','gift'],
+    ['understand','ˌʌndɚˈstænd','明白、了解','I do not understand.','understand'],
+  ],
+  phrases:[
+    ['seem to disappear','好像消失了'],['many, many loaves later','很多條麵包之後'],['The revolution is over','革命結束了'],
+    ['for dessert','當作甜點'],['We’ll never know','我們永遠不會知道'],['not a crumb','一點碎屑都沒有'],
+    ['a gift from ... and his baker','來自…和他的麵包師傅的禮物'],['Not quite.','還沒有完全。'],
+  ],
+  patterns:[
+    ['These hired armies seem to disappear!',[['These hired armies','S'],['seem to disappear!','V']],'hired armies ＝ 被雇來的軍隊。seem to + 原形動詞 ＝ 似乎…。'],
+    ['The British have surrendered.',[['The British','S'],['have surrendered.','V']],'have + 過去分詞（surrendered）＝ 現在完成式，表示「已經完成」。'],
+    ['Did he bake the British soldiers gingerbread for their dessert?',[['Did','X'],['he','S'],['bake','V'],['the British soldiers gingerbread','O'],['for their dessert?','X']],'Did + 主詞 + 原形動詞 ＝ 過去式疑問句。bake someone something ＝ 烤東西給某人。'],
+    ['They didn’t leave a crumb.',[['They','S'],['didn’t leave','V'],['a crumb.','O']],'didn’t + 原形動詞 ＝ 過去式否定。這是一句幽默的結尾：吃得太乾淨，連碎屑都沒有。'],
+  ],
+  verbs:[['understand','understood','understood','明白'],['disappear','disappeared','disappeared','消失'],['surrender','surrendered','surrendered','投降'],['win','won','won','贏'],['cry','cried','cried','大喊、哭'],['say','said','said','說'],['bake','baked','baked','烘烤'],['know','knew','known','知道'],['leave','left','left','留下、離開']],
+  notes:[['Not quite.','華盛頓說 “Not quite.”（還沒有完全。）是在回答 “My work is done!”。意思是：你的功勞還沒有結束，我們還要感謝你。最後一頁的旗子上寫著 “and his baker”，就是在感謝他。']],
+  exam:'Q7 結尾：英國人投降，革命結束，麵包師傅用薑餅幫助美國贏得勝利。Q3 主旨：每個人都可以用自己的方式幫助國家。Q5 作者目的：最後一頁有幽默的玩笑（They didn’t leave a crumb.）。',
+  parent:'請孩子用自己的話，從頭到尾說一遍這個故事（用中文也可以）：麵包師傅怎麼開始、怎麼幫忙、怎麼結束。這就是 Q7 要的答案。'
+},
+
+{ id:'tp', kind:'tpintro', label:'Test Prep · 考前練習' },
+];
+
+/* 11 題口試模擬（題目與 Working with Others 相同，答案改寫成這個故事） */
+const QS3 = [
+ { no:1, cat:'Genre', zh:'文體', q:'What is the genre of this text? How do you know?', qzh:'這篇文章的文體是什麼？你怎麼知道？',
+   frame:'The genre is {{biography}}. I know because it tells about a real {{person}}’s life, the {{place}} where he lived and worked, and the way he made a {{difference}}.',
+   bank:['biography','person','place','difference','fiction','poem'],
+   ans:'The genre is biography. I know because it tells about a real person’s life, the place where he lived and worked (Philadelphia), and the way he made a difference.',
+   azh:'這篇文章的文體是傳記。我知道是因為它講述一個真實人物的人生、他居住和工作的地方（費城），以及他如何帶來改變、做出貢獻。',
+   tip:'請孩子翻回 p.242 的 Genre Study，那裡寫了傳記要找的三個線索：這個人為什麼重要、他住或工作的地方、他帶來的改變。再回頭看課文：麵包師傅（人）、費城（地方）、幫助華盛頓贏得戰爭（改變）。',
+   words:[['biography','傳記'],['genre','文體'],['real person','真實人物'],['place','地方'],['make a difference','帶來改變']],
+   pat:'I know because ... ＝ 我知道是因為…（回答「你怎麼知道？」的標準句型）。',
+   jump:['prep','g1'], parent:'先問孩子：「這是編出來的童話，還是真人真事？」再請他說出三個證據。'},
+ { no:2, cat:'Point of View', zh:'敘事視角', q:'What point of view is this story told from?', qzh:'這個故事是用誰的視角寫的？',
+   frame:'This text is told from the {{third}}-person point of view. The author uses words like “{{he}}” and “the baker” to tell about the baker, but never says “{{I}}”.',
+   bank:['third','he','I','first','second','you'],
+   ans:'This text is told from the third-person point of view. The author uses words like “he” and “the baker” to tell about the baker, but never says “I”.',
+   azh:'這篇文章是用第三人稱的視角寫的。作者用「他（he）」和「麵包師傅（the baker）」這樣的字來講述麵包師傅的故事，而且從來不說「我（I）」。',
+   tip:'請孩子看 p.245 和 p.247：He had been young and hungry too. / He dusted flour off his hands. 作者是站在旁邊看故事的人，用 he、his、the baker 來說，所以是第三人稱。引號裡的 I（例如 “I was a soldier once.”）是角色在說話，不是作者。',
+   words:[['point of view','視角、觀點'],['third person','第三人稱'],['author','作者'],['the baker','麵包師傅'],['tell about','講述']],
+   pat:'第一人稱 I / we；第二人稱 you；第三人稱 he / she / they。',
+   jump:['g1','g2'], parent:'遊戲：請孩子在第 1 段圈出所有的 he 和 his，數數看有幾個。'},
+ { no:3, cat:'Central Idea', zh:'中心主旨', q:'What is the central idea of the text?', qzh:'這篇文章的中心主旨是什麼？',
+   frame:'The central idea is that anyone can {{help}} their country in their own way. The baker used his {{baking}} and kindness to feed hungry soldiers and {{persuade}} the enemy soldiers to switch {{sides}}.',
+   bank:['help','baking','persuade','sides','fight','hide'],
+   ans:'The central idea is that anyone can help their country in their own way. The baker used his baking and kindness to feed hungry soldiers and persuade the enemy soldiers to switch sides.',
+   azh:'中心主旨是每個人都可以用自己的方式幫助自己的國家。麵包師傅用他的烘焙和善意，餵飽飢餓的士兵，並說服敵方的士兵換邊。',
+   tip:'中心主旨是「作者最想教我們的一件事」。看 p.248：Somehow, he had to find a way to help.（他得想辦法幫上忙）。他不是將軍，也不年輕，但他用自己最拿手的事（做吃的、善意與說服），幫了大忙。',
+   words:[['central idea','中心主旨'],['in one’s own way','用自己的方式'],['feed','餵食、提供食物'],['persuade','說服'],['switch sides','換邊']],
+   pat:'The central idea is that + 一個完整的句子。 ＝ 中心主旨是…',
+   jump:['g2','g5','g7'], parent:'問孩子：「如果你是麵包師傅，你會用什麼方法幫忙？」讓孩子先用中文想，再套進 can help their country in their own way。'},
+ { no:4, cat:'Setting', zh:'背景', q:'What is the setting of the story?', qzh:'這個故事的背景（時間與地點）是什麼？',
+   frame:'The story takes place in the {{thirteen}} colonies, in the city of {{Philadelphia}}, during the American {{Revolution}} a long time ago. It also moves to the army camp and across the {{ocean}} to England.',
+   bank:['thirteen','Philadelphia','Revolution','ocean','future','desert'],
+   ans:'The story takes place in the thirteen colonies, in the city of Philadelphia, during the American Revolution a long time ago. It also moves to the army camp and across the ocean to England.',
+   azh:'這個故事發生在十三個殖民地、費城這個城市，在很久以前的美國獨立戰爭期間。故事也會移到軍營，以及大海另一邊的英國。',
+   tip:'時間和地點分開問。地點：p.244 Philadelphia、p.245 the thirteen colonies；後面有軍營（General Washington 那邊）和 Across the ocean（英國國王那邊）。時間：Newspapers shouted REVOLUTION! INDEPENDENCE! LIBERTY!（p.247）告訴我們是獨立戰爭的時候。',
+   words:[['setting','背景'],['colonies','殖民地'],['Revolution','革命、獨立戰爭'],['ocean','海洋'],['a long time ago','很久以前']],
+   pat:'takes place in ... ＝ 發生在…。during ＋ 事件 ＝ 在…期間。',
+   jump:['g1','g2','g3'], parent:'問孩子：「這是現在發生的事，還是很久以前？」「在哪個城市？」只要說出 Philadelphia 和 long ago 就很棒。'},
+ { no:5, cat:'Author’s Purpose', zh:'作者目的', q:'What is the author’s purpose for writing this text? How do you know?', qzh:'作者為什麼要寫這篇文章？你怎麼知道？',
+   frame:'The author’s purpose is to {{inform}} and {{entertain}} readers. I know because the author tells {{true}} information about a baker who helped in the Revolution, and uses funny {{jokes}} and a surprising ending.',
+   bank:['inform','entertain','true','jokes','persuade','scary'],
+   ans:'The author’s purpose is to inform and entertain readers. I know because the author tells true information about a baker who helped in the Revolution, and uses funny jokes and a surprising ending.',
+   azh:'作者的寫作目的是告知並娛樂讀者。我知道是因為作者說了一位在獨立戰爭中幫忙的麵包師傅的真實資訊，也用了好笑的玩笑和出人意料的結尾。',
+   tip:'複習 P.I.E.：Persuade 說服、Inform 告知、Entertain 娛樂。這是傳記，教我們一個歷史上的人物，所以有 Inform；故事裡有幽默的地方（華盛頓太客氣沒說他又老又胖；最後連一點碎屑都沒留下），所以也有 Entertain。如果老師只要一個答案，說 inform 也可以。',
+   words:[['purpose','目的'],['inform','告知'],['entertain','娛樂'],['persuade','說服'],['funny','好笑的']],
+   pat:'P.I.E. ＝ Persuade（說服）、Inform（告知）、Entertain（娛樂）。',
+   jump:['g3','g7'], parent:'用 P.I.E. 猜謎：這個故事有教我們歷史嗎？（Inform）好不好笑？（Entertain）有沒有叫我們一定要買東西或做什麼？（沒有，所以不是 Persuade）。'},
+ { no:6, cat:'Topic', zh:'主題', q:'What is the topic of this text? How do you know?', qzh:'這篇文章的主題是什麼？你怎麼知道？',
+   frame:'The topic is a {{baker}} who helped the American {{Revolution}}. I know because the title is Gingerbread for {{Liberty}}, and the story is about how his {{gingerbread}} helped win the war.',
+   bank:['baker','Revolution','Liberty','gingerbread','king','farmer'],
+   ans:'The topic is a baker who helped the American Revolution. I know because the title is Gingerbread for Liberty, and the story is about how his gingerbread helped win the war.',
+   azh:'文章的主題是一位幫助美國獨立戰爭的麵包師傅。我知道是因為標題是《為了自由的薑餅》，而且故事在講他的薑餅如何幫助贏得戰爭。',
+   tip:'Topic（主題）只要用「一個短語」回答（Central Idea 才是一整句話）。看標題 Gingerbread for Liberty!：Gingerbread（薑餅）＋ Liberty（自由）。再看故事，每一頁都有麵包師傅。',
+   words:[['topic','主題'],['title','標題'],['baker','麵包師傅'],['gingerbread','薑餅'],['liberty','自由']],
+   pat:'Topic 是一個短語；Central Idea 是一個完整的句子。',
+   jump:['g1','g7'], parent:'比一比：「主題」像「這本書在講什麼東西」，「中心主旨」像「作者想教我們什麼」。'},
+ { no:7, cat:'Beginning · Middle · End', zh:'開頭、中間、結尾', q:'What happens at the beginning, middle, and end of the story?', qzh:'故事的開頭、中間、結尾分別發生了什麼事？',
+   frame:'Beginning: A kind baker in Philadelphia makes the best gingerbread, and when the Revolution starts, he decides to {{help}} General Washington.\nMiddle: The king of England hires big armies, so the baker rows across the bay at night and talks to the {{soldiers}} about his bakeshop.\nEnd: The British {{surrender}}, and the baker’s gingerbread helps the Americans {{win}}.',
+   bank:['help','soldiers','surrender','win','lose','sleep'],
+   ans:'Beginning: A kind baker in Philadelphia makes the best gingerbread, and when the Revolution starts, he decides to help General Washington.\nMiddle: The king of England hires big armies, so the baker rows across the bay at night and talks to the soldiers about his bakeshop.\nEnd: The British surrender, and the baker’s gingerbread helps the Americans win.',
+   azh:'開頭：費城有一位善良的麵包師傅，做出最棒的薑餅；革命開始時，他決定去幫華盛頓將軍。\n中間：英國國王雇用了大軍隊，於是麵包師傅在夜裡划船渡過海灣，向士兵們說起他的麵包店。\n結尾：英國人投降了，麵包師傅的薑餅幫助美國人贏得勝利。',
+   tip:'三根手指法。Beginning（pp.244–248）：介紹麵包師傅，革命開始，他決定去幫忙。Middle（pp.249–257）：他去幫華盛頓，英國國王雇了大軍隊，他划船去說服敵軍。End（pp.258–260）：英國投降，革命結束，薑餅的玩笑結尾。',
+   words:[['beginning','開頭'],['middle','中間'],['end','結尾'],['surrender','投降'],['row','划船']],
+   pat:'先寫 Beginning:、Middle:、End: 三個標籤，每個後面各接一句話。',
+   jump:['g1','g2','g5','g7'], parent:'請孩子一根手指一段，用中文說完整個故事，再套進英文。'},
+ { no:8, cat:'Main Characters', zh:'主要人物', q:'Who are the main characters in the story?', qzh:'這個故事的主要人物是誰？',
+   frame:'The main characters are the {{baker}} and General {{Washington}}. The baker’s {{wife}}, the {{king}} of England, and the hungry soldiers are also in the story.',
+   bank:['baker','Washington','wife','king','teacher','dog'],
+   ans:'The main characters are the baker and General Washington. The baker’s wife, the king of England, and the hungry soldiers are also in the story.',
+   azh:'主要人物是麵包師傅和華盛頓將軍。麵包師傅的太太、英國國王，以及飢餓的士兵也出現在故事裡。',
+   tip:'主要人物（main characters）是故事一直出現、最重要的人。麵包師傅幾乎每一頁都有，華盛頓是他最重要的夥伴。太太、國王、士兵只是其他的角色。',
+   words:[['main character','主要人物'],['baker','麵包師傅'],['General Washington','華盛頓將軍'],['wife','太太'],['king','國王']],
+   pat:'A and B ＝ A 和 B。列舉三個以上：A, B, and C。',
+   jump:['g1','g2','g3','g4'], parent:'請孩子數一數故事裡出現了哪些人，再選出最常出現的兩個。'},
+ { no:9, cat:'RCQT 細節題', zh:'閱讀理解（細節）', q:'What do people do when conflicts make them angry?', qzh:'當衝突讓人們生氣時，他們會怎麼做？',
+   frame:'When conflicts make them angry, some people {{fight}} with armies and guns, like the king of England. Some people {{threaten}} to leave, like Washington’s hungry soldiers. But the baker stays {{calm}} and looks for a way to {{help}}.',
+   bank:['fight','threaten','calm','help','sing','sleep'],
+   ans:'When conflicts make them angry, some people fight with armies and guns, like the king of England. Some people threaten to leave, like Washington’s hungry soldiers. But the baker stays calm and looks for a way to help.',
+   azh:'當衝突讓人們生氣時，有些人會用軍隊和槍來打仗，像英國國王。有些人會威脅要離開，像華盛頓飢餓的士兵。但是麵包師傅保持冷靜，並且尋找幫忙的方法。',
+   tip:'這三題（Q9–Q11）和 Working with Others 是同樣的題目，只是這一課要用這個故事的例子回答。Q9：找「生氣的人」。國王因為輸不起而雇用軍隊（p.251）；士兵因為食物不好而 threatening to leave（p.249）；麵包師傅沒有生氣，他想辦法幫忙（p.248）。',
+   words:[['conflict','衝突'],['fight','打仗、爭鬥'],['threaten','威脅'],['calm','冷靜的'],['look for','尋找']],
+   pat:'some people ... . Some people ... . But ... ＝ 有些人…，有些人…，但是…（比較不同做法）。',
+   jump:['g3','g4','g5'], parent:'問孩子：「士兵為什麼生氣？國王為什麼生氣？」兩個答案都可以。麵包師傅和他們有什麼不同？（他保持冷靜。）'},
+ { no:10, cat:'RCQT 推論題', zh:'閱讀理解（推論）', q:'Why is it important to cool down when you feel angry?', qzh:'為什麼生氣的時候要先冷靜下來？',
+   frame:'It is important to cool down because angry people cannot think {{clearly}}. When the baker stays calm, he can think of {{words}} to persuade the soldiers, and he finds a peaceful way to {{solve}} the problem instead of fighting.',
+   bank:['clearly','words','solve','loudly','hit','toys'],
+   ans:'It is important to cool down because angry people cannot think clearly. When the baker stays calm, he can think of words to persuade the soldiers, and he finds a peaceful way to solve the problem instead of fighting.',
+   azh:'冷靜下來很重要，因為生氣的人無法清楚地思考。麵包師傅保持冷靜，所以他能想出話來說服士兵，並找到和平的方法解決問題，而不是打仗。',
+   tip:'帶孩子看 p.255：In the darkest hour of the night, he rowed across the bay. With each dip of his oars, he thought of words…（每划一下槳，就想一些話）。他是冷靜之後才想出辦法的。如果他生氣衝上去打仗，反而會被抓到（p.254：If you are caught, you will be killed）。',
+   words:[['important','重要的'],['cool down','冷靜下來'],['clearly','清楚地'],['peaceful','和平的'],['instead of','而不是']],
+   pat:'It is important to + 動詞 ＝ 做…很重要。because ... ＝ 因為…。instead of + V-ing ＝ 而不是…。',
+   jump:['g5','g6'], parent:'問孩子：「你生氣的時候，能不能想出好辦法？」讓他用自己的經驗，說出為什麼要先冷靜。'},
+ { no:11, cat:'RCQT 統整題', zh:'閱讀理解（統整）', q:'What can people do to solve a conflict after they have calmed down?', qzh:'人們冷靜之後，可以怎麼解決衝突？',
+   frame:'After they have calmed down, people can {{talk}} and {{listen}} to each other and work {{together}}. The baker talks kindly to the soldiers about his {{bakeshop}}, and the hired armies seem to disappear.',
+   bank:['talk','listen','together','bakeshop','yell','hide'],
+   ans:'After they have calmed down, people can talk and listen to each other and work together. The baker talks kindly to the soldiers about his bakeshop, and the hired armies seem to disappear.',
+   azh:'人們冷靜下來之後，可以彼此交談、傾聽，並一起合作。麵包師傅親切地向士兵說起他的麵包店，於是那些雇來的軍隊好像都消失了。',
+   tip:'這題考統整！把課文的行動連起來：冷靜（p.255）→ 去談（p.254 Let me go speak to them）→ 說出真實的事（p.256 I have a bakeshop）→ 問題解決（p.258 These hired armies seem to disappear）。順序是：先冷靜，再談，再解決。',
+   words:[['calmed down','已經冷靜下來'],['talk kindly','親切地說'],['listen','傾聽'],['work together','一起合作'],['disappear','消失']],
+   pat:'After they have calmed down, ... ＝ 在他們冷靜下來之後…。A and B ＝ A 和 B。',
+   jump:['g5','g6','g7'], parent:'請孩子用手指比 1-2-3：先冷靜、再談話、問題解決。每個步驟說一句。'},
 ];
 /* ============ 小工具 ============ */
 const $ = (s, r = document) => r.querySelector(s);
@@ -875,40 +2127,72 @@ const ART = {
 };
 
 /* ============ 狀態 ============ */
-const S = { voiceURI: null, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
-const P = { done: {} };
+const S = { voiceURI: null, bookId: null, view: 'shelf', i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
+const P = { done: {}, pos: {} };
 const PKEY = 'wwo-ebook-v1';
+let BOOK = null, SPREADS = [], QS = [], countable = [];
+const QSTATE = {};
 function loadP() {
   try {
     const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
-    P.done = j.done || {};
-    if (typeof j.i === 'number') S.i = Math.min(Math.max(0, j.i), SPREADS.length - 1);
-    if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI;
+    P.done = j.done || {}; P.pos = j.pos || {};
+    if (!j.pos && typeof j.i === 'number') P.pos.wwo = j.i;
+    if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId;
   } catch (e) { }
 }
-function saveP() { try { localStorage.setItem(PKEY, JSON.stringify({ done: P.done, i: S.i, fs: S.fs, auto: S.auto, slow: S.slow, mode: S.mode, voiceURI: S.voiceURI })); } catch (e) { } }
+function saveP() {
+  try {
+    if (BOOK && S.view === 'book') P.pos[BOOK.id] = S.i;
+    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, mode: S.mode, voiceURI: S.voiceURI }));
+  } catch (e) { }
+}
 
 /* ============ 資料前處理 ============ */
-SPREADS.forEach(sp => {
-  if (sp.kind === 'read') {
-    sp.sents = []; let n = 0;
-    sp.left.forEach(b => { if (b.s) b.s.forEach(x => { x.idx = n++; x.key = sp.id + ':' + x.idx; sp.sents.push(x); }); });
-    const alts = sp.vocab.map(v => v[4] || reEsc(v[0])).sort((a, b) => b.length - a.length);
-    sp._re = new RegExp('\\b(?:' + alts.join('|') + ')\\b', 'gi');
-    sp._vre = sp.vocab.map(v => new RegExp('^(?:' + (v[4] || reEsc(v[0])) + ')$', 'i'));
+const norm = s => s.toLowerCase().replace(/\s+/g, ' ').trim();
+function solveTiles(q) {
+  let rest = norm(q.target).replace(/\s+([.,!?])/g, '$1'); const used = new Set(), order = [];
+  while (rest) {
+    rest = rest.trimStart(); if (!rest) break;
+    let best = -1, bl = 0;
+    q.tiles.forEach((t, i) => { if (used.has(i)) return; const tl = norm(t); if (rest.startsWith(tl) && tl.length > bl) { best = i; bl = tl.length; } });
+    if (best < 0) return null; used.add(best); order.push(best); rest = rest.slice(bl);
   }
-});
-const QSTATE = {};
-QS.forEach(q => {
-  SPREADS.push({ id: 'q' + q.no, kind: 'q', label: `第 ${q.no} 題 · ${q.cat}`, q });
-  q.blanks = [...q.frame.matchAll(/\{\{(.+?)\}\}/g)].map(m => m[1]);
-  q.full = q.frame.replace(/\{\{(.+?)\}\}/g, '$1');
-  let seed = q.no * 7919; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  q.shuf = [...q.bank].sort(() => rnd() - .5);
-  QSTATE[q.no] = { fills: q.blanks.map(() => null), hint: {}, done: !!P.done['q' + q.no] };
-});
+  return used.size === q.tiles.length ? order : null;
+}
+function prepBook(bk) {
+  bk.spreads.forEach(sp => {
+    sp.pid = bk.kp + sp.id;
+    if (sp.kind === 'read') {
+      sp.sents = []; let n = 0;
+      sp.left.forEach(b => { if (b.s) b.s.forEach(x => { x.idx = n++; x.key = sp.pid + ':' + x.idx; sp.sents.push(x); }); });
+      sp.vocab = sp.vocab || [];
+      if (sp.vocab.length) {
+        const alts = sp.vocab.map(v => v[4] || reEsc(v[0])).sort((a, b) => b.length - a.length);
+        sp._re = new RegExp('\\b(?:' + alts.join('|') + ')\\b', 'gi');
+        sp._vre = sp.vocab.map(v => new RegExp('^(?:' + (v[4] || reEsc(v[0])) + ')$', 'i'));
+      } else sp._re = null;
+    }
+  });
+  bk.qs.forEach(q => {
+    q.pid = bk.kp + 'q' + q.no;
+    bk.spreads.push({ id: 'q' + q.no, pid: q.pid, kind: 'q', label: `第 ${q.no} 題 · ${q.cat}`, q });
+    const done = !!P.done[q.pid];
+    if (bk.qmode === 'fill') {
+      q.blanks = [...q.frame.matchAll(/\{\{(.+?)\}\}/g)].map(m => m[1]);
+      q.full = q.frame.replace(/\{\{(.+?)\}\}/g, '$1');
+      q.say = q.full.replace(/\n/g, ' ').replace(/(Beginning|Middle|End):\s*/g, '');
+      let seed = q.no * 7919; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      q.shuf = [...q.bank].sort(() => rnd() - .5);
+      QSTATE[q.pid] = { fills: done ? [...q.blanks] : q.blanks.map(() => null), hint: {}, done };
+    } else {
+      q.full = q.target; q.ans = q.ans || q.target; q.say = q.ans.replace(/\n/g, ' ');
+      q.order = solveTiles(q);
+      QSTATE[q.pid] = { placed: done && q.order ? [...q.order] : [], wrong: false, done };
+    }
+  });
+  bk.countable = bk.spreads.filter(s => s.kind === 'read' || s.kind === 'q');
+}
 const SP = () => SPREADS[S.i];
-const countable = SPREADS.filter(s => s.kind === 'read' || s.kind === 'q');
 
 /* ============ 朗讀（瀏覽器內建語音） ============ */
 let voice = null, token = 0, warned = false;
@@ -1044,18 +2328,19 @@ let toastTm;
 function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTm); toastTm = setTimeout(() => t.classList.remove('show'), ms); }
 function starsHtml(n) { return ICON.star.replace('class="star"', 'class="star' + (n ? ' on' : '') + '"'); }
 function updStars() {
-  const n = countable.filter(s => P.done[s.id]).length;
+  const n = countable.filter(s => P.done[s.pid]).length;
   $('#starCount').innerHTML = ICON.star.replace('class="star"', 'class="star on"') + `<span>${n} / ${countable.length}</span>`;
 }
 function award(id) { if (!P.done[id]) { P.done[id] = 1; saveP(); updStars(); toast('得到一顆星星！'); } }
 
 /* ============ 左頁：課文 ============ */
 function sentHtml(x, sp, extra = '') {
-  const html = esc(x.en).replace(sp._re, m => { const k = sp._vre.findIndex(r => r.test(m)); return `<span class="vw" data-act="vw" data-k="${k}">${m}</span>`; });
-  return `<span class="sent${DB.keys.has(x.key) ? ' rec' : ''}${S.sel === x.idx ? ' sel' : ''}${extra}" id="s-${x.idx}" data-act="sent" data-i="${x.idx}" tabindex="0" role="button">${html}</span>`;
+  let html = esc(x.en);
+  if (sp._re) html = html.replace(sp._re, m => { const k = sp._vre.findIndex(r => r.test(m)); return `<span class="vw" data-act="vw" data-k="${k}">${m}</span>`; });
+  return (x.who ? `<span class="who">${esc(x.who)}</span>` : '') + `<span class="sent${DB.keys.has(x.key) ? ' rec' : ''}${S.sel === x.idx ? ' sel' : ''}${extra}" id="s-${x.idx}" data-act="sent" data-i="${x.idx}" tabindex="0" role="button">${html}</span>`;
 }
 function leftRead(sp) {
-  let h = `<div class="art">${ART[sp.art]()}</div><div class="read">`, inUl = false;
+  let h = `<div class="art">${(ART[sp.art] || ART.prep)()}</div><div class="read">`, inUl = false;
   const closeUl = () => { if (inUl) { h += '</ul>'; inUl = false; } };
   sp.left.forEach(b => {
     if (b.k !== 'li') closeUl();
@@ -1083,7 +2368,7 @@ function updDock() {
       <button class="btn sm" data-act="delrec" ${has ? '' : 'disabled'} aria-label="刪除這句的錄音">${ICON.trash}</button>
       <div class="hint">${x ? '選取的句子：' + esc(x.en.length > 34 ? x.en.slice(0, 34) + '…' : x.en) : '點一句課文，就能聽、能錄那一句。虛線單字可以點來看中文。'}</div>`;
   } else if (sp.kind === 'q') {
-    const q = sp.q, st = QSTATE[q.no], key = 'q' + q.no, has = DB.keys.has(key), isRec = S.recKey === key, ok = st.done || S.reveal[q.no];
+    const q = sp.q, st = QSTATE[q.pid], key = q.pid, has = DB.keys.has(key), isRec = S.recKey === key, ok = st.done || S.reveal[q.pid];
     d.innerHTML = `
       ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="qans" ${ok ? '' : 'disabled'}>${ICON.spk}聽完整答案</button>`}
       ${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec">${ICON.mic}錄我的回答</button>`}
@@ -1098,59 +2383,64 @@ function updDock() {
 const isReg = (b, p, pp) => p === pp && (p === b + 'ed' || p === b + 'd' || (b.endsWith('y') && p === b.slice(0, -1) + 'ied') || p === b + b.slice(-1) + 'ed');
 function rightRead(sp) {
   let h = `<div class="rh"><h2>教師手冊</h2><span>${esc(sp.label)}</span></div>`;
-  h += `<div class="sec parent"><h3>家長怎麼帶 <small>不需要懂英文也能做</small></h3><p>${esc(sp.parent)}</p></div>`;
+  if (sp.parent) h += `<div class="sec parent"><h3>家長怎麼帶 <small>不需要懂英文也能做</small></h3><p>${esc(sp.parent)}</p></div>`;
   h += `<div class="sec"><h3>中英對照翻譯 <small>點一句可以聽</small></h3>${sp.sents.map(x => `<button class="tr" id="t-${x.idx}" data-act="sent" data-i="${x.idx}"><span class="en">${esc(x.en)}</span><span class="zh">${esc(x.zh)}</span></button>`).join('')}</div>`;
-  h += `<div class="sec"><h3>重點單字 <small>點卡片聽單字和例句</small></h3><div class="vgrid">${sp.vocab.map(v => `<button class="vcard" data-act="vspeak" data-w="${esc(v[0])}" data-ex="${esc(v[3])}"><div class="w">${ICON.spk}${esc(v[0])}</div><div class="ipa">/${esc(v[1])}/</div><div class="zh">${esc(v[2])}</div><div class="ex">${esc(v[3])}</div></button>`).join('')}</div></div>`;
-  h += `<div class="sec"><h3>片語與搭配詞</h3><ul class="plist">${sp.phrases.map(p => `<li><span class="e">${esc(p[0])}</span><span class="z">${esc(p[1])}</span></li>`).join('')}</ul></div>`;
-  h += `<div class="sec"><h3>句型結構 <small>顏色幫你看懂句子</small></h3><div class="legend"><span class="r-S">S 主詞（誰）</span><span class="r-V">V 動詞（做什麼）</span><span class="r-O">O 受詞（做的對象）</span><span class="r-X">其他補充</span></div>${sp.patterns.map(p => `<div class="pat"><div class="pt">${esc(p[0])}</div><div class="row">${p[1].map(x => `<span class="r-${x[1]}">${esc(x[0])}</span>`).join('')}</div><div class="note">${esc(p[2])}</div></div>`).join('')}</div>`;
-  h += `<div class="sec"><h3>動詞三態 <small>點一列聽三種變化</small></h3><div class="vtwrap"><table class="vt"><thead><tr><th>原形</th><th>過去式</th><th>過去分詞</th><th>中文</th></tr></thead><tbody>${sp.verbs.map(v => { const irr = !isReg(v[0], v[1], v[2]); return `<tr data-act="vrow" data-t="${esc([v[0], v[1], v[2]].join(', ').replace(/ \/ /g, ', '))}"><td>${esc(v[0])}</td><td class="${irr ? 'irr' : ''}">${esc(v[1])}</td><td class="${irr ? 'irr' : ''}">${esc(v[2])}</td><td class="z">${esc(v[3])}</td></tr>`; }).join('')}</tbody></table></div><div class="legend2"><b>紅色</b>是不規則變化，要特別背。</div></div>`;
-  h += `<div class="sec exam"><h3>考試重點提醒</h3><p>${esc(sp.exam)}</p></div>`;
+  if (sp.vocab.length) h += `<div class="sec"><h3>重點單字 <small>點卡片聽單字和例句</small></h3><div class="vgrid">${sp.vocab.map(v => `<button class="vcard" data-act="vspeak" data-w="${esc(v[0])}" data-ex="${esc(v[3])}"><div class="w">${ICON.spk}${esc(v[0])}</div><div class="ipa">/${esc(v[1])}/</div><div class="zh">${esc(v[2])}</div><div class="ex">${esc(v[3])}</div></button>`).join('')}</div></div>`;
+  if (sp.phrases && sp.phrases.length) h += `<div class="sec"><h3>片語與搭配詞</h3><ul class="plist">${sp.phrases.map(p => `<li><span class="e">${esc(p[0])}</span><span class="z">${esc(p[1])}</span></li>`).join('')}</ul></div>`;
+  if (sp.patterns && sp.patterns.length) h += `<div class="sec"><h3>句型結構 <small>顏色幫你看懂句子</small></h3>${LEGEND}${sp.patterns.map(p => `<div class="pat"><div class="pt">${esc(p[0])}</div><div class="row">${p[1].map(x => `<span class="r-${x[1]}">${esc(x[0])}</span>`).join('')}</div><div class="note">${esc(p[2])}</div></div>`).join('')}</div>`;
+  if (sp.verbs && sp.verbs.length) h += `<div class="sec"><h3>動詞三態 <small>點一列聽三種變化</small></h3><div class="vtwrap"><table class="vt"><thead><tr><th>原形</th><th>過去式</th><th>過去分詞</th><th>中文</th></tr></thead><tbody>${sp.verbs.map(v => { const irr = !isReg(v[0], v[1], v[2]); return `<tr data-act="vrow" data-t="${esc([v[0], v[1], v[2]].join(', ').replace(/ \/ /g, ', '))}"><td>${esc(v[0])}</td><td class="${irr ? 'irr' : ''}">${esc(v[1])}</td><td class="${irr ? 'irr' : ''}">${esc(v[2])}</td><td class="z">${esc(v[3])}</td></tr>`; }).join('')}</tbody></table></div><div class="legend2"><b>紅色</b>是不規則變化，要特別背。</div></div>`;
+  if (sp.notes && sp.notes.length) h += `<div class="sec"><h3>${esc(sp.notesTitle || '文法小教室')}</h3>${sp.notes.map(n => `<div class="nt"><b>${esc(n[0])}</b><p>${nl(n[1])}</p></div>`).join('')}</div>`;
+  if (sp.exam) h += `<div class="sec exam"><h3>考試重點提醒</h3><p>${esc(sp.exam)}</p></div>`;
   return h;
 }
+const LEGEND = '<div class="legend"><span class="r-S">S 主詞（誰）</span><span class="r-V">V 動詞（做什麼）</span><span class="r-O">O 受詞（做的對象）</span><span class="r-X">其他補充</span></div>';
 
 /* ============ 封面與說明 ============ */
-function leftCover() { return `<div class="art">${ART.cover()}</div>`; }
+function leftCover() { return `<div class="art">${ART[BOOK.cover]()}</div>`; }
 function rightCover() {
-  return `<div class="rh"><h2>歡迎翻開這本書</h2><span>給孩子，也給家長</span></div>
+  const fill = BOOK.qmode === 'fill', n = BOOK.qs.length, nn = n === 11 ? '十一' : n;
+  return `<div class="rh"><h2>${esc(BOOK.title)}</h2><span>給孩子，也給家長</span></div>
   <div class="sec"><h3>怎麼使用</h3><ol class="steps">
    <li><span>左頁是課文。翻到新的一頁會自動朗讀，被唸到的句子會變成黃色。</span></li>
    <li><span>點任何一句，可以單獨再聽一次。虛線的單字點一下，會出現中文意思。</span></li>
    <li><span>右頁是教師手冊：中英對照、單字、片語、句型、動詞三態、考試重點。</span></li>
    <li><span>選一句課文，按「錄這句」，錄下自己的聲音。之後選「我的聲音」，翻頁時就會播放孩子自己的朗讀。</span></li>
-   <li><span>最後 12 頁是考前練習，就是段考口試的十一題。填完句子就能得到星星。</span></li>
+   <li><span>最後 ${n + 1} 頁是考前練習，就是段考口試的${nn}題。${fill ? '填完句子就能得到星星。' : '把字塊排成完整的句子，就能得到星星。'}</span></li>
   </ol></div>
   <div class="sec parent"><h3>給家長的一週練習法</h3>
    <p><b>第 1 天：</b>聽。每頁自動朗讀，孩子手指著字跟讀。</p>
    <p><b>第 2 天：</b>讀。孩子錄下自己唸的課文，只需要鼓勵，不用糾正發音。</p>
-   <p><b>第 3 天：</b>填。完成考前練習的句子填空。</p>
-   <p><b>第 4 天：</b>說。孩子對著家長說出十一題答案，並錄下來聽一聽。</p></div>
+   <p><b>第 3 天：</b>${fill ? '填。完成考前練習的句子填空。' : '排。完成考前練習的句子重組。'}</p>
+   <p><b>第 4 天：</b>說。孩子對著家長說出${nn}題答案，並錄下來聽一聽。</p></div>
   <div class="sec"><h3>關於錄音與朗讀</h3>
-   <p>朗讀使用裝置內建的英文語音，之後可以換成老師提供的真人音檔。錄音只存在這台裝置的瀏覽器裡，不會上傳到網路，換裝置或清除瀏覽資料就會消失。若瀏覽器不允許使用麥克風，錄音按鈕會改成讓你選擇用手機錄好的音檔。</p></div>
-  <div class="sec exam"><h3>閱讀順序</h3><div class="jumps"><button class="btn" data-act="goto" data-id="prep">課前準備</button><button class="btn" data-act="goto" data-id="r1">從課文開始</button><button class="btn" data-act="goto" data-id="tp">直接去考前練習</button></div></div>`;
+   <p>朗讀使用裝置內建的英文語音，可以用上方的「聲音」按鈕換一個比較清楚的聲音。錄音只存在這台裝置的瀏覽器裡，不會上傳到網路，換裝置或清除瀏覽資料就會消失。</p></div>
+  <div class="sec exam"><h3>從哪裡開始</h3><div class="jumps"><button class="btn" data-act="goto" data-id="prep">課前準備</button><button class="btn" data-act="goto" data-id="${BOOK.startId}">從課文開始</button><button class="btn" data-act="goto" data-id="tp">直接去考前練習</button><button class="btn" data-act="shelf">回書櫃</button></div></div>`;
 }
 
 /* ============ 考前練習 ============ */
 function leftTp() {
+  const fill = BOOK.qmode === 'fill';
   return `<div class="read"><h3 style="margin-top:0">Test Prep 考前練習</h3>
-  <p style="font-size:.6em;font-family:var(--f-ui);line-height:1.7">段考口試的十一題。每一題先看中文提示、再把英文句子填完整，最後大聲說出來並錄下來。</p></div>
-  <div class="tpgrid" style="font-family:var(--f-ui)">${QS.map(q => `<button class="tpitem" data-act="goto" data-id="q${q.no}"><span class="n">${q.no}</span><span class="t"><b>${esc(q.cat)}</b><small>${esc(q.zh)} · ${esc(q.qzh)}</small></span>${starsHtml(P.done['q' + q.no])}</button>`).join('')}</div>`;
+  <p style="font-size:.6em;font-family:var(--f-ui);line-height:1.7">段考口試的${BOOK.qs.length === 11 ? '十一' : BOOK.qs.length}題。每一題先看中文提示，${fill ? '再把英文句子填完整' : '再把字塊排成完整的英文句子'}，最後大聲說出來並錄下來。</p></div>
+  <div class="tpgrid" style="font-family:var(--f-ui)">${QS.map(q => `<button class="tpitem" data-act="goto" data-id="q${q.no}"><span class="n">${q.no}</span><span class="t"><b>${esc(q.cat)}</b><small>${esc(q.zh)} · ${esc(q.qzh)}</small></span>${starsHtml(P.done[q.pid])}</button>`).join('')}</div>`;
 }
 function rightTp() {
-  return `<div class="rh"><h2>口試小抄</h2><span>十一題的開頭句</span></div>
+  const fill = BOOK.qmode === 'fill';
+  return `<div class="rh"><h2>口試小抄</h2><span>${QS.length} 題的開頭句</span></div>
   <div class="sec exam"><h3>四步驟練習法</h3><ol class="steps">
     <li><span><b>看：</b>讀中文題目和中文答案提示。</span></li>
-    <li><span><b>填：</b>點選正確的單字，把英文句子填完。填錯的單字會抖一下，不用擔心。</span></li>
+    <li><span><b>${fill ? '填' : '排'}：</b>${fill ? '點選正確的單字，把英文句子填完。填錯的單字會抖一下，不用擔心。' : '點字塊，排成完整的英文句子。排錯時可以點已經放好的字塊拿掉，也可以按「提示」。'}</span></li>
     <li><span><b>說：</b>按「聽完整答案」，跟著唸三遍，再自己說一遍。</span></li>
     <li><span><b>錄：</b>錄下自己的回答，和標準答案比一比。</span></li></ol></div>
   <div class="sec"><h3>每一題怎麼開頭</h3><ul class="plist">${QS.map(q => `<li><span class="e">Q${q.no}　${esc(q.ans.replace(/\n.*/s, '').split(' ').slice(0, 7).join(' '))} …</span><span class="z">${esc(q.zh)}</span></li>`).join('')}</ul></div>
-  <div class="sec"><h3>三個萬用句型</h3><ul class="plist">
+  <div class="sec"><h3>萬用句型</h3><ul class="plist">
     <li><span class="e">I know because ...</span><span class="z">我知道是因為…</span></li>
     <li><span class="e">The author’s purpose is to ...</span><span class="z">作者的目的是…</span></li>
     <li><span class="e">such as A, B, or C</span><span class="z">例如 A、B 或 C</span></li></ul></div>
   <div class="sec parent"><h3>家長怎麼帶</h3><p>不需要懂每個字。只要請孩子先說中文，再跟著按鈕唸英文。一次練習一題，孩子能完整說出一題就給他一個擊掌。</p></div>`;
 }
 function frameHtml(q) {
-  const st = QSTATE[q.no]; let bi = 0; const firstEmpty = st.fills.findIndex(f => f == null);
+  const st = QSTATE[q.pid]; let bi = 0; const firstEmpty = st.fills.findIndex(f => f == null);
   return q.frame.split('\n').map(line => {
     const m = line.match(/^(Beginning|Middle|End):\s*/); let lab = '';
     if (m) { lab = `<span class="lab">${m[1]}</span>`; line = line.slice(m[0].length); }
@@ -1165,50 +2455,62 @@ function frameHtml(q) {
   }).join('');
 }
 function bankHtml(q) {
-  const st = QSTATE[q.no];
+  const st = QSTATE[q.pid];
   return q.shuf.map(w => `<button class="chip${st.fills.includes(w) ? ' used' : ''}" data-act="chip" data-w="${esc(w)}">${esc(w)}</button>`).join('');
 }
+const isPunct = t => /^[.,!?]$/.test(t);
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+function assemble(q, st) { let s = ''; st.placed.forEach(i => { const t = q.tiles[i]; s += (isPunct(t) || !s ? '' : ' ') + t; }); return s; }
+function scrambleHtml(q) {
+  const st = QSTATE[q.pid];
+  const tray = st.placed.length ? st.placed.map((ti, pos) => `<button class="tile placed" data-act="untile" data-p="${pos}">${esc(pos === 0 ? cap(q.tiles[ti]) : q.tiles[ti])}</button>`).join('') : '<span class="ph">點下面的字塊，排成一句話</span>';
+  const bank = q.tiles.map((t, i) => `<button class="tile${st.placed.includes(i) ? ' used' : ''}" data-act="tile" data-t="${i}">${esc(t)}</button>`).join('');
+  return `<div class="tray${st.wrong ? ' wrong' : ''}" id="tray">${tray}</div><div class="bank" id="tbank">${bank}</div>
+  <div class="tctl"><button class="btn sm" data-act="tclear">清除重排</button>${q.order ? '<button class="btn sm" data-act="thint">提示</button>' : ''}</div>`;
+}
 function winHtml(q) {
-  const st = QSTATE[q.no]; if (!st.done) return '';
+  const st = QSTATE[q.pid]; if (!st.done) return '';
   return `<div class="win">太棒了！完整的句子是：<div class="ans" style="margin-top:6px;font-weight:700">${nl(q.full)}</div><div style="margin-top:8px;font-weight:500">現在換你大聲說一遍，再按「錄我的回答」。</div></div>`;
 }
 function leftQ(sp) {
-  const q = sp.q;
+  const q = sp.q, un = BOOK.qmode === 'unscramble';
   return `<div class="qbadge">第 ${q.no} 題 · ${esc(q.cat)} ${esc(q.zh)}</div>
   <p class="qtext" style="font-family:var(--f-read)">${esc(q.q)}</p>
   <p class="qzh">${esc(q.qzh)}</p>
   <div style="margin-bottom:14px"><button class="btn sm" data-act="qspeak">${ICON.spk}聽題目</button></div>
   <div class="hintbox"><b>中文答案提示（看中文，說英文）</b>${nl(q.azh)}</div>
-  <div class="frame" id="frame" style="font-family:var(--f-read)">${frameHtml(q)}</div>
-  <div class="bank" id="bank">${bankHtml(q)}</div>
+  ${un ? `<div class="lab2">Unscramble the Sentence 句子重組：點字塊，排成一句話（句首會自動大寫）</div><div id="scr" style="font-family:var(--f-read)">${scrambleHtml(q)}</div>`
+       : `<div class="frame" id="frame" style="font-family:var(--f-read)">${frameHtml(q)}</div><div class="bank" id="bank">${bankHtml(q)}</div>`}
   <div id="win">${winHtml(q)}</div>
   <div class="dock" id="dock"></div>`;
 }
 function rightQ(sp) {
-  const q = sp.q, ok = S.reveal[q.no] || QSTATE[q.no].done;
+  const q = sp.q, ok = S.reveal[q.pid] || QSTATE[q.pid].done;
   const lines = q.ans.split('\n'), zl = q.azh.split('\n');
   let h = `<div class="rh"><h2>考試手冊</h2><span>第 ${q.no} 題 · ${esc(q.cat)}</span></div>`;
   h += `<div class="sec"><h3>標準答案 <small>先自己試試看再偷看</small></h3>`;
   if (!ok) h += `<button class="btn reveal" data-act="reveal">顯示答案</button>`;
-  else h += lines.map((l, i) => `<button class="tr" data-act="qline" data-l="${i}"><span class="en">${nl(l)}</span><span class="zh">${nl(zl[i] || '')}</span></button>`).join('');
+  else h += lines.map((l, i) => `<button class="tr" data-act="qline" data-l="${i}"><span class="en">${nl(l)}</span><span class="zh">${nl(zl[i] || (lines.length === 1 ? q.azh : ''))}</span></button>`).join('');
   h += `</div>`;
   h += `<div class="sec parent"><h3>家長怎麼帶</h3><p>${esc(q.parent)}</p></div>`;
   h += `<div class="sec"><h3>教師引導小撇步</h3><p>${esc(q.tip)}</p></div>`;
+  if (q.parts) h += `<div class="sec"><h3>句子結構 <small>顏色幫你看懂句子</small></h3>${LEGEND}<div class="pat"><div class="row">${q.parts.map(x => `<span class="r-${x[1]}">${esc(x[0])}</span>`).join('')}</div></div></div>`;
   h += `<div class="sec"><h3>關鍵單字 <small>點一下聽發音</small></h3><div class="vgrid">${q.words.map(w => `<button class="vcard" data-act="vspeak" data-w="${esc(w[0])}" data-ex=""><div class="w">${ICON.spk}${esc(w[0])}</div><div class="zh">${esc(w[1])}</div></button>`).join('')}</div></div>`;
   h += `<div class="sec"><h3>句型提醒</h3><p>${esc(q.pat)}</p></div>`;
-  h += `<div class="sec exam"><h3>去哪裡找答案</h3><div class="jumps">${q.jump.map(id => { const s = SPREADS.find(x => x.id === id); return `<button class="btn" data-act="goto" data-id="${id}">${esc(s.label)}</button>`; }).join('')}</div></div>`;
+  h += `<div class="sec exam"><h3>去哪裡找答案</h3><div class="jumps">${q.jump.map(id => { const s = SPREADS.find(x => x.id === id); return s ? `<button class="btn" data-act="goto" data-id="${id}">${esc(s.label)}</button>` : ''; }).join('')}</div></div>`;
   return h;
 }
 
 /* ============ 繪製整個畫面 ============ */
 function render(dir = 0) {
   const sp = SP(), L = $('#pgL'), R = $('#pgR'), book = $('#book');
-  L.className = 'page left'; $('#pgL').scrollTop = 0; R.scrollTop = 0;
+  L.className = 'page left'; L.style.background = ''; L.scrollTop = 0; R.scrollTop = 0;
   S.sel = null;
-  if (sp.kind === 'cover') { L.className = 'page left coverpg'; L.innerHTML = leftCover(); R.innerHTML = rightCover(); }
+  if (sp.kind === 'cover') { L.className = 'page left coverpg'; L.style.background = BOOK.coverBg; L.innerHTML = leftCover(); R.innerHTML = rightCover(); }
   else if (sp.kind === 'read') { L.innerHTML = leftRead(sp); R.innerHTML = rightRead(sp); }
   else if (sp.kind === 'tpintro') { L.innerHTML = leftTp(); R.innerHTML = rightTp(); }
   else { L.innerHTML = leftQ(sp); R.innerHTML = rightQ(sp); }
+  $('#brandTitle').textContent = BOOK.title; $('#brandSub').textContent = `by ${BOOK.author} · 課本 ${BOOK.pages}`;
   updDock(); updStars();
   book.dataset.side = S.side;
   $$('#tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.side === S.side));
@@ -1219,6 +2521,24 @@ function render(dir = 0) {
   if (dir) { book.classList.remove('turn-next', 'turn-prev'); void book.offsetWidth; book.classList.add(dir > 0 ? 'turn-next' : 'turn-prev'); setTimeout(() => book.classList.remove('turn-next', 'turn-prev'), 450); }
   saveP();
 }
+function renderShelf() {
+  const sh = $('#shelf');
+  sh.innerHTML = `<div class="shelf-in"><h1>靜心小二英文閱讀書櫃</h1><p>選一本書開始。每本書都有課文朗讀、教師手冊和考前練習。</p>
+  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}</div></div>`;
+}
+function showShelf() {
+  stopAll(); S.view = 'shelf'; renderShelf();
+  $('#book').hidden = true; document.querySelector('.pager').hidden = true; $('#shelf').hidden = false; $('#starCount').hidden = true;
+  $('#brandTitle').textContent = '靜心小二英文閱讀'; $('#brandSub').textContent = '書櫃';
+  $('#bShelf').setAttribute('aria-pressed', 'true'); document.documentElement.style.setProperty('--fs', S.fs); saveP();
+}
+function openBook(id, i) {
+  const bk = BOOKS.find(b => b.id === id); if (!bk) return showShelf();
+  stopAll(); BOOK = bk; SPREADS = bk.spreads; QS = bk.qs; countable = bk.countable; S.bookId = id; S.view = 'book';
+  S.i = i != null ? i : Math.min(Math.max(0, P.pos[id] || 0), SPREADS.length - 1); S.side = 'L';
+  $('#shelf').hidden = true; $('#book').hidden = false; document.querySelector('.pager').hidden = false; $('#starCount').hidden = false;
+  $('#bShelf').setAttribute('aria-pressed', 'false'); render();
+}
 async function goTo(i, dir) {
   if (i < 0 || i >= SPREADS.length) return;
   if (REC.mr) REC.mr.stop();
@@ -1226,7 +2546,7 @@ async function goTo(i, dir) {
   const sp = SP();
   if (S.auto && sp.kind === 'read') {
     await sleep(550); if (SP() !== sp) return;
-    const ok = await playItems(sp.sents); if (ok) award(sp.id);
+    const ok = await playItems(sp.sents); if (ok) award(sp.pid);
   } else if (S.auto && sp.kind === 'q') {
     await sleep(450); if (SP() !== sp) return; playItems([{ text: sp.q.q }], { mark: false, useMine: false });
   }
@@ -1258,17 +2578,28 @@ function showGloss(el, v, word) {
   clearTimeout(showGloss.t); showGloss.t = setTimeout(() => { g.hidden = true; }, 2600);
 }
 async function onChip(w) {
-  const sp = SP(), q = sp.q, st = QSTATE[q.no], b = st.fills.findIndex(f => f == null);
+  const sp = SP(), q = sp.q, st = QSTATE[q.pid], b = st.fills.findIndex(f => f == null);
   if (b < 0) return;
   if (q.blanks[b] === w) {
     st.fills[b] = w; $('#frame').innerHTML = frameHtml(q); $('#bank').innerHTML = bankHtml(q);
     if (st.fills.every(f => f != null)) {
-      st.done = true; $('#win').innerHTML = winHtml(q); award(sp.id); $('#pgR').innerHTML = rightQ(sp); updDock();
-      playItems([{ text: q.full.replace(/\n/g, ' ').replace(/^(Beginning|Middle|End):\s*/g, '') }], { mark: false, useMine: false });
+      st.done = true; $('#win').innerHTML = winHtml(q); award(sp.pid); $('#pgR').innerHTML = rightQ(sp); updDock();
+      playItems([{ text: q.say }], { mark: false, useMine: false });
     } else { speakQuick(w); }
   } else {
     const el = $$('#bank .chip').find(c => c.dataset.w === w); if (el) { el.classList.add('bad'); setTimeout(() => el.classList.remove('bad'), 450); }
     toast('再試試看，想一想這個空格要填什麼', 1800);
+  }
+}
+function checkTiles(sp) {
+  const q = sp.q, st = QSTATE[q.pid];
+  if (st.placed.length < q.tiles.length) { $('#scr').innerHTML = scrambleHtml(q); return; }
+  const got = norm(assemble(q, st)), good = [q.target, ...(q.alts || [])].some(a => norm(a) === got);
+  if (good) {
+    st.done = true; $('#scr').innerHTML = scrambleHtml(q); $('#win').innerHTML = winHtml(q); award(q.pid); $('#pgR').innerHTML = rightQ(sp); updDock();
+    playItems([{ text: q.say }], { mark: false, useMine: false });
+  } else {
+    st.wrong = true; $('#scr').innerHTML = scrambleHtml(q); toast('再看看，想一想句子的順序', 2000);
   }
 }
 function speakQuick(t) { stopAll(); setTimeout(() => speakText(t), 160); }
@@ -1279,33 +2610,39 @@ document.addEventListener('click', async e => {
   switch (a) {
     case 'vw': { const v = sp.vocab[+t.dataset.k]; if (v) showGloss(t, v); e.stopPropagation(); speakQuick(t.textContent); break; }
     case 'sent': { const i = +t.dataset.i; S.sel = i; $$('.sent.sel').forEach(x => x.classList.remove('sel')); const s = $('#s-' + i); if (s) s.classList.add('sel'); updDock(); playItems([sp.sents[i]]); break; }
-    case 'playpage': { const ok = await playItems(sp.sents); if (ok) award(sp.id); break; }
+    case 'playpage': { const ok = await playItems(sp.sents); if (ok) award(sp.pid); break; }
     case 'stop': stopAll(); break;
     case 'mode': S.mode = t.dataset.m; saveP(); updDock(); toast(S.mode === 'mine' ? '朗讀時，有錄音的句子會播放我的聲音' : '朗讀時使用標準聲音'); break;
-    case 'rec': { const key = sp.kind === 'q' ? 'q' + sp.q.no : (S.sel != null ? sp.sents[S.sel].key : null); if (key) toggleRec(key); break; }
-    case 'mine': { const key = sp.kind === 'q' ? 'q' + sp.q.no : sp.sents[S.sel].key; playMine(key); break; }
-    case 'delrec': { const key = sp.kind === 'q' ? 'q' + sp.q.no : sp.sents[S.sel].key; await recDel(key); afterRecChange(); toast('已刪除這段錄音'); break; }
+    case 'rec': { const key = sp.kind === 'q' ? sp.q.pid : (S.sel != null ? sp.sents[S.sel].key : null); if (key) toggleRec(key); break; }
+    case 'mine': { const key = sp.kind === 'q' ? sp.q.pid : sp.sents[S.sel].key; playMine(key); break; }
+    case 'delrec': { const key = sp.kind === 'q' ? sp.q.pid : sp.sents[S.sel].key; await recDel(key); afterRecChange(); toast('已刪除這段錄音'); break; }
     case 'vspeak': { stopAll(); await sleep(60); const my = token; await speakText(t.dataset.w); if (my === token && t.dataset.ex) { await sleep(250); if (my === token) await speakText(t.dataset.ex); } break; }
     case 'vrow': speakQuick(t.dataset.t.replace(/,/g, '. ')); break;
     case 'goto': { const i = SPREADS.findIndex(s => s.id === t.dataset.id); goTo(i, i > S.i ? 1 : -1); break; }
     case 'tocgo': $('#toc').hidden = true; goTo(+t.dataset.i, +t.dataset.i > S.i ? 1 : -1); break;
     case 'voicepick': { const v = speechSynthesis.getVoices().find(x => x.voiceURI === t.dataset.u); if (v) { voice = v; S.voiceURI = v.voiceURI; saveP(); $$('[data-act="voicepick"]').forEach(b => b.classList.toggle('cur', b === t)); speakQuick('Hello! Let us read together.'); } break; }
+    case 'shelf': showShelf(); break;
+    case 'openbook': openBook(t.dataset.b); break;
+    case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
+    case 'untile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed.splice(+t.dataset.p, 1); st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
+    case 'tclear': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed = []; st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
+    case 'thint': { const q = sp.q, st = QSTATE[q.pid]; if (st.done || !q.order) break; let k = 0; while (k < st.placed.length && norm(q.tiles[st.placed[k]]) === norm(q.tiles[q.order[k]])) k++; st.placed = q.order.slice(0, Math.min(k + 1, q.order.length)); st.wrong = false; checkTiles(sp); break; }
     case 'tocclose': $('#toc').hidden = true; break;
     case 'qspeak': playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break;
-    case 'qans': playItems([{ text: sp.q.full.replace(/\n/g, ' ').replace(/(Beginning|Middle|End):\s*/g, '') }], { mark: false, useMine: false }); break;
+    case 'qans': playItems([{ text: sp.q.say }], { mark: false, useMine: false }); break;
     case 'qline': { const l = sp.q.ans.split('\n')[+t.dataset.l]; playItems([{ text: l.replace(/^(Beginning|Middle|End):\s*/, '') }], { mark: false, useMine: false }); break; }
-    case 'reveal': S.reveal[sp.q.no] = true; $('#pgR').innerHTML = rightQ(sp); updDock(); break;
+    case 'reveal': S.reveal[sp.q.pid] = true; $('#pgR').innerHTML = rightQ(sp); updDock(); break;
     case 'chip': onChip(t.dataset.w); break;
     case 'blank': {
-      const q = sp.q, st = QSTATE[q.no], b = +t.dataset.b;
+      const q = sp.q, st = QSTATE[q.pid], b = +t.dataset.b;
       if (st.done) break;
       if (st.fills[b]) { st.fills[b] = null; } else { st.hint[b] = true; }
       $('#frame').innerHTML = frameHtml(q); $('#bank').innerHTML = bankHtml(q); break;
     }
     case 'compare': {
-      const q = sp.q, text = q.full.replace(/\n/g, ' ').replace(/(Beginning|Middle|End):\s*/g, '');
+      const q = sp.q, text = q.say;
       const ok = await playItems([{ text }], { mark: false, useMine: false });
-      if (ok) await playMine('q' + q.no); break;
+      if (ok) await playMine(q.pid); break;
     }
   }
 });
@@ -1317,6 +2654,7 @@ document.addEventListener('keydown', e => {
 $('#bNext').onclick = () => go(1);
 $('#bPrev').onclick = () => go(-1);
 $('#bToc').onclick = openToc;
+$('#bShelf').onclick = showShelf;
 $('#bVoice').onclick = openVoices;
 $('#toc').addEventListener('click', e => { if (e.target.id === 'toc') $('#toc').hidden = true; });
 $('#bAuto').onclick = () => { S.auto = !S.auto; $('#bAuto').setAttribute('aria-pressed', S.auto); saveP(); toast(S.auto ? '翻到新的一頁會自動朗讀' : '翻頁後不會自動朗讀'); };
@@ -1329,12 +2667,171 @@ $('#book').addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty =
 $('#book').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) > 90 && Math.abs(dy) < 50) go(dx < 0 ? 1 : -1); }, { passive: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopAll(); });
 
-/* ============ 開始 ============ */
+/* ============ 第二課插圖 ============ */
+const lolli = (cx, cy, r, col = '#e23b3b') => `<g transform="translate(${cx} ${cy}) scale(${r / 80})" stroke-linecap="round">
+  <rect x="-5" y="60" width="10" height="110" rx="4" fill="#f3e2c4" stroke="${OUT}" stroke-width="4"/>
+  <circle r="80" fill="${col}" stroke="${OUT}" stroke-width="5"/>
+  <path d="M0 -8 a8 8 0 1 1 -8 8 a22 22 0 1 1 22 -22 a40 40 0 1 1 -40 40 a60 60 0 1 1 60 -60" stroke="#fff" stroke-width="9" fill="none" opacity=".85"/></g>`;
+const dog = (x, y) => `<g stroke="${OUT}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M${x - 40} ${y - 6} q-26 -10 -18 -30" fill="none" stroke-width="7"/>
+  <path d="M${x - 24} ${y + 18} v26 M${x - 6} ${y + 20} v24 M${x + 18} ${y + 20} v24 M${x + 34} ${y + 14} v30" fill="none" stroke-width="8"/>
+  <ellipse cx="${x}" cy="${y}" rx="44" ry="24" fill="#c98d52"/>
+  <circle cx="${x + 44}" cy="${y - 20}" r="19" fill="#c98d52"/><ellipse cx="${x + 36}" cy="${y - 30}" rx="7" ry="13" fill="#8a5a2b" transform="rotate(-20 ${x + 36} ${y - 30})"/>
+  <circle cx="${x + 50}" cy="${y - 24}" r="2.6" fill="${OUT}"/><ellipse cx="${x + 62}" cy="${y - 17}" rx="5" ry="4" fill="${OUT}"/></g>`;
+const balloon = (x, y, c) => `<g stroke="${OUT}" stroke-width="3"><path d="M${x} ${y + 24} q-6 30 4 60" fill="none"/><ellipse cx="${x}" cy="${y}" rx="17" ry="22" fill="${c}"/></g>`;
+const card = (x, y, w, h, rot = 0) => `<g transform="rotate(${rot} ${x + w / 2} ${y + h / 2})" stroke="${OUT}" stroke-width="3"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#fff"/>${star(x + w / 2, y + h / 2 - 4, Math.min(w, h) * .26)}<path d="M${x + 14} ${y + h - 16} h${w - 28}" stroke="#9aa6c2" stroke-width="4" fill="none"/></g>`;
+const chair = x => `<g stroke="${OUT}" stroke-width="3" stroke-linecap="round"><path d="M${x} 232 v20 M${x + 34} 232 v20" fill="none" stroke-width="5"/><rect x="${x - 2}" y="214" width="40" height="18" rx="4" fill="#d9a066"/><rect x="${x - 2}" y="188" width="8" height="28" rx="3" fill="#d9a066"/></g>`;
+
+Object.assign(ART, {
+  leash: () => svgWrap(sun + ground + dog(200, 206) +
+    kid(88, 176, { mood: 'talk', arms: 'reachR', shirt: '#3b82f6', hair: '#2f2420' }) + kid(312, 176, { mood: 'talk', arms: 'reachL', shirt: '#f08a24', style: 'pony', hair: '#7a4a21' }) +
+    `<path d="M154 150 Q175 200 242 192 M246 152 Q232 176 244 190" stroke="#e2574c" stroke-width="4" fill="none"/>` +
+    bub(20, 8, 150, 44, 'I hold it!', 88, 70) + bub(230, 8, 150, 44, 'Me too!', 312, 70), '兩個孩子想牽同一條狗繩'),
+  room: () => svgWrap(ground +
+    kid(88, 168, { s: 1.15, mood: 'talk', arms: 'out', shirt: '#7c5cc4', hair: '#2a2a2a', skin: '#e0a97c' }) +
+    kid(310, 178, { mood: 'happy', arms: 'hold', shirt: '#2e9e6a', hair: '#2f2420' }) +
+    `<g stroke="${OUT}" stroke-width="3"><rect x="284" y="156" width="54" height="40" rx="4" fill="#3b82f6"/><rect x="290" y="150" width="54" height="40" rx="4" fill="#fff"/><path d="M317 150 v40 M298 162 h14 M298 172 h14 M322 162 h14 M322 172 h14" fill="none" stroke-width="2.5"/></g>` +
+    bub(14, 6, 160, 42, 'Clean up!', 88, 54, 21) + bub(205, 8, 185, 44, 'One chapter!', 310, 80), '媽媽請 Mario 整理房間，他想先看完這一章'),
+  bday: () => svgWrap(sun + ground +
+    `<g stroke="${OUT}" stroke-width="3"><rect x="288" y="130" width="96" height="100" fill="#f7d9a8"/><polygon points="278,132 336,84 394,132" fill="#c9553d"/><rect x="322" y="176" width="28" height="54" fill="#8a5a2b"/></g>` +
+    kid(130, 176, { mood: 'happy', arms: 'up', shirt: '#e2574c', style: 'pony', hair: '#2f2420' }) + card(84, 20, 92, 66, -12) +
+    balloon(214, 120, '#ff7a7a') + balloon(240, 104, '#ffd23f') + balloon(262, 124, '#6cc6ff') + bub(190, 10, 190, 42, 'Ami! A party!', 150, 66, 21), '開心跑回家，手上拿著派對邀請卡'),
+  talk2: () => svgWrap(ground +
+    kid(88, 178, { mood: 'sad', arms: 'out', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) +
+    kid(312, 168, { s: 1.15, mood: 'talk', arms: 'out', shirt: '#7c5cc4', hair: '#2a2a2a', skin: '#e0a97c', flip: true }) +
+    kid(200, 206, { s: .7, mood: 'shout', arms: 'up', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21' }) +
+    bub(10, 8, 190, 44, 'They’ll laugh!', 88, 72, 21) + bub(215, 6, 170, 42, 'Not fair!', 312, 52), '媽媽要姊姊打電話問能不能帶妹妹'),
+  party: () => svgWrap(`<g stroke="${OUT}" stroke-width="3"><path d="M20 30 Q200 80 380 30" fill="none"/><polygon points="70,48 90,48 80,72" fill="#ff7a7a"/><polygon points="140,60 160,60 150,84" fill="#ffd23f"/><polygon points="240,60 260,60 250,84" fill="#6cc6ff"/><polygon points="310,48 330,48 320,72" fill="#8bd48b"/></g>` + ground + chair(60) + chair(110) +
+    kid(92, 170, { mood: 'sad', shirt: '#f08a24', style: 'pony', hair: '#2f2420', s: .95 }) +
+    kid(290, 196, { s: .85, mood: 'shout', arms: 'up', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21' }) + bub(206, 96, 130, 42, 'Waaah!', 290, 140, 21), '派對上玩大風吹，Sana 跌倒大哭'),
+  bag: () => svgWrap(ground + lolli(210, 78, 38) +
+    `<g stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"><path d="M110 130 L300 130 L322 238 L88 238Z" fill="#f2b705"/><path d="M110 130 Q200 100 300 130" fill="none"/><path d="M150 130 Q150 84 200 84 Q250 84 250 130" fill="none" stroke-width="6"/><circle cx="160" cy="180" r="8" fill="#e2574c"/><circle cx="210" cy="206" r="8" fill="#3b82f6"/><circle cx="262" cy="176" r="8" fill="#2e9e6a"/></g>` +
+    `<g stroke="${OUT}" stroke-width="3"><circle cx="58" cy="196" r="16" fill="none" stroke-width="6" stroke="#f2b705"/><polygon points="58,170 50,180 66,180" fill="#e2263f"/><rect x="332" y="190" width="40" height="18" rx="9" fill="#c9c9c9"/><circle cx="378" cy="199" r="9" fill="#c9c9c9"/><rect x="340" y="214" width="26" height="20" fill="#7a4a21"/></g>`, '派對小禮物袋裡有巧克力、哨子、戒指和大紅棒棒糖'),
+  fridge: () => svgWrap(ground +
+    `<g stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"><rect x="230" y="26" width="132" height="212" rx="8" fill="#e8f1f8"/><path d="M230 96 h132 M230 166 h132" fill="none"/><path d="M168 30 L230 40 V232 L168 240Z" fill="#cfe0ee"/><rect x="176" y="120" width="8" height="40" rx="3" fill="#8aa0b8"/></g>` +
+    `<g stroke="${OUT}" stroke-width="3"><rect x="288" y="56" width="6" height="40" rx="2" fill="#f3e2c4"/><polygon points="291,34 270,58 312,58" fill="#e23b3b"/></g>` +
+    kid(80, 176, { mood: 'angry', arms: 'up', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) + bub(14, 8, 150, 44, 'SANA!', 80, 70), '冰箱裡只剩下黏在棍子上的小三角形'),
+  closet: () => svgWrap(ground +
+    `<g stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"><rect x="250" y="40" width="130" height="198" rx="6" fill="#d9a066"/><rect x="262" y="52" width="106" height="186" fill="#5a3a1f"/><rect x="270" y="64" width="22" height="100" rx="6" fill="#3b82f6"/><rect x="296" y="64" width="22" height="104" rx="6" fill="#e2574c"/><rect x="322" y="64" width="22" height="96" rx="6" fill="#2e9e6a"/><path d="M268 232 h30 v-14 h-18 z M326 232 h30 v-14 h-18 z" fill="#2b3550"/></g>` +
+    kid(86, 176, { mood: 'angry', arms: 'reachR', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) +
+    kid(300, 200, { s: .6, mood: 'talk', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21' }) + bub(10, 8, 190, 44, 'I’ll get you!', 86, 72), '姊姊追妹妹，妹妹躲進衣櫃'),
+  ami3: () => svgWrap(ground +
+    kid(70, 178, { mood: 'sad', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) +
+    kid(210, 166, { s: 1.2, mood: 'angry', arms: 'out', shirt: '#7c5cc4', hair: '#2a2a2a', skin: '#e0a97c' }) +
+    kid(318, 196, { s: .75, mood: 'sad', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21', flip: true }) + bub(14, 8, 180, 44, 'Share!', 70, 76) + bub(250, 4, 140, 42, 'For shame!', 218, 52, 20), '媽媽雙手叉腰，要姊姊跟妹妹分享'),
+  triangle: () => svgWrap(ground +
+    `<g stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"><rect x="194" y="104" width="12" height="110" rx="4" fill="#f3e2c4"/><polygon points="200,34 168,106 232,106" fill="#e23b3b"/></g>` +
+    kid(76, 176, { mood: 'angry', arms: 'reachR', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) +
+    kid(320, 190, { s: .85, mood: 'talk', arms: 'reachL', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21', flip: true }) + bub(250, 6, 140, 42, 'Take it!', 320, 100), '妹妹把剩下的小三角形遞過來'),
+  invite: () => svgWrap(sun + ground + card(150, 14, 100, 72, 6) +
+    kid(88, 178, { mood: 'sad', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) +
+    kid(205, 178, { mood: 'happy', arms: 'up', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21' }) +
+    kid(322, 204, { s: .65, mood: 'shout', arms: 'up', shirt: '#8b5cf6', hair: '#2f2420' }) + bub(262, 70, 128, 42, 'Me too!', 322, 150, 20), 'Sana 揮舞著邀請卡，小妹 Maryam 也想去'),
+  fair: () => svgWrap(ground +
+    kid(76, 178, { mood: 'sad', arms: 'up', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21' }) +
+    kid(205, 166, { s: 1.15, mood: 'talk', arms: 'out', shirt: '#7c5cc4', hair: '#2a2a2a', skin: '#e0a97c' }) +
+    kid(326, 178, { mood: 'calm', shirt: '#f08a24', style: 'pony', hair: '#2f2420', flip: true }) + kid(270, 214, { s: .6, mood: 'happy', shirt: '#8b5cf6', hair: '#2f2420' }) +
+    bub(10, 6, 200, 42, 'It’s only fair.', 200, 62, 20), '媽媽說這樣才公平'),
+  friends: () => svgWrap(sun + ground + heart(200, 72, 1.1) + lolli(200, 150, 26, '#2e9e6a') +
+    kid(92, 176, { mood: 'happy', arms: 'reachR', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) +
+    kid(308, 178, { s: .92, mood: 'happy', arms: 'reachL', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21', flip: true }) + bub(10, 10, 130, 42, 'Thanks!', 92, 70) + bub(262, 10, 120, 42, 'Here!', 308, 78), 'Sana 送給姊姊一支綠棒棒糖，她們成了朋友'),
+  chat: () => svgWrap(ground + kid(200, 178, { mood: 'talk', arms: 'up', shirt: '#14a39a', style: 'pony', hair: '#2f2420' }) +
+    bub(16, 14, 112, 42, 'Who?', 170, 104) + bub(144, 4, 112, 42, 'Where?', 200, 80) + bub(272, 14, 112, 42, 'Why?', 240, 104) + star(60, 140, 18) + star(344, 150, 16, '#9ad7ff'), '練習說出完整的句子'),
+  write: () => svgWrap(ground +
+    `<path d="M50 96 Q125 74 200 100 V224 Q125 200 50 222Z" fill="#fff" stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"/><path d="M350 96 Q275 74 200 100 V224 Q275 200 350 222Z" fill="#fffdf4" stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"/>` +
+    `<path d="M72 128 Q120 114 176 134 M72 152 Q120 138 176 158 M72 176 Q120 162 176 182 M224 134 Q280 114 328 128 M224 158 Q280 138 328 152 M224 182 Q280 162 328 176" stroke="#9aa6c2" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+    `<g stroke="${OUT}" stroke-width="3" stroke-linejoin="round" transform="rotate(35 300 150)"><rect x="286" y="90" width="18" height="90" rx="3" fill="#f2b705"/><polygon points="286,180 304,180 295,204" fill="#f3e2c4"/><rect x="286" y="82" width="18" height="12" rx="3" fill="#e2574c"/></g>` + bub(120, 6, 160, 42, 'My story', 200, 102), '打開本子，寫下自己的故事'),
+  cover2: () => svgWrap(`<rect width="400" height="560" fill="#b3302b"/>
+    <circle cx="340" cy="60" r="110" fill="#c9443d" opacity=".7"/><circle cx="30" cy="300" r="90" fill="#c9443d" opacity=".5"/>
+    <text x="200" y="128" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="70" fill="#fff">Big Red</text>
+    <text x="200" y="202" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="70" fill="#ffe27a">Lollipop</text>
+    <text x="200" y="244" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="22" fill="#ffe3df">by Rukhsana Khan</text>
+    <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>` +
+    lolli(200, 350, 82, '#e23b3b').replace('translate(200 350)', 'translate(200 330)') +
+    kid(66, 440, { s: .9, mood: 'happy', arms: 'reachR', shirt: '#f08a24', style: 'pony', hair: '#2f2420' }) + kid(334, 440, { s: .8, mood: 'happy', arms: 'reachL', shirt: '#2e9e6a', style: 'pony', hair: '#7a4a21', flip: true }) +
+    `<text x="200" y="534" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="20" fill="${OUT}" font-weight="600">Grade 2 · Realistic Fiction</text>`, '封面：大紅棒棒糖', '0 0 400 560'),
+});
+/* ============ 第三課插圖（Gingerbread for Liberty!） ============ */
+const gbm = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M-34 -20 L34 -20 M-14 18 L-22 46 M14 18 L22 46" stroke="${OUT}" stroke-width="20" fill="none"/>
+  <path d="M-34 -20 L34 -20 M-14 18 L-22 46 M14 18 L22 46" stroke="#c98b4f" stroke-width="14" fill="none"/>
+  <rect x="-18" y="-34" width="36" height="58" rx="16" fill="#c98b4f" stroke="${OUT}" stroke-width="3"/>
+  <circle cy="-52" r="19" fill="#c98b4f" stroke="${OUT}" stroke-width="3"/>
+  <circle cx="-7" cy="-56" r="2.6" fill="#fff"/><circle cx="7" cy="-56" r="2.6" fill="#fff"/><path d="M-8 -46 Q0 -39 8 -46" stroke="#fff" stroke-width="2.6" fill="none"/>
+  <circle cy="-16" r="3.2" fill="#fff"/><circle cy="-1" r="3.2" fill="#fff"/><circle cy="14" r="3.2" fill="#fff"/></g>`;
+const chef = (x, y, o = {}) => {
+  const s = o.s || 1, hat = o.hat === false ? '' :
+    `<g stroke="${OUT}" stroke-width="${3 * s}" stroke-linejoin="round"><circle cx="${x - 13 * s}" cy="${y - 112 * s}" r="${12 * s}" fill="#fff"/><circle cx="${x + 13 * s}" cy="${y - 112 * s}" r="${12 * s}" fill="#fff"/><circle cx="${x}" cy="${y - 120 * s}" r="${13 * s}" fill="#fff"/><rect x="${x - 22 * s}" y="${y - 104 * s}" width="${44 * s}" height="${14 * s}" rx="${4 * s}" fill="#fff"/></g>`;
+  return kid(x, y, { skin: '#f2c29b', hair: '#d8d8d8', shirt: '#fafafa', style: 'short', pants: '#5a4630', ...o }) + hat;
+};
+const crown = (x, y, s = 1) => `<g stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><path d="M${x - 22 * s} ${y - 94 * s} l-5 -26 l14 12 l13 -20 l13 20 l14 -12 l-5 26z" fill="#ffd23f"/></g>`;
+const ship = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><path d="M-50 0 H50 L36 24 H-36Z" fill="#8a5a2b"/><path d="M0 0 V-70" fill="none" stroke-width="4"/><path d="M0 -66 Q36 -50 30 -10 H0Z" fill="#fff"/><path d="M0 -60 Q-30 -46 -26 -10 H0Z" fill="#fff"/></g>`;
+const wig = '#f4f4f4';
+
+Object.assign(ART, {
+  bakery: () => svgWrap(ground +
+    `<g stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"><rect x="236" y="150" width="150" height="86" rx="6" fill="#d9a066"/><rect x="226" y="140" width="170" height="14" rx="5" fill="#b9793f"/></g>` +
+    gbm(282, 112, .62) + gbm(340, 112, .62) +
+    chef(66, 174, { s: 1.12, mood: 'talk', arms: 'out' }) +
+    kid(158, 208, { s: .62, mood: 'happy', arms: 'up', shirt: '#3b82f6', hair: '#2f2420' }) + kid(200, 210, { s: .55, mood: 'happy', arms: 'up', shirt: '#e2574c', style: 'pony', hair: '#7a4a21' }) +
+    bub(8, 4, 258, 42, 'No empty bellies here!', 66, 52, 20), '麵包師傅和他的薑餅店'),
+  wife: () => svgWrap(ground +
+    chef(112, 172, { s: 1.12, mood: 'talk', arms: 'out', hat: false }) +
+    kid(300, 176, { mood: 'talk', arms: 'out', shirt: '#8b5cf6', style: 'pony', hair: '#6b4a2b', flip: true }) +
+    `<g stroke="${OUT}" stroke-width="3"><path d="M20 70 q4 40 -4 70 h34 q-8 -30 -4 -70z" fill="#fff"/><circle cx="35" cy="64" r="5" fill="#c9c9c9"/></g>` +
+    bub(60, 4, 180, 42, 'To fight for my America!', 112, 56, 15) + bub(210, 52, 188, 42, 'You are a baker now!', 300, 108, 16), '麵包師傅要去從軍，太太提醒他'),
+  washington: () => svgWrap(ground +
+    kid(206, 172, { s: 1.15, mood: 'calm', arms: 'down', shirt: '#27408b', style: 'curly', hair: wig, pants: '#e9e0c9' }) +
+    kid(72, 190, { s: .9, mood: 'sad', arms: 'down', shirt: '#3d6b4f' }) + kid(130, 196, { s: .8, mood: 'angry', arms: 'down', shirt: '#6b7f3a', style: 'pony', hair: '#2f2420' }) +
+    chef(332, 178, { s: 1, mood: 'happy', arms: 'out' }) +
+    bub(8, 4, 170, 42, 'No food!', 72, 82, 20) + bub(226, 6, 172, 42, 'Not in my America!', 332, 66, 16), '士兵威脅要離開，麵包師傅捲起袖子'),
+  king: () => svgWrap(ground +
+    kid(130, 176, { s: 1.1, mood: 'talk', arms: 'up', shirt: '#b02a2a', style: 'curly', hair: '#8a6a1c' }) + crown(130, 176, 1.1) +
+    kid(300, 190, { s: .9, mood: 'sad', arms: 'out', shirt: '#4a4a55', flip: true }) +
+    ship(344, 62, .55) +
+    bub(14, 4, 170, 42, 'Ha ha ha ha!', 126, 56, 21) + bub(206, 90, 170, 42, 'What if...?', 300, 122, 21), '英國國王大笑，雇用別國的軍隊'),
+  rowboat: () => svgWrap(`<rect width="400" height="280" fill="#1f2a55"/><circle cx="330" cy="50" r="26" fill="#fff6c8" stroke="${OUT}" stroke-width="3"/>` +
+    `<g fill="#fff6c8"><circle cx="50" cy="40" r="3"/><circle cx="110" cy="76" r="2.5"/><circle cx="230" cy="30" r="3"/><circle cx="280" cy="86" r="2.5"/></g>` +
+    `<path d="M0 190 Q50 178 100 190 T200 190 T300 190 T400 190 V280 H0Z" fill="#2d4a8a" stroke="${OUT}" stroke-width="3"/>` +
+    chef(200, 168, { s: .85, mood: 'talk', arms: 'out' }) +
+    `<path d="M120 196 H282 Q264 236 232 238 H170 Q138 236 120 196Z" fill="#8a5a2b" stroke="${OUT}" stroke-width="3.5" stroke-linejoin="round"/>` +
+    `<path d="M140 206 L84 238 M262 206 L318 238" stroke="${OUT}" stroke-width="5" stroke-linecap="round" fill="none"/>` +
+    `<g fill="none" stroke="#bfe3ff" stroke-width="3" stroke-linecap="round"><path d="M70 246 q8 -8 16 0 M312 246 q8 -8 16 0 M100 258 q8 -8 16 0"/></g>` +
+    bub(110, 6, 180, 44, 'LIBERTY!', 200, 78, 24), '夜裡划船渡海灣，想著要說的話'),
+  soldiers: () => svgWrap(ground +
+    kid(60, 192, { s: .9, mood: 'sad', arms: 'down', shirt: '#3b5ba8', hair: '#2f2420' }) + kid(118, 198, { s: .8, mood: 'sad', arms: 'down', shirt: '#3b5ba8', style: 'pony', hair: '#7a4a21' }) + kid(172, 192, { s: .88, mood: 'sad', arms: 'down', shirt: '#3b5ba8', style: 'curly', hair: '#a0602a' }) +
+    chef(334, 176, { s: 1.05, mood: 'talk', arms: 'reachL' }) +
+    `<g stroke="${OUT}" stroke-width="3"><ellipse cx="236" cy="62" rx="74" ry="44" fill="#fff"/><circle cx="196" cy="116" r="8" fill="#fff"/><circle cx="178" cy="136" r="5" fill="#fff"/></g>` + gbm(236, 76, .62) +
+    `<text x="236" y="26" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="16" fill="${OUT}">yum…</text>`, '飢餓的士兵聽著麵包店的故事'),
+  crumb: () => svgWrap(sun + ground +
+    chef(80, 176, { s: 1, mood: 'happy', arms: 'up' }) +
+    kid(322, 174, { s: 1.12, mood: 'happy', arms: 'up', shirt: '#27408b', style: 'curly', hair: wig, pants: '#e9e0c9' }) +
+    `<g stroke="${OUT}" stroke-width="3"><ellipse cx="200" cy="224" rx="62" ry="12" fill="#fff"/></g><g fill="#c98b4f" stroke="${OUT}" stroke-width="1.5"><circle cx="176" cy="222" r="3"/><circle cx="214" cy="226" r="2.5"/><circle cx="196" cy="220" r="2"/></g>` +
+    bub(120, 14, 160, 44, 'We won!', 80, 70, 24) + bub(150, 110, 100, 36, 'No crumbs!', 200, 214, 16), '勝利了，連一點薑餅碎屑都沒剩下'),
+  cover3: () => svgWrap(`<rect width="400" height="560" fill="#8a4b2a"/>
+    <circle cx="340" cy="60" r="110" fill="#a05a33" opacity=".7"/><circle cx="30" cy="300" r="90" fill="#a05a33" opacity=".5"/>
+    <text x="200" y="112" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="58" fill="#fff">Gingerbread</text>
+    <text x="200" y="176" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="54" fill="#ffe27a">for Liberty!</text>
+    <text x="200" y="216" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="22" fill="#ffe9d6">by Mara Rockliff</text>
+    <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>` +
+    gbm(200, 412, 2.2) +
+    chef(62, 446, { s: .9, mood: 'happy', arms: 'reachR' }) +
+    kid(340, 446, { s: .85, mood: 'happy', arms: 'reachL', shirt: '#27408b', style: 'curly', hair: wig, pants: '#e9e0c9', flip: true }) +
+    `<text x="200" y="534" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="20" fill="${OUT}" font-weight="600">Grade 2 · Biography</text>`, '封面：為了自由的薑餅', '0 0 400 560'),
+});
+/* ============ 書櫃與開始 ============ */
+const BOOKS = [
+  { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2 },
+  { id: 'wwo', kp: '', title: 'Working with Others', zh: '與他人合作', author: 'Robin Nelson', pages: 'pp.228–238', when: '本週課文', cover: 'cover', coverBg: '#0f857d', qmode: 'fill', startId: 'r1', spreads: SPREADS1, qs: QS1 },
+  { id: 'gb', kp: 'gb-', title: 'Gingerbread for Liberty!', zh: '為了自由的薑餅', author: 'Mara Rockliff', pages: 'pp.242–260', when: '本週課文', cover: 'cover3', coverBg: '#8a4b2a', qmode: 'fill', startId: 'g1', spreads: SPREADS3, qs: QS3 },
+];
 (async function start() {
   loadP();
-  QS.forEach(q => { QSTATE[q.no].done = !!P.done['q' + q.no]; if (QSTATE[q.no].done) QSTATE[q.no].fills = [...q.blanks]; });
+  BOOKS.forEach(prepBook);
   await recInit();
-  render();
+  document.documentElement.style.setProperty('--fs', S.fs);
+  const bk = BOOKS.find(b => b.id === S.bookId);
+  if (bk) openBook(bk.id); else showShelf();
 })();
 </script>
 </body></html>
