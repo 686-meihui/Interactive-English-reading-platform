@@ -253,6 +253,35 @@ table.vt tr:hover td{background:var(--accent-soft)}
 .tile.used{opacity:.25;pointer-events:none}
 .tctl{display:flex;gap:8px;margin:0 0 12px;font-family:var(--f-ui)}
 
+/* reading test */
+.rtp{font-family:var(--f-ui)}
+.rtdir{line-height:1.6;margin:18px 0 10px;font-size:1rem}
+.rq{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 12px}
+.rqt{display:flex;gap:10px;align-items:flex-start}
+.rqt .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:600}
+.rqs{text-align:left;font-family:var(--f-read);font-size:calc(var(--fs)*1.2rem);line-height:1.5;font-weight:600;color:var(--ink);padding:0;background:none;border:0}
+.rzh{color:var(--ink2);font-size:.9rem;margin:4px 0 8px 44px}
+.rtopts{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0 44px}
+.rtopts.col{flex-direction:column;align-items:stretch}
+.ropt{font-family:var(--f-read);font-size:calc(var(--fs)*1.1rem);font-weight:600;text-align:left;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 16px;min-height:48px}
+.ropt:not(:disabled):hover{border-color:var(--accent)}
+.ropt.right{background:#d8f2d8;border-color:#2e9e4a}
+.ropt.wrong{background:#fde0dc;border-color:#d64b3c}
+.ropt.dim{opacity:.5}
+.lines{margin:6px 0 8px 44px}
+.lines i{display:block;height:34px;border-bottom:2px dashed var(--line)}
+.rub{display:flex;flex-direction:column;gap:6px;margin:0 0 4px 44px}
+.chkb{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:6px 12px;min-height:44px;font-weight:600;color:var(--ink)}
+.chkb .bx{flex:none;width:24px;height:24px;border:2.5px solid var(--ink2);border-radius:6px;display:grid;place-items:center;font-weight:800;color:var(--accent)}
+.chkb.on{border-color:var(--accent);background:var(--accent-soft)}
+.ak{border-bottom:1px dashed var(--line);padding:9px 0}
+.ak:last-child{border-bottom:0}
+.ak b{display:block;margin-bottom:3px}
+.ak p{margin:4px 0;line-height:1.65}
+.ak.ok b{color:#1f7a3a}
+.ak.bad b{color:#c0392b}
+.ak.lock{color:var(--ink2)}
+
 @media (max-width:900px){
   .book{grid-template-columns:1fr}
   .book::after{display:none}
@@ -1999,6 +2028,70 @@ const QS3 = [
    pat:'After they have calmed down, ... ＝ 在他們冷靜下來之後…。A and B ＝ A 和 B。',
    jump:['g5','g6','g7'], parent:'請孩子用手指比 1-2-3：先冷靜、再談話、問題解決。每個步驟說一句。'},
 ];
+/* ============ 閱讀測驗（仿段考 Part B Reading：是非 3 題、選擇 7 題、手寫問答 2 題，共 14 分） ============ */
+/* tf: a = 'T' 或 'F'；mc: a = 正確選項的位置（0=a, 1=b, 2=c）；j = 回課文找證據的頁面 id */
+const RT1 = {
+  tf: [
+    { q:'Yelling and hitting help people solve conflicts.', a:'F', zh:'大吼和打人可以幫助人們解決衝突。', why:'錯誤。課文說 Yelling, screaming, and hitting do not solve conflicts. They hurt people and make problems worse.（大吼、尖叫和打人都不能解決衝突，還會讓問題更糟。）', j:'r2' },
+    { q:'The text says people should take turns talking.', a:'T', zh:'文章說人們應該輪流說話。', why:'正確。課文說 Take turns talking to let everyone share his or her opinion.（輪流說話，讓每個人都能說出自己的意見。）', j:'r3' },
+    { q:'Compromise means both sides give up something.', a:'T', zh:'妥協的意思是雙方都要放棄一些東西。', why:'正確。課文說 Compromise means both sides must give up something to solve conflicts.（妥協就是雙方都要放棄一些，才能解決衝突。）', j:'r5' },
+  ],
+  mc: [
+    { q:'What is the genre of this text?', qzh:'這篇文章的文體是什麼？', o:['drama','informational text','poem'], a:1, why:'這是資訊類文章（informational text），提供真實的方法和事實，也有醒目的小標題。', j:'prep' },
+    { q:'What can you do when you feel too angry to talk?', qzh:'太生氣而不能好好說話時，可以怎麼做？', o:['Call someone a mean name.','Take deep breaths and count slowly.','Yell until you feel better.'], a:1, why:'課文 Dealing with Anger 列出：Take deep breaths and count slowly.（深呼吸、慢慢數數）。另外兩個是課文說「不可以」的事。', j:'r6' },
+    { q:'What is the author’s purpose for writing this text?', qzh:'作者為什麼要寫這篇文章？', o:['To entertain us with a funny story.','To persuade us to buy a book.','To inform us how to solve conflicts peacefully.'], a:2, why:'作者教我們怎麼處理生氣、怎麼解決衝突，所以是 inform（告知、教導）。', j:'r5' },
+    { q:'Which one is an example of a heading?', qzh:'下面哪一個是「標題」（heading）的例子？', o:['Talking Things Out','Listen carefully to what the other person has to say.','Apologize when you are wrong.'], a:0, why:'heading 是用來標示一個部分的醒目標題。Talking Things Out 是標題；另外兩個是句子。', j:'r7' },
+    { q:'What is the topic of this text?', qzh:'這篇文章的主題是什麼？', o:['playing soccer at school','working with others and solving conflicts','how to bake a cake'], a:1, why:'主題看標題 Working with Others，加上整篇都在談 conflicts（衝突）。', j:'r1' },
+    { q:'What is the main idea of this text?', qzh:'這篇文章的中心主旨是什麼？', o:['Conflicts are always fun.','Only adults can solve conflicts.','People can solve conflicts peacefully by working together.'], a:2, why:'課文最後說 Solving conflicts peacefully takes practice. Work together!（和平解決衝突需要練習，大家一起努力！）', j:'r5' },
+    { q:'Why does the author have two parts called Dealing with Anger and Talking Things Out?', qzh:'為什麼作者要分成「處理憤怒」和「把話說清楚」兩個部分？', o:['To make the text longer.','To show two steps: calm down first, then talk.','To tell two different stories.'], a:1, why:'先用「處理憤怒」的方法冷靜下來，等心情好一點（When you feel a little better），再進行「把話說清楚」。', j:'r6' },
+  ],
+  wr: [
+    { q:'What should people do when they feel too angry to talk?', qzh:'人們太生氣而不能好好說話時，應該怎麼做？', model:'People should calm down by taking deep breaths and counting slowly.', zh:'人們應該用深呼吸、慢慢數數來讓自己冷靜下來。', keys:'calm down / take deep breaths / count slowly / draw a picture / listen to calm music / take a walk', tip:'用 People should … 開頭，再接課文 Dealing with Anger 裡的任何一個方法就可以拿到內容分。', j:'r6' },
+    { q:'How can people solve a conflict together?', qzh:'人們可以怎麼一起解決衝突？', model:'People can solve a conflict by taking turns talking and listening to each other.', zh:'人們可以輪流說話並互相傾聽，來解決衝突。', keys:'take turns talking / listen / use respectful words / apologize / compromise / ask an adult', tip:'用 People can solve a conflict by + V-ing 回答「怎麼做」。也可以答 compromise（妥協）或 ask an adult（請大人幫忙）。', j:'r3' },
+  ],
+};
+
+const RT2 = {
+  tf: [
+    { q:'Sana is invited to the birthday party at the beginning of the story.', a:'F', zh:'故事開頭時，Sana 被邀請參加生日派對。', why:'錯誤。被邀請的是姊姊 Rubina（I’ve been invited to a birthday party!），Sana 是吵著說 I wanna go too! 而且 She’s not invited.', j:'b1' },
+    { q:'Rubina puts her big red lollipop on the top shelf of the fridge.', a:'T', zh:'Rubina 把她的大紅棒棒糖放在冰箱最上層。', why:'正確。課文說 I put my big red lollipop on the top shelf of the fridge to have in the morning.', j:'b4' },
+    { q:'At the end of the story, Sana gives Rubina a green lollipop.', a:'T', zh:'故事結尾，Sana 送給 Rubina 一支綠色棒棒糖。', why:'正確。課文說 Here. She hands me a big green lollipop. After that we’re friends.', j:'b11' },
+  ],
+  mc: [
+    { q:'What is the genre of this story?', qzh:'這個故事的文體是什麼？', o:['realistic fiction','informational text','poem'], a:0, why:'故事是虛構的，但可能發生在現實生活中，所以是寫實小說（realistic fiction）。', j:'prep' },
+    { q:'What did Ami tell Rubina to do at first?', qzh:'Ami（媽媽）一開始叫 Rubina 做什麼？', o:['Leave Sana at home.','Buy Sana a gift.','Call her friend and ask if Sana can come.'], a:2, why:'課文說 You call up your friend and ask if you can bring Sana, or else you can’t go.', j:'b2' },
+    { q:'What is the author’s purpose for writing this story?', qzh:'作者為什麼要寫這個故事？', o:['To entertain us with a story about two sisters.','To inform us with facts about birthday parties.','To persuade us to buy candy.'], a:0, why:'這是寫實小說，用來說故事給讀者聽，所以是 entertain（娛樂）。', j:'b1' },
+    { q:'What point of view is this story told from?', qzh:'這個故事是用誰的視角寫的？', o:['third person','second person','first person'], a:2, why:'敘述者 Rubina 用 I、me、my 來說故事（I’m so excited…），所以是第一人稱。', j:'b1' },
+    { q:'What is the topic of this story?', qzh:'這個故事的主題是什麼？', o:['a school trip','sisters and sharing','a lost pet'], a:1, why:'故事圍繞著姊妹之間的爭吵、分享（share）與和好。', j:'b7' },
+    { q:'What is the main idea of this story?', qzh:'這個故事的中心主旨是什麼？', o:['Birthday parties are boring.','Sharing is only for little kids.','Being kind to your sister can turn a fight into friendship.'], a:2, why:'結尾 Rubina 為 Sana 說話，Sana 也送她綠色棒棒糖，After that we’re friends.（之後我們就成了朋友。）', j:'b11' },
+    { q:'Why did Rubina say, “Don’t make Sana take Maryam to the party”?', qzh:'Rubina 為什麼說「不要讓 Sana 帶 Maryam 去派對」？', o:['She wanted Maryam to go instead.','She knew how it felt and wanted to be kind to Sana.','She did not like parties.'], a:1, why:'Rubina 想起自己被迫帶 Sana 的難堪，所以決定體貼妹妹，不讓她也那麼難受。', j:'b10' },
+  ],
+  wr: [
+    { q:'What problem does Rubina have at the beginning of the story?', qzh:'故事開頭，Rubina 遇到什麼問題？', model:'Rubina has to take her little sister Sana to the birthday party.', zh:'Rubina 必須帶她的小妹 Sana 一起去生日派對。', keys:'take Sana / little sister / has to / birthday party / invited', tip:'題目用 problem（問題）和 beginning（開頭），答案在 b2–b3：Ami 要她帶 Sana 一起去。可以用 Rubina has to … 開頭。', j:'b3' },
+    { q:'What lesson does Rubina learn by the end of the story?', qzh:'到故事結尾，Rubina 學到什麼道理？', model:'Rubina learns that being kind to her sister can make them friends.', zh:'Rubina 學到：對妹妹好，可以讓他們變成朋友。', keys:'kind / share / sister / friends / help', tip:'用 learns that … 開頭。看最後一頁：Rubina 幫 Sana 說話，Sana 送她綠色棒棒糖，After that we’re friends。', j:'b11' },
+  ],
+};
+
+const RT3 = {
+  tf: [
+    { q:'The baker lived in New York.', a:'F', zh:'麵包師傅住在紐約。', why:'錯誤。課文說 Everyone in Philadelphia knew the gingerbread baker.（費城每個人都認識他。）', j:'g1' },
+    { q:'The baker went to join General Washington.', a:'T', zh:'麵包師傅去加入華盛頓將軍。', why:'正確。課文說 He packed his bags and went to join General Washington.', j:'g2' },
+    { q:'The king of England hired other armies to fight the Americans.', a:'T', zh:'英國國王雇用其他國家的軍隊來打美國人。', why:'正確。課文說 The king of England wrote to other rulers and hired THEIR armies to help him squash the revolution.', j:'g4' },
+  ],
+  mc: [
+    { q:'What is the genre of this text?', qzh:'這篇文章的文體是什麼？', o:['poem','fantasy','biography'], a:2, why:'傳記（biography）在講真實人物的人生。課文 p.242 的 Genre Study 有說明。', j:'prep' },
+    { q:'What did the baker tell the soldiers across the bay?', qzh:'麵包師傅對海灣對面的士兵說了什麼？', o:['He had a bakeshop.','He had a big ship.','He had a gun.'], a:0, why:'課文說 “I have a bakeshop . . .” he began.（「我有一間麵包店……」他開口說。）', j:'g6' },
+    { q:'What is the author’s purpose for writing this text?', qzh:'作者為什麼要寫這篇文章？', o:['To inform us about how a baker helped in the Revolution.','To persuade us to join the army.','To scare us with a ghost story.'], a:0, why:'傳記提供真實的人物資訊，也教我們歷史，所以是 inform（告知）。', j:'g7' },
+    { q:'What is the setting of this story?', qzh:'這個故事的背景是什麼？', o:['a farm in space','a school today','Philadelphia during the American Revolution'], a:2, why:'地點是 Philadelphia（費城）、thirteen colonies（十三個殖民地），時間是革命時期。', j:'g1' },
+    { q:'What is the topic of this text?', qzh:'這篇文章的主題是什麼？', o:['a baker who helped win a war','how to bake bread','a king who builds ships'], a:0, why:'標題 Gingerbread for Liberty! 加上整個故事，都在講一位麵包師傅如何幫忙贏得獨立戰爭。', j:'g1' },
+    { q:'What is the main idea of this text?', qzh:'這篇文章的中心主旨是什麼？', o:['Only soldiers can help their country.','Anyone can help their country in their own way.','Gingerbread is the best food in the world.'], a:1, why:'麵包師傅不是將軍，但他用自己的本領（烘焙和善意）幫助了國家（Somehow, he had to find a way to help.）。', j:'g2' },
+    { q:'Why did the baker row across the bay at night?', qzh:'麵包師傅為什麼在夜裡划船渡過海灣？', o:['To catch fish.','To hide from his wife.','To talk to the hired soldiers and persuade them.'], a:2, why:'課文說 Let me go speak to them. Perhaps I can persuade them we are not their enemies.（讓我去跟他們談談，也許能說服他們。）', j:'g5' },
+  ],
+  wr: [
+    { q:'Why did the baker go to join General Washington?', qzh:'麵包師傅為什麼去加入華盛頓將軍？', model:'The baker went to join General Washington because he loved his country and wanted to help.', zh:'麵包師傅去加入華盛頓將軍，因為他愛他的國家，想要幫忙。', keys:'loved his country / wanted to help / find a way to help / fight for America', tip:'用 because 回答「為什麼」。答案在課文 p.248：he loved his country、he had to find a way to help。', j:'g2' },
+    { q:'How did the baker help the Americans win?', qzh:'麵包師傅如何幫助美國人贏得勝利？', model:'The baker talked to the hired soldiers about his bakeshop, and they stopped fighting.', zh:'麵包師傅向被雇來的士兵說起他的麵包店，於是他們不再打仗了。', keys:'talked to the soldiers / bakeshop / gingerbread / persuaded / switch sides', tip:'用過去式（talked、persuaded）回答。答案在 g5–g7：他去說服士兵，結果 These hired armies seem to disappear!', j:'g6' },
+  ],
+};
 /* ============ 小工具 ============ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -2128,14 +2221,14 @@ const ART = {
 
 /* ============ 狀態 ============ */
 const S = { voiceURI: null, bookId: null, view: 'shelf', i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
-const P = { done: {}, pos: {} };
+const P = { done: {}, pos: {}, rt: {} };
 const PKEY = 'wwo-ebook-v1';
 let BOOK = null, SPREADS = [], QS = [], countable = [];
 const QSTATE = {};
 function loadP() {
   try {
     const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
-    P.done = j.done || {}; P.pos = j.pos || {};
+    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {};
     if (!j.pos && typeof j.i === 'number') P.pos.wwo = j.i;
     if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId;
   } catch (e) { }
@@ -2143,7 +2236,7 @@ function loadP() {
 function saveP() {
   try {
     if (BOOK && S.view === 'book') P.pos[BOOK.id] = S.i;
-    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, mode: S.mode, voiceURI: S.voiceURI }));
+    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, mode: S.mode, voiceURI: S.voiceURI }));
   } catch (e) { }
 }
 
@@ -2190,7 +2283,8 @@ function prepBook(bk) {
       QSTATE[q.pid] = { placed: done && q.order ? [...q.order] : [], wrong: false, done };
     }
   });
-  bk.countable = bk.spreads.filter(s => s.kind === 'read' || s.kind === 'q');
+  if (bk.rt) bk.spreads.push({ id: 'rt', pid: bk.kp + 'rt', kind: 'rt', label: 'Reading Test · 閱讀測驗', rt: bk.rt });
+  bk.countable = bk.spreads.filter(s => s.kind === 'read' || s.kind === 'q' || s.kind === 'rt');
 }
 const SP = () => SPREADS[S.i];
 
@@ -2405,7 +2499,7 @@ function rightCover() {
    <li><span>點任何一句，可以單獨再聽一次。虛線的單字點一下，會出現中文意思。</span></li>
    <li><span>右頁是教師手冊：中英對照、單字、片語、句型、動詞三態、考試重點。</span></li>
    <li><span>選一句課文，按「錄這句」，錄下自己的聲音。之後選「我的聲音」，翻頁時就會播放孩子自己的朗讀。</span></li>
-   <li><span>最後 ${n + 1} 頁是考前練習，就是段考口試的${nn}題。${fill ? '填完句子就能得到星星。' : '把字塊排成完整的句子，就能得到星星。'}</span></li>
+   <li><span>最後 ${n + 2} 頁是考前練習和閱讀測驗。考前練習是段考口試的${nn}題，${fill ? '填完句子就能得到星星。' : '把字塊排成完整的句子就能得到星星。'}閱讀測驗仿照段考的是非題、選擇題和手寫問答題。</span></li>
   </ol></div>
   <div class="sec parent"><h3>給家長的一週練習法</h3>
    <p><b>第 1 天：</b>聽。每頁自動朗讀，孩子手指著字跟讀。</p>
@@ -2414,7 +2508,7 @@ function rightCover() {
    <p><b>第 4 天：</b>說。孩子對著家長說出${nn}題答案，並錄下來聽一聽。</p></div>
   <div class="sec"><h3>關於錄音與朗讀</h3>
    <p>朗讀使用裝置內建的英文語音，可以用上方的「聲音」按鈕換一個比較清楚的聲音。錄音只存在這台裝置的瀏覽器裡，不會上傳到網路，換裝置或清除瀏覽資料就會消失。</p></div>
-  <div class="sec exam"><h3>從哪裡開始</h3><div class="jumps"><button class="btn" data-act="goto" data-id="prep">課前準備</button><button class="btn" data-act="goto" data-id="${BOOK.startId}">從課文開始</button><button class="btn" data-act="goto" data-id="tp">直接去考前練習</button><button class="btn" data-act="shelf">回書櫃</button></div></div>`;
+  <div class="sec exam"><h3>從哪裡開始</h3><div class="jumps"><button class="btn" data-act="goto" data-id="prep">課前準備</button><button class="btn" data-act="goto" data-id="${BOOK.startId}">從課文開始</button><button class="btn" data-act="goto" data-id="tp">直接去考前練習</button><button class="btn" data-act="goto" data-id="rt">閱讀測驗</button><button class="btn" data-act="shelf">回書櫃</button></div></div>`;
 }
 
 /* ============ 考前練習 ============ */
@@ -2509,6 +2603,7 @@ function render(dir = 0) {
   if (sp.kind === 'cover') { L.className = 'page left coverpg'; L.style.background = BOOK.coverBg; L.innerHTML = leftCover(); R.innerHTML = rightCover(); }
   else if (sp.kind === 'read') { L.innerHTML = leftRead(sp); R.innerHTML = rightRead(sp); }
   else if (sp.kind === 'tpintro') { L.innerHTML = leftTp(); R.innerHTML = rightTp(); }
+  else if (sp.kind === 'rt') { L.innerHTML = leftRt(sp); R.innerHTML = rightRt(sp); }
   else { L.innerHTML = leftQ(sp); R.innerHTML = rightQ(sp); }
   $('#brandTitle').textContent = BOOK.title; $('#brandSub').textContent = `by ${BOOK.author} · 課本 ${BOOK.pages}`;
   updDock(); updStars();
@@ -2555,9 +2650,9 @@ const go = d => goTo(S.i + d, d);
 
 /* ============ 目錄 ============ */
 function openToc() {
-  const grp = (t, ids) => `<h4>${t}</h4>` + ids.map(sp => { const idx = SPREADS.indexOf(sp); return `<button class="toc-item${idx === S.i ? ' cur' : ''}" data-act="tocgo" data-i="${idx}"><span class="t">${esc(sp.label)}</span>${(sp.kind === 'read' || sp.kind === 'q') ? starsHtml(P.done[sp.id]) : ''}</button>`; }).join('');
+  const grp = (t, ids) => `<h4>${t}</h4>` + ids.map(sp => { const idx = SPREADS.indexOf(sp); return `<button class="toc-item${idx === S.i ? ' cur' : ''}" data-act="tocgo" data-i="${idx}"><span class="t">${esc(sp.label)}</span>${(sp.kind === 'read' || sp.kind === 'q' || sp.kind === 'rt') ? starsHtml(P.done[sp.pid]) : ''}</button>`; }).join('');
   $('#tocPanel').innerHTML = `<h2>目錄</h2><button class="btn sm" data-act="tocclose" style="margin-bottom:6px">關閉</button>` +
-    grp('封面', SPREADS.filter(s => s.kind === 'cover')) + grp('課前準備與課文', SPREADS.filter(s => s.kind === 'read')) + grp('考前練習（口試十一題）', SPREADS.filter(s => s.kind === 'tpintro' || s.kind === 'q'));
+    grp('封面', SPREADS.filter(s => s.kind === 'cover')) + grp('課前準備與課文', SPREADS.filter(s => s.kind === 'read')) + grp('考前練習（口試十一題）', SPREADS.filter(s => s.kind === 'tpintro' || s.kind === 'q')) + grp('閱讀測驗', SPREADS.filter(s => s.kind === 'rt'));
   $('#toc').hidden = false;
 }
 
@@ -2602,6 +2697,77 @@ function checkTiles(sp) {
     st.wrong = true; $('#scr').innerHTML = scrambleHtml(q); toast('再看看，想一想句子的順序', 2000);
   }
 }
+
+/* ============ 閱讀測驗（仿段考 Part B） ============ */
+const RTW = [1, .5, .5];
+const RTCHK = ['Content 內容 (1)', 'Complete sentence 完整句子 (0.5)', 'Capital / Period 大寫與句號 (0.5)'];
+function rtState(sp) { return P.rt[sp.pid] || (P.rt[sp.pid] = { a: {}, c: {} }); }
+function rtItem(sp, k) { const rt = sp.rt; return k <= 3 ? rt.tf[k - 1] : k <= 10 ? rt.mc[k - 4] : rt.wr[k - 11]; }
+function rtScore(sp) {
+  const R = rtState(sp), rt = sp.rt; let o = 0, n = 0, w = 0, wc = 0;
+  rt.tf.forEach((x, i) => { const k = i + 1; if (R.a[k] != null) { n++; if (R.a[k] === x.a) o++; } });
+  rt.mc.forEach((x, i) => { const k = i + 4; if (R.a[k] != null) { n++; if (R.a[k] === x.a) o++; } });
+  rt.wr.forEach((x, i) => { const c = R.c[i + 11] || []; c.forEach((v, j) => { if (v) { w += RTW[j]; wc++; } }); });
+  return { o, n, w, total: o + w, wc };
+}
+function rtOpt(R, k, x, v, label, type) {
+  const done = R.a[k] != null, right = type === 'tf' ? x.a : x.a;
+  const cls = done ? (v === right ? ' right' : (R.a[k] === v ? ' wrong' : ' dim')) : '';
+  return `<button class="ropt${cls}" data-act="rtans" data-n="${k}" data-t="${type}" data-v="${v}" ${done ? 'disabled' : ''}>${label}</button>`;
+}
+function leftRt(sp) {
+  const R = rtState(sp), rt = sp.rt, L = ['a', 'b', 'c'];
+  const qline = (k, q) => `<div class="rqt"><span class="n">${k}</span><button class="rqs" data-act="rtspeak" data-n="${k}">${esc(q)}</button></div>`;
+  let h = `<div class="rtp"><div class="qbadge">Reading Test 閱讀測驗 · 滿分 14</div>
+  <p class="rtdir"><b>Directions:</b> Read the statements below. Choose <b>True</b> if it is correct or <b>False</b> if it is incorrect. (1 point each)</p>`;
+  rt.tf.forEach((x, i) => { const k = i + 1; h += `<div class="rq">${qline(k, x.q)}<div class="rtopts">${rtOpt(R, k, x, 'T', 'True', 'tf')}${rtOpt(R, k, x, 'F', 'False', 'tf')}</div></div>`; });
+  h += `<p class="rtdir"><b>Directions:</b> Read each question and choose the correct answer. (1 point each)</p>`;
+  rt.mc.forEach((x, i) => { const k = i + 4; h += `<div class="rq">${qline(k, x.q)}<div class="rzh">${esc(x.qzh)}</div><div class="rtopts col">${x.o.map((t, j) => rtOpt(R, k, x, j, `<b>${L[j]})</b> ${esc(t)}`, 'mc')).join('')}</div></div>`; });
+  h += `<p class="rtdir"><b>Directions:</b> Read the questions carefully, then write a <b>complete sentence</b> to answer the question. You may use a sentence from the story. (2 points each)</p>`;
+  rt.wr.forEach((x, i) => {
+    const k = i + 11, c = R.c[k] || [];
+    h += `<div class="rq">${qline(k, x.q)}<div class="rzh">${esc(x.qzh)}</div><div class="lines"><i></i><i></i><i></i></div><div class="rzh">請把答案手寫在紙上。寫完後，自己或請家長檢查：</div>
+    <div class="rub">${RTCHK.map((t, j) => `<button class="chkb${c[j] ? ' on' : ''}" data-act="chk" data-n="${k}" data-j="${j}"><span class="bx">${c[j] ? '✓' : ''}</span>${t}</button>`).join('')}</div></div>`;
+  });
+  const s = rtScore(sp);
+  h += `<div class="win" id="rtscore">${s.n < 10 ? `已作答 ${s.n} / 10 題，加油！` : `選擇與是非：答對 ${s.o} / 10 題`}　目前總分 ${s.total} / 14</div>
+  <div class="tctl"><button class="btn sm" data-act="rtreset">重新作答</button></div></div>`;
+  return h;
+}
+function rightRt(sp) {
+  const R = rtState(sp), rt = sp.rt, L = ['a', 'b', 'c'], s = rtScore(sp);
+  let h = `<div class="rh"><h2>閱讀測驗手冊</h2><span>${esc(BOOK.title)}</span></div>
+  <div class="sec exam"><h3>目前分數</h3><p style="font-size:1.4rem;font-weight:800;margin:4px 0">${s.total} / 14</p>
+  <p>是非題與選擇題 ${s.o} / ${s.n}（共 10 題）；手寫問答 ${s.w} / 4</p>
+  <p style="margin-top:6px">選擇或是非題一旦點選就不能改，像真正的考試一樣。想再試一次，按左頁最下面的「重新作答」。答對 8 題以上會得到星星。</p></div>
+  <div class="sec"><h3>答案與解析 <small>作答後才會出現</small></h3>`;
+  for (let k = 1; k <= 10; k++) {
+    const x = rtItem(sp, k), ans = R.a[k];
+    if (ans == null) { h += `<div class="ak lock"><b>Q${k}</b><p>先在左頁作答，這裡就會出現答案。</p></div>`; continue; }
+    const ok = ans === x.a, right = k <= 3 ? (x.a === 'T' ? 'True' : 'False') : `${L[x.a]}) ${x.o[x.a]}`;
+    h += `<div class="ak ${ok ? 'ok' : 'bad'}"><b>Q${k}　${ok ? '答對了' : '再想想'}　正確答案：${esc(right)}</b>${k <= 3 ? `<p class="zh">${esc(x.zh)}</p>` : ''}<p>${esc(x.why)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button></div>`;
+  }
+  h += `</div><div class="sec"><h3>手寫問答的參考答案</h3>`;
+  rt.wr.forEach((x, i) => {
+    const k = i + 11;
+    h += `<div class="ak"><b>Q${k}　${esc(x.q)}</b>` + (R.show && R.show[k] ? `<button class="tr" data-act="rtmodel" data-n="${k}"><span class="en">${esc(x.model)}</span><span class="zh">${esc(x.zh)}</span></button><p><b>可以用的關鍵字：</b>${esc(x.keys)}</p><p>${esc(x.tip)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button>` : `<p>先自己寫寫看，再偷看參考答案。</p><button class="btn reveal sm" data-act="rtshow" data-n="${k}">顯示參考答案</button>`) + `</div>`;
+  });
+  h += `</div><div class="sec exam"><h3>寫完整句子的三個檢查</h3><ol class="steps">
+   <li><span><b>Content 內容（1 分）：</b>有沒有回答題目問的事？可以直接用課文裡的句子。</span></li>
+   <li><span><b>Complete sentence 完整句子（0.5 分）：</b>有「誰」和「做什麼」嗎？可以把題目的字放進答案開頭，例如 The baker went …。</span></li>
+   <li><span><b>Capital / Period 大寫與句號（0.5 分）：</b>句子第一個字母大寫，最後有句號。人名和地名也要大寫。</span></li></ol></div>
+  <div class="sec parent"><h3>家長怎麼帶</h3><p>先讓孩子做左頁的是非和選擇題，看右頁的解析。手寫題請孩子自己先寫，再用三個檢查對照。你不需要懂每個字，只要看「有沒有句號、第一個字母有沒有大寫」，再請他唸一遍答案。</p></div>`;
+  return h;
+}
+function rtRefresh(sp) {
+  const L = $('#pgL'), R = $('#pgR'), a = L.scrollTop, b = R.scrollTop;
+  L.innerHTML = leftRt(sp); R.innerHTML = rightRt(sp); L.scrollTop = a; R.scrollTop = b; saveP();
+}
+function rtCheckDone(sp) {
+  const s = rtScore(sp);
+  if (s.n >= 10) { if (s.o >= 8) award(sp.pid); else toast(`答對 ${s.o} / 10，再試一次拿星星！`, 2800); }
+}
+
 function speakQuick(t) { stopAll(); setTimeout(() => speakText(t), 160); }
 
 document.addEventListener('click', async e => {
@@ -2621,6 +2787,12 @@ document.addEventListener('click', async e => {
     case 'goto': { const i = SPREADS.findIndex(s => s.id === t.dataset.id); goTo(i, i > S.i ? 1 : -1); break; }
     case 'tocgo': $('#toc').hidden = true; goTo(+t.dataset.i, +t.dataset.i > S.i ? 1 : -1); break;
     case 'voicepick': { const v = speechSynthesis.getVoices().find(x => x.voiceURI === t.dataset.u); if (v) { voice = v; S.voiceURI = v.voiceURI; saveP(); $$('[data-act="voicepick"]').forEach(b => b.classList.toggle('cur', b === t)); speakQuick('Hello! Let us read together.'); } break; }
+    case 'rtans': { const R = rtState(sp), k = +t.dataset.n; if (R.a[k] != null) break; R.a[k] = t.dataset.t === 'tf' ? t.dataset.v : +t.dataset.v; rtRefresh(sp); rtCheckDone(sp); break; }
+    case 'chk': { const R = rtState(sp), k = +t.dataset.n, j = +t.dataset.j; const c = R.c[k] || (R.c[k] = [0, 0, 0]); c[j] = c[j] ? 0 : 1; rtRefresh(sp); break; }
+    case 'rtshow': { const R = rtState(sp); (R.show || (R.show = {}))[+t.dataset.n] = 1; rtRefresh(sp); break; }
+    case 'rtmodel': { const x = rtItem(sp, +t.dataset.n); playItems([{ text: x.model }], { mark: false, useMine: false }); break; }
+    case 'rtspeak': { const x = rtItem(sp, +t.dataset.n); playItems([{ text: x.q }], { mark: false, useMine: false }); break; }
+    case 'rtreset': { const R = rtState(sp); R.a = {}; R.c = {}; R.show = {}; rtRefresh(sp); $('#pgL').scrollTop = 0; toast('已經重新開始，加油！'); break; }
     case 'shelf': showShelf(); break;
     case 'openbook': openBook(t.dataset.b); break;
     case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
@@ -2821,9 +2993,9 @@ Object.assign(ART, {
 });
 /* ============ 書櫃與開始 ============ */
 const BOOKS = [
-  { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2 },
-  { id: 'wwo', kp: '', title: 'Working with Others', zh: '與他人合作', author: 'Robin Nelson', pages: 'pp.228–238', when: '本週課文', cover: 'cover', coverBg: '#0f857d', qmode: 'fill', startId: 'r1', spreads: SPREADS1, qs: QS1 },
-  { id: 'gb', kp: 'gb-', title: 'Gingerbread for Liberty!', zh: '為了自由的薑餅', author: 'Mara Rockliff', pages: 'pp.242–260', when: '本週課文', cover: 'cover3', coverBg: '#8a4b2a', qmode: 'fill', startId: 'g1', spreads: SPREADS3, qs: QS3 },
+  { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2, rt: RT2 },
+  { id: 'wwo', kp: '', title: 'Working with Others', zh: '與他人合作', author: 'Robin Nelson', pages: 'pp.228–238', when: '本週課文', cover: 'cover', coverBg: '#0f857d', qmode: 'fill', startId: 'r1', spreads: SPREADS1, qs: QS1, rt: RT1 },
+  { id: 'gb', kp: 'gb-', title: 'Gingerbread for Liberty!', zh: '為了自由的薑餅', author: 'Mara Rockliff', pages: 'pp.242–260', when: '本週課文', cover: 'cover3', coverBg: '#8a4b2a', qmode: 'fill', startId: 'g1', spreads: SPREADS3, qs: QS3, rt: RT3 },
 ];
 (async function start() {
   loadP();
