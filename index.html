@@ -282,6 +282,40 @@ table.vt tr:hover td{background:var(--accent-soft)}
 .ak.bad b{color:#c0392b}
 .ak.lock{color:var(--ink2)}
 
+/* levels + typing + test results */
+.lvtabs{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap;font-family:var(--f-ui)}
+.lvt{display:flex;align-items:center;gap:6px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:6px 12px;min-height:46px;font-weight:700;font-size:.9rem}
+.lvt .lv{background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:1px 8px}
+.lvt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.lvt[aria-pressed="true"] .lv{background:rgba(255,255,255,.25);color:inherit}
+.lvt .star{width:18px;height:18px}
+.tpitem .s3{display:inline-flex;gap:0;margin-left:auto}
+.tpitem .s3 .star{width:16px;height:16px}
+.listenbox{background:var(--accent-soft);border:3px dashed var(--accent);border-radius:18px;padding:16px;margin:0 0 16px;font-family:var(--f-ui)}
+.listenbox .lbt{font-weight:800;font-size:1.1rem;margin-bottom:10px}
+.lbb{display:flex;gap:8px;flex-wrap:wrap}
+.trow{margin:0 0 12px}
+.tlab{font-family:var(--f-ui);font-size:.8rem;font-weight:800;color:var(--accent);letter-spacing:.06em;margin-bottom:3px}
+.tline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.starter{font-weight:700;font-size:calc(var(--fs)*1.25rem);background:var(--hl);color:var(--hl-ink);border-radius:10px;padding:4px 12px}
+.tin{flex:1 1 220px;min-width:0;font-family:var(--f-read);font-size:calc(var(--fs)*1.25rem);border:3px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--card);color:var(--ink);min-height:52px}
+.tin:focus{outline:none;border-color:var(--accent)}
+.trow.ok .tin{border-color:#2e9e4a;background:#e6f6e6}
+.trow.bad .tin{border-color:#d64b3c}
+.tmsg{font-family:var(--f-ui);font-size:.95rem;margin:5px 0 0;color:#b03a2e;font-weight:600}
+.tmsg.hint{color:var(--accent)}
+.tmsg.ans{color:var(--ink);font-family:var(--f-read);font-weight:600}
+.ropt.sel{background:var(--hl);border-color:var(--accent);color:var(--hl-ink)}
+.rsub{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 4px;font-size:.9rem;color:var(--ink2)}
+.rres{border:3px solid var(--accent);background:var(--accent-soft);border-radius:18px;padding:14px 16px;margin:0 0 16px}
+.rres h3{margin:0 0 6px;font-size:1.3rem}
+.rres.all{background:#e6f6e6;border-color:#2e9e4a}
+.wq{background:var(--card);border:2px solid #e0b4ac;border-radius:14px;padding:10px 12px;margin:10px 0}
+.wq b{display:block;margin-bottom:4px}
+.wq .mine{color:#b03a2e;font-weight:600}
+.wq .rc{color:#1f7a3a;font-weight:700}
+.wq p{margin:6px 0;line-height:1.6}
+
 @media (max-width:900px){
   .book{grid-template-columns:1fr}
   .book::after{display:none}
@@ -2220,7 +2254,7 @@ const ART = {
 };
 
 /* ============ 狀態 ============ */
-const S = { voiceURI: null, bookId: null, view: 'shelf', i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
+const S = { voiceURI: null, bookId: null, view: 'shelf', lv: 1, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
 const P = { done: {}, pos: {}, rt: {} };
 const PKEY = 'wwo-ebook-v1';
 let BOOK = null, SPREADS = [], QS = [], countable = [];
@@ -2252,6 +2286,41 @@ function solveTiles(q) {
   }
   return used.size === q.tiles.length ? order : null;
 }
+
+const qn = s => s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
+const lk = s => qn(s).toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+function makeRows(text, alts) {
+  const rows = [];
+  text.split('\n').forEach(line => {
+    let label = ''; const m = line.match(/^(Beginning|Middle|End):\s*/); if (m) { label = m[1]; line = line.slice(m[0].length); }
+    const parts = (line.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) || [line]).map(x => x.trim()).filter(Boolean);
+    parts.forEach((p, i) => {
+      const w = p.split(' '), n = Math.min(4, Math.max(2, Math.round(w.length * .25)));
+      rows.push({ label: i === 0 ? label : '', text: p, starter: w.slice(0, n).join(' ') });
+    });
+  });
+  if (rows.length === 1 && alts && alts.length) rows[0].alts = alts;
+  return rows;
+}
+function typedCheck(input, row) {
+  const s = qn(input); if (!s) return { ok: false, msg: '還沒有輸入喔。' };
+  const cands = [row.text, ...(row.alts || [])], k = lk(s), hit = cands.find(c => lk(c) === k);
+  if (!hit) {
+    let best = 0; cands.forEach(c => { const a = lk(c).split(' '), b = k.split(' '); let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; best = Math.max(best, i); });
+    return { ok: false, msg: best ? `前面「${k.split(' ').slice(0, best).join(' ')}」是對的，後面再檢查一下。` : '開頭不太一樣，按「提示」看看。' };
+  }
+  const issues = [], first = (s.match(/[A-Za-z]/) || [''])[0];
+  if (first && first !== first.toUpperCase()) issues.push('句首的第一個字母要大寫');
+  if (!/[.!?]["”’')]*$/.test(s)) issues.push('句尾要有句號');
+  hit.split(' ').slice(1).map(w => w.replace(/[^A-Za-z’']/g, '')).filter(w => /^[A-Z]/.test(w)).forEach(w => { if (!new RegExp('(^|[^A-Za-z])' + w.replace(/’/g, "['’]") + '(?![A-Za-z])').test(s)) issues.push(`「${w}」要大寫`); });
+  return issues.length ? { ok: false, msg: '內容對了！但是' + [...new Set(issues)].join('、') + '。' } : { ok: true };
+}
+function nextWord(input, row) {
+  const k = lk(input), b = k ? k.split(' ') : []; let best = null, bi = -1;
+  [row.text, ...(row.alts || [])].forEach(c => { const a = lk(c).split(' '); let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; if (i > bi) { bi = i; best = a; } });
+  if (bi >= best.length) return '句子的字都對了，記得句尾的句號。';
+  return `下一個字是「${best[bi]}」（共 ${best[bi].length} 個字母）。`;
+}
 function prepBook(bk) {
   bk.spreads.forEach(sp => {
     sp.pid = bk.kp + sp.id;
@@ -2266,25 +2335,31 @@ function prepBook(bk) {
       } else sp._re = null;
     }
   });
+  const newT = () => ({ vals: [], res: [], hm: [], done: false, shown: false, zh: false });
   bk.qs.forEach(q => {
     q.pid = bk.kp + 'q' + q.no;
     bk.spreads.push({ id: 'q' + q.no, pid: q.pid, kind: 'q', label: `第 ${q.no} 題 · ${q.cat}`, q });
-    const done = !!P.done[q.pid];
     if (bk.qmode === 'fill') {
       q.blanks = [...q.frame.matchAll(/\{\{(.+?)\}\}/g)].map(m => m[1]);
       q.full = q.frame.replace(/\{\{(.+?)\}\}/g, '$1');
       q.say = q.full.replace(/\n/g, ' ').replace(/(Beginning|Middle|End):\s*/g, '');
       let seed = q.no * 7919; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
       q.shuf = [...q.bank].sort(() => rnd() - .5);
-      QSTATE[q.pid] = { fills: done ? [...q.blanks] : q.blanks.map(() => null), hint: {}, done };
+      q.model = q.full;
+      QSTATE[q.pid] = { fills: q.blanks.map(() => null), hint: {}, done: false };
     } else {
       q.full = q.target; q.ans = q.ans || q.target; q.say = q.ans.replace(/\n/g, ' ');
       q.order = solveTiles(q);
-      QSTATE[q.pid] = { placed: done && q.order ? [...q.order] : [], wrong: false, done };
+      q.model = q.ans;
+      QSTATE[q.pid] = { placed: [], wrong: false, done: false };
     }
+    q.rows = makeRows(q.model, bk.qmode === 'unscramble' ? q.alts : null);
+    QSTATE[q.pid].t = { 2: newT(), 3: newT() };
   });
   if (bk.rt) bk.spreads.push({ id: 'rt', pid: bk.kp + 'rt', kind: 'rt', label: 'Reading Test · 閱讀測驗', rt: bk.rt });
-  bk.countable = bk.spreads.filter(s => s.kind === 'read' || s.kind === 'q' || s.kind === 'rt');
+  const keys = [];
+  bk.spreads.forEach(s => { if (s.kind === 'read' || s.kind === 'rt') keys.push(s.pid); else if (s.kind === 'q') keys.push(s.pid, s.pid + '.2', s.pid + '.3'); });
+  bk.countable = keys.map(pid => ({ pid }));
 }
 const SP = () => SPREADS[S.i];
 
@@ -2462,7 +2537,7 @@ function updDock() {
       <button class="btn sm" data-act="delrec" ${has ? '' : 'disabled'} aria-label="刪除這句的錄音">${ICON.trash}</button>
       <div class="hint">${x ? '選取的句子：' + esc(x.en.length > 34 ? x.en.slice(0, 34) + '…' : x.en) : '點一句課文，就能聽、能錄那一句。虛線單字可以點來看中文。'}</div>`;
   } else if (sp.kind === 'q') {
-    const q = sp.q, st = QSTATE[q.pid], key = q.pid, has = DB.keys.has(key), isRec = S.recKey === key, ok = st.done || S.reveal[q.pid];
+    const q = sp.q, st = QSTATE[q.pid], key = q.pid, has = DB.keys.has(key), isRec = S.recKey === key, ok = qAny(q) || S.reveal[q.pid];
     d.innerHTML = `
       ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="qans" ${ok ? '' : 'disabled'}>${ICON.spk}聽完整答案</button>`}
       ${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec">${ICON.mic}錄我的回答</button>`}
@@ -2499,7 +2574,7 @@ function rightCover() {
    <li><span>點任何一句，可以單獨再聽一次。虛線的單字點一下，會出現中文意思。</span></li>
    <li><span>右頁是教師手冊：中英對照、單字、片語、句型、動詞三態、考試重點。</span></li>
    <li><span>選一句課文，按「錄這句」，錄下自己的聲音。之後選「我的聲音」，翻頁時就會播放孩子自己的朗讀。</span></li>
-   <li><span>最後 ${n + 2} 頁是考前練習和閱讀測驗。考前練習是段考口試的${nn}題，${fill ? '填完句子就能得到星星。' : '把字塊排成完整的句子就能得到星星。'}閱讀測驗仿照段考的是非題、選擇題和手寫問答題。</span></li>
+   <li><span>最後 ${n + 2} 頁是考前練習和閱讀測驗。考前練習是段考口試的${nn}題，每題有三關：${fill ? '填空' : '排句子'}、引導打字、只聽問題打字，每過一關得一顆星星，可以反覆練習。閱讀測驗仿照段考的是非題、選擇題和手寫問答題。</span></li>
   </ol></div>
   <div class="sec parent"><h3>給家長的一週練習法</h3>
    <p><b>第 1 天：</b>聽。每頁自動朗讀，孩子手指著字跟讀。</p>
@@ -2515,8 +2590,8 @@ function rightCover() {
 function leftTp() {
   const fill = BOOK.qmode === 'fill';
   return `<div class="read"><h3 style="margin-top:0">Test Prep 考前練習</h3>
-  <p style="font-size:.6em;font-family:var(--f-ui);line-height:1.7">段考口試的${BOOK.qs.length === 11 ? '十一' : BOOK.qs.length}題。每一題先看中文提示，${fill ? '再把英文句子填完整' : '再把字塊排成完整的英文句子'}，最後大聲說出來並錄下來。</p></div>
-  <div class="tpgrid" style="font-family:var(--f-ui)">${QS.map(q => `<button class="tpitem" data-act="goto" data-id="q${q.no}"><span class="n">${q.no}</span><span class="t"><b>${esc(q.cat)}</b><small>${esc(q.zh)} · ${esc(q.qzh)}</small></span>${starsHtml(P.done[q.pid])}</button>`).join('')}</div>`;
+  <p style="font-size:.6em;font-family:var(--f-ui);line-height:1.7">段考口試的${BOOK.qs.length === 11 ? '十一' : BOOK.qs.length}題。每一題先看中文提示，${fill ? '再把英文句子填完整' : '再把字塊排成完整的英文句子'}，最後大聲說出來並錄下來。每一題有三關：第 1 關${fill ? '填空' : '排句子'}、第 2 關引導打字、第 3 關只聽問題再打出整句，可以一直重複練習。</p></div>
+  <div class="tpgrid" style="font-family:var(--f-ui)">${QS.map(q => `<button class="tpitem" data-act="goto" data-id="q${q.no}"><span class="n">${q.no}</span><span class="t"><b>${esc(q.cat)}</b><small>${esc(q.zh)} · ${esc(q.qzh)}</small></span><span class="s3">${starsHtml(P.done[q.pid])}${starsHtml(P.done[q.pid + '.2'])}${starsHtml(P.done[q.pid + '.3'])}</span></button>`).join('')}</div>`;
 }
 function rightTp() {
   const fill = BOOK.qmode === 'fill';
@@ -2526,6 +2601,8 @@ function rightTp() {
     <li><span><b>${fill ? '填' : '排'}：</b>${fill ? '點選正確的單字，把英文句子填完。填錯的單字會抖一下，不用擔心。' : '點字塊，排成完整的英文句子。排錯時可以點已經放好的字塊拿掉，也可以按「提示」。'}</span></li>
     <li><span><b>說：</b>按「聽完整答案」，跟著唸三遍，再自己說一遍。</span></li>
     <li><span><b>錄：</b>錄下自己的回答，和標準答案比一比。</span></li></ol></div>
+  <div class="sec"><h3>三個關卡</h3><ol class="steps"><li><span><b>第 1 關：</b>${fill ? '點單字，把句子填完整。' : '點字塊，排成完整的句子。'}</span></li><li><span><b>第 2 關：</b>只給開頭的幾個字，後面自己打。</span></li><li><span><b>第 3 關：</b>只聽問題，題目文字不會出現，要自己打出整個答句。</span></li></ol>
+  <p>每一關都可以按「清除重做」或「再練習一次」，想練幾次都可以。星星拿到後不會不見。</p></div>
   <div class="sec"><h3>每一題怎麼開頭</h3><ul class="plist">${QS.map(q => `<li><span class="e">Q${q.no}　${esc(q.ans.replace(/\n.*/s, '').split(' ').slice(0, 7).join(' '))} …</span><span class="z">${esc(q.zh)}</span></li>`).join('')}</ul></div>
   <div class="sec"><h3>萬用句型</h3><ul class="plist">
     <li><span class="e">I know because ...</span><span class="z">我知道是因為…</span></li>
@@ -2562,35 +2639,76 @@ function scrambleHtml(q) {
   return `<div class="tray${st.wrong ? ' wrong' : ''}" id="tray">${tray}</div><div class="bank" id="tbank">${bank}</div>
   <div class="tctl"><button class="btn sm" data-act="tclear">清除重排</button>${q.order ? '<button class="btn sm" data-act="thint">提示</button>' : ''}</div>`;
 }
+const lvKey = (q, l) => l === 1 ? q.pid : q.pid + '.' + l;
+const qAny = q => { const st = QSTATE[q.pid]; return st.done || st.t[2].done || st.t[3].done; };
+const qDoneLv = (q, l) => { const st = QSTATE[q.pid]; return l === 1 ? st.done : st.t[l].done; };
 function winHtml(q) {
-  const st = QSTATE[q.pid]; if (!st.done) return '';
-  return `<div class="win">太棒了！完整的句子是：<div class="ans" style="margin-top:6px;font-weight:700">${nl(q.full)}</div><div style="margin-top:8px;font-weight:500">現在換你大聲說一遍，再按「錄我的回答」。</div></div>`;
+  const lv = S.lv; if (!qDoneLv(q, lv)) return '';
+  return `<div class="win">太棒了！完整的句子是：<div class="ans" style="margin-top:6px;font-weight:700">${nl(q.model)}</div><div style="margin-top:8px;font-weight:500">現在換你大聲說一遍，再按「錄我的回答」。</div>
+  <div class="tctl" style="margin-top:10px"><button class="btn sm" data-act="qreset">再練習一次</button>${lv < 3 ? `<button class="btn sm pri" data-act="qlv" data-lv="${lv + 1}">挑戰第 ${lv + 1} 關</button>` : ''}</div></div>`;
+}
+function lvTabs(q) {
+  const labs = [BOOK.qmode === 'fill' ? '填空' : '排句子', '引導打字', '聽題打字'];
+  return `<div class="lvtabs">${[1, 2, 3].map(l => `<button class="lvt" data-act="qlv" data-lv="${l}" aria-pressed="${S.lv === l}"><span class="lv">第 ${l} 關</span><span class="lb">${labs[l - 1]}</span>${starsHtml(P.done[lvKey(q, l)])}</button>`).join('')}</div>`;
+}
+function typedHtml(q, lv) {
+  const T = QSTATE[q.pid].t[lv];
+  const rows = q.rows.map((r, i) => {
+    const res = T.res[i], lab = r.label || (q.rows.length > 1 ? `第 ${i + 1} 句` : '');
+    return `<div class="trow${res ? (res.ok ? ' ok' : ' bad') : ''}">${lab ? `<div class="tlab">${esc(lab)}</div>` : ''}<div class="tline">${lv === 2 ? `<span class="starter">${esc(r.starter)}</span>` : ''}<input class="tin" data-i="${i}" value="${esc(T.vals[i] || '')}" ${T.done ? 'readonly' : ''} autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${lv === 2 ? '接著打後面的字' : '打出完整的句子'}"></div>
+    ${res && !res.ok ? `<div class="tmsg">${esc(res.msg)}</div>` : ''}${T.hm[i] ? `<div class="tmsg hint">${esc(T.hm[i])}</div>` : ''}${T.shown ? `<div class="tmsg ans">參考答案：${esc(r.text)}</div>` : ''}</div>`;
+  }).join('');
+  return rows + `<div class="tctl"><button class="btn sm pri" data-act="qtcheck" ${T.done ? 'disabled' : ''}>檢查答案</button><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button></div>`;
 }
 function leftQ(sp) {
-  const q = sp.q, un = BOOK.qmode === 'unscramble';
-  return `<div class="qbadge">第 ${q.no} 題 · ${esc(q.cat)} ${esc(q.zh)}</div>
-  <p class="qtext" style="font-family:var(--f-read)">${esc(q.q)}</p>
-  <p class="qzh">${esc(q.qzh)}</p>
-  <div style="margin-bottom:14px"><button class="btn sm" data-act="qspeak">${ICON.spk}聽題目</button></div>
-  <div class="hintbox"><b>中文答案提示（看中文，說英文）</b>${nl(q.azh)}</div>
-  ${un ? `<div class="lab2">Unscramble the Sentence 句子重組：點字塊，排成一句話（句首會自動大寫）</div><div id="scr" style="font-family:var(--f-read)">${scrambleHtml(q)}</div>`
-       : `<div class="frame" id="frame" style="font-family:var(--f-read)">${frameHtml(q)}</div><div class="bank" id="bank">${bankHtml(q)}</div>`}
-  <div id="win">${winHtml(q)}</div>
-  <div class="dock" id="dock"></div>`;
+  const q = sp.q, un = BOOK.qmode === 'unscramble', lv = S.lv, st = QSTATE[q.pid];
+  let h = `<div class="qbadge">第 ${q.no} 題 · ${esc(q.cat)} ${esc(q.zh)}</div>${lvTabs(q)}`;
+  if (lv === 3) {
+    const T3 = st.t[3];
+    h += `<div class="listenbox"><div class="lbt">只聽問題，把整個答句打出來</div><div class="lbb"><button class="btn pri" data-act="qspeak">${ICON.spk}聽提問</button><button class="btn" data-act="qslow">${ICON.spk}慢慢聽</button><button class="btn sm" data-act="qzhtoggle">${T3.zh ? '隱藏中文提示' : '需要提示：看中文'}</button></div>
+    ${T3.zh ? `<div class="hintbox" style="margin:12px 0 0"><b>中文提示</b>${esc(q.qzh)}<br>${nl(q.azh)}</div>` : ''}</div>`;
+  } else {
+    h += `<p class="qtext" style="font-family:var(--f-read)">${esc(q.q)}</p><p class="qzh">${esc(q.qzh)}</p>
+    <div style="margin-bottom:14px"><button class="btn sm" data-act="qspeak">${ICON.spk}聽題目</button></div>
+    <div class="hintbox"><b>中文答案提示（看中文，說英文）</b>${nl(q.azh)}</div>`;
+  }
+  if (lv === 1) h += un ? `<div class="lab2">Unscramble the Sentence 句子重組：點字塊，排成一句話（句首會自動大寫）</div><div id="scr" style="font-family:var(--f-read)">${scrambleHtml(q)}</div>`
+    : `<div class="frame" id="frame" style="font-family:var(--f-read)">${frameHtml(q)}</div><div class="bank" id="bank">${bankHtml(q)}</div><div class="tctl"><button class="btn sm" data-act="qreset">清除重做</button></div>`;
+  else h += `<div class="lab2">${lv === 2 ? 'Type the Sentence 引導打字：看開頭的字，接著把句子打完整（注意大寫和句號）' : 'Listen and Type 聽題打字：打出完整的答句（句首大寫、句尾句號）'}</div><div id="typed" style="font-family:var(--f-read)">${typedHtml(q, lv)}</div>`;
+  h += `<div id="win">${winHtml(q)}</div><div class="dock" id="dock"></div>`;
+  return h;
+}
+function reLeftQ(sp) { const L = $('#pgL'), y = L.scrollTop; L.innerHTML = leftQ(sp); L.scrollTop = y; updDock(); }
+function readTyped(q, lv) { const T = QSTATE[q.pid].t[lv]; $$('#typed .tin').forEach(e => { T.vals[+e.dataset.i] = e.value; }); return T; }
+const fullOf = (q, lv, i) => (lv === 2 ? q.rows[i].starter + ' ' : '') + (QSTATE[q.pid].t[lv].vals[i] || '').trim();
+function typedCheckAll(sp) {
+  const q = sp.q, lv = S.lv, T = readTyped(q, lv);
+  q.rows.forEach((r, i) => { T.res[i] = typedCheck(fullOf(q, lv, i), r); T.hm[i] = null; });
+  if (T.res.every(r => r.ok)) {
+    T.done = true; award(lvKey(q, lv));
+    $('#typed').innerHTML = typedHtml(q, lv); $('#win').innerHTML = winHtml(q); $('#pgR').innerHTML = rightQ(sp); updDock();
+    playItems([{ text: q.say }], { mark: false, useMine: false });
+  } else { $('#typed').innerHTML = typedHtml(q, lv); toast('再檢查看看，按「提示」會告訴你下一個字', 2200); }
+}
+function resetQ(sp) {
+  const q = sp.q, st = QSTATE[q.pid], lv = S.lv;
+  if (lv === 1) { if (BOOK.qmode === 'fill') { st.fills = q.blanks.map(() => null); st.hint = {}; } else { st.placed = []; st.wrong = false; } st.done = false; }
+  else st.t[lv] = { vals: [], res: [], hm: [], done: false, shown: false, zh: st.t[lv].zh };
+  reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp);
 }
 function rightQ(sp) {
-  const q = sp.q, ok = S.reveal[q.pid] || QSTATE[q.pid].done;
-  const lines = q.ans.split('\n'), zl = q.azh.split('\n');
+  const q = sp.q, ok = S.reveal[q.pid] || qAny(q);
+  const lines = q.ans.split('\n'), zl = q.azh.split('\n'), hide = S.lv === 3 && !ok;
   let h = `<div class="rh"><h2>考試手冊</h2><span>第 ${q.no} 題 · ${esc(q.cat)}</span></div>`;
   h += `<div class="sec"><h3>標準答案 <small>先自己試試看再偷看</small></h3>`;
   if (!ok) h += `<button class="btn reveal" data-act="reveal">顯示答案</button>`;
   else h += lines.map((l, i) => `<button class="tr" data-act="qline" data-l="${i}"><span class="en">${nl(l)}</span><span class="zh">${nl(zl[i] || (lines.length === 1 ? q.azh : ''))}</span></button>`).join('');
   h += `</div>`;
-  h += `<div class="sec parent"><h3>家長怎麼帶</h3><p>${esc(q.parent)}</p></div>`;
-  h += `<div class="sec"><h3>教師引導小撇步</h3><p>${esc(q.tip)}</p></div>`;
-  if (q.parts) h += `<div class="sec"><h3>句子結構 <small>顏色幫你看懂句子</small></h3>${LEGEND}<div class="pat"><div class="row">${q.parts.map(x => `<span class="r-${x[1]}">${esc(x[0])}</span>`).join('')}</div></div></div>`;
+  if (hide) h += `<div class="sec parent"><h3>第 3 關挑戰中</h3><p>這一關只聽問題。解說和提示會在答對後出現，想偷看可以按上面的「顯示答案」。</p></div>`;
+  if (!hide) h += `<div class="sec parent"><h3>家長怎麼帶</h3><p>${esc(q.parent)}</p></div><div class="sec"><h3>教師引導小撇步</h3><p>${esc(q.tip)}</p></div>`;
+  if (q.parts && !hide) h += `<div class="sec"><h3>句子結構 <small>顏色幫你看懂句子</small></h3>${LEGEND}<div class="pat"><div class="row">${q.parts.map(x => `<span class="r-${x[1]}">${esc(x[0])}</span>`).join('')}</div></div></div>`;
   h += `<div class="sec"><h3>關鍵單字 <small>點一下聽發音</small></h3><div class="vgrid">${q.words.map(w => `<button class="vcard" data-act="vspeak" data-w="${esc(w[0])}" data-ex=""><div class="w">${ICON.spk}${esc(w[0])}</div><div class="zh">${esc(w[1])}</div></button>`).join('')}</div></div>`;
-  h += `<div class="sec"><h3>句型提醒</h3><p>${esc(q.pat)}</p></div>`;
+  if (!hide) h += `<div class="sec"><h3>句型提醒</h3><p>${esc(q.pat)}</p></div>`;
   h += `<div class="sec exam"><h3>去哪裡找答案</h3><div class="jumps">${q.jump.map(id => { const s = SPREADS.find(x => x.id === id); return s ? `<button class="btn" data-act="goto" data-id="${id}">${esc(s.label)}</button>` : ''; }).join('')}</div></div>`;
   return h;
 }
@@ -2630,14 +2748,14 @@ function showShelf() {
 function openBook(id, i) {
   const bk = BOOKS.find(b => b.id === id); if (!bk) return showShelf();
   stopAll(); BOOK = bk; SPREADS = bk.spreads; QS = bk.qs; countable = bk.countable; S.bookId = id; S.view = 'book';
-  S.i = i != null ? i : Math.min(Math.max(0, P.pos[id] || 0), SPREADS.length - 1); S.side = 'L';
+  S.i = i != null ? i : Math.min(Math.max(0, P.pos[id] || 0), SPREADS.length - 1); S.side = 'L'; S.lv = 1; S.lv = 1;
   $('#shelf').hidden = true; $('#book').hidden = false; document.querySelector('.pager').hidden = false; $('#starCount').hidden = false;
   $('#bShelf').setAttribute('aria-pressed', 'false'); render();
 }
 async function goTo(i, dir) {
   if (i < 0 || i >= SPREADS.length) return;
   if (REC.mr) REC.mr.stop();
-  stopAll(); S.i = i; S.side = 'L'; render(dir != null ? dir : 0);
+  stopAll(); S.i = i; S.side = 'L'; S.lv = 1; render(dir != null ? dir : 0);
   const sp = SP();
   if (S.auto && sp.kind === 'read') {
     await sleep(550); if (SP() !== sp) return;
@@ -2701,51 +2819,58 @@ function checkTiles(sp) {
 /* ============ 閱讀測驗（仿段考 Part B） ============ */
 const RTW = [1, .5, .5];
 const RTCHK = ['Content 內容 (1)', 'Complete sentence 完整句子 (0.5)', 'Capital / Period 大寫與句號 (0.5)'];
-function rtState(sp) { return P.rt[sp.pid] || (P.rt[sp.pid] = { a: {}, c: {} }); }
+function rtShuffle(R, sp) { R.perm = {}; sp.rt.mc.forEach((x, i) => { const p = x.o.map((_, j) => j); for (let j = p.length - 1; j > 0; j--) { const r = Math.floor(Math.random() * (j + 1)); [p[j], p[r]] = [p[r], p[j]]; } R.perm[i + 4] = p; }); }
+function rtState(sp) { const R = P.rt[sp.pid] || (P.rt[sp.pid] = { a: {}, c: {}, sub: 0 }); if (!R.perm) rtShuffle(R, sp); return R; }
 function rtItem(sp, k) { const rt = sp.rt; return k <= 3 ? rt.tf[k - 1] : k <= 10 ? rt.mc[k - 4] : rt.wr[k - 11]; }
 function rtScore(sp) {
-  const R = rtState(sp), rt = sp.rt; let o = 0, n = 0, w = 0, wc = 0;
-  rt.tf.forEach((x, i) => { const k = i + 1; if (R.a[k] != null) { n++; if (R.a[k] === x.a) o++; } });
-  rt.mc.forEach((x, i) => { const k = i + 4; if (R.a[k] != null) { n++; if (R.a[k] === x.a) o++; } });
-  rt.wr.forEach((x, i) => { const c = R.c[i + 11] || []; c.forEach((v, j) => { if (v) { w += RTW[j]; wc++; } }); });
-  return { o, n, w, total: o + w, wc };
+  const R = rtState(sp); let o = 0, n = 0, w = 0; const wrong = [];
+  for (let k = 1; k <= 10; k++) { const x = rtItem(sp, k); if (R.a[k] != null) { n++; if (R.a[k] === x.a) o++; else wrong.push(k); } else wrong.push(k); }
+  sp.rt.wr.forEach((x, i) => { (R.c[i + 11] || []).forEach((v, j) => { if (v) w += RTW[j]; }); });
+  return { o, n, w, wrong, total: (R.sub ? o : 0) + w };
 }
+const rtAnsText = (k, x, v) => k <= 3 ? (v === 'T' ? 'True' : 'False') : x.o[v];
 function rtOpt(R, k, x, v, label, type) {
-  const done = R.a[k] != null, right = type === 'tf' ? x.a : x.a;
-  const cls = done ? (v === right ? ' right' : (R.a[k] === v ? ' wrong' : ' dim')) : '';
-  return `<button class="ropt${cls}" data-act="rtans" data-n="${k}" data-t="${type}" data-v="${v}" ${done ? 'disabled' : ''}>${label}</button>`;
+  const sub = !!R.sub; let cls = '';
+  if (sub) cls = v === x.a ? ' right' : (R.a[k] === v ? ' wrong' : ' dim'); else if (R.a[k] === v) cls = ' sel';
+  return `<button class="ropt${cls}" data-act="rtans" data-n="${k}" data-t="${type}" data-v="${v}" ${sub ? 'disabled' : ''}>${label}</button>`;
 }
 function leftRt(sp) {
-  const R = rtState(sp), rt = sp.rt, L = ['a', 'b', 'c'];
+  const R = rtState(sp), rt = sp.rt, L = ['a', 'b', 'c'], s = rtScore(sp);
   const qline = (k, q) => `<div class="rqt"><span class="n">${k}</span><button class="rqs" data-act="rtspeak" data-n="${k}">${esc(q)}</button></div>`;
-  let h = `<div class="rtp"><div class="qbadge">Reading Test 閱讀測驗 · 滿分 14</div>
-  <p class="rtdir"><b>Directions:</b> Read the statements below. Choose <b>True</b> if it is correct or <b>False</b> if it is incorrect. (1 point each)</p>`;
+  let h = `<div class="rtp"><div class="qbadge">Reading Test 閱讀測驗 · 滿分 14</div>`;
+  if (R.sub) {
+    const nw = s.wrong.length;
+    h += `<div class="rres ${nw ? 'some' : 'all'}"><h3>${nw ? `答對 ${s.o} 題，答錯 ${nw} 題` : '滿分！10 題全部答對！'}</h3>
+    <p>${nw ? '沒關係，錯的題目就是最好的學習機會。看看下面每一題的解釋，再測驗一次，你一定可以拿到滿分！' : '太棒了！你已經把這一課讀熟了。也可以再測驗一次，確認自己真的記住了。'}</p>
+    ${s.wrong.map(k => { const x = rtItem(sp, k); return `<div class="wq"><b>Q${k}　${esc(x.q)}</b><div class="mine">你的答案：${R.a[k] != null ? esc(rtAnsText(k, x, R.a[k])) : '沒有作答'}</div><div class="rc">正確答案：${esc(rtAnsText(k, x, x.a))}</div><p>${esc(x.why)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button></div>`; }).join('')}
+    <button class="btn pri" data-act="rtreset">再測驗一次</button></div>`;
+  }
+  h += `<p class="rtdir"><b>Directions:</b> Read the statements below. Choose <b>True</b> if it is correct or <b>False</b> if it is incorrect. (1 point each)</p>`;
   rt.tf.forEach((x, i) => { const k = i + 1; h += `<div class="rq">${qline(k, x.q)}<div class="rtopts">${rtOpt(R, k, x, 'T', 'True', 'tf')}${rtOpt(R, k, x, 'F', 'False', 'tf')}</div></div>`; });
   h += `<p class="rtdir"><b>Directions:</b> Read each question and choose the correct answer. (1 point each)</p>`;
-  rt.mc.forEach((x, i) => { const k = i + 4; h += `<div class="rq">${qline(k, x.q)}<div class="rzh">${esc(x.qzh)}</div><div class="rtopts col">${x.o.map((t, j) => rtOpt(R, k, x, j, `<b>${L[j]})</b> ${esc(t)}`, 'mc')).join('')}</div></div>`; });
+  rt.mc.forEach((x, i) => { const k = i + 4, perm = R.perm[k]; h += `<div class="rq">${qline(k, x.q)}<div class="rzh">${esc(x.qzh)}</div><div class="rtopts col">${perm.map((oi, j) => rtOpt(R, k, x, oi, `<b>${L[j]})</b> ${esc(x.o[oi])}`, 'mc')).join('')}</div></div>`; });
+  if (!R.sub) h += `<div class="rsub"><button class="btn pri" data-act="rtsubmit" ${s.n < 10 ? 'disabled' : ''}>送出答案</button><span>${s.n < 10 ? `還有 ${10 - s.n} 題沒作答。全部作答後才能送出，送出前可以改答案。` : '全部作答完成，按「送出答案」看成績。'}</span></div>`;
   h += `<p class="rtdir"><b>Directions:</b> Read the questions carefully, then write a <b>complete sentence</b> to answer the question. You may use a sentence from the story. (2 points each)</p>`;
   rt.wr.forEach((x, i) => {
     const k = i + 11, c = R.c[k] || [];
     h += `<div class="rq">${qline(k, x.q)}<div class="rzh">${esc(x.qzh)}</div><div class="lines"><i></i><i></i><i></i></div><div class="rzh">請把答案手寫在紙上。寫完後，自己或請家長檢查：</div>
     <div class="rub">${RTCHK.map((t, j) => `<button class="chkb${c[j] ? ' on' : ''}" data-act="chk" data-n="${k}" data-j="${j}"><span class="bx">${c[j] ? '✓' : ''}</span>${t}</button>`).join('')}</div></div>`;
   });
-  const s = rtScore(sp);
-  h += `<div class="win" id="rtscore">${s.n < 10 ? `已作答 ${s.n} / 10 題，加油！` : `選擇與是非：答對 ${s.o} / 10 題`}　目前總分 ${s.total} / 14</div>
+  h += `<div class="win" id="rtscore">${R.sub ? `選擇與是非：答對 ${s.o} / 10 題　` : ''}目前總分 ${s.total} / 14</div>
   <div class="tctl"><button class="btn sm" data-act="rtreset">重新作答</button></div></div>`;
   return h;
 }
 function rightRt(sp) {
-  const R = rtState(sp), rt = sp.rt, L = ['a', 'b', 'c'], s = rtScore(sp);
+  const R = rtState(sp), rt = sp.rt, s = rtScore(sp);
   let h = `<div class="rh"><h2>閱讀測驗手冊</h2><span>${esc(BOOK.title)}</span></div>
   <div class="sec exam"><h3>目前分數</h3><p style="font-size:1.4rem;font-weight:800;margin:4px 0">${s.total} / 14</p>
-  <p>是非題與選擇題 ${s.o} / ${s.n}（共 10 題）；手寫問答 ${s.w} / 4</p>
-  <p style="margin-top:6px">選擇或是非題一旦點選就不能改，像真正的考試一樣。想再試一次，按左頁最下面的「重新作答」。答對 8 題以上會得到星星。</p></div>
-  <div class="sec"><h3>答案與解析 <small>作答後才會出現</small></h3>`;
-  for (let k = 1; k <= 10; k++) {
-    const x = rtItem(sp, k), ans = R.a[k];
-    if (ans == null) { h += `<div class="ak lock"><b>Q${k}</b><p>先在左頁作答，這裡就會出現答案。</p></div>`; continue; }
-    const ok = ans === x.a, right = k <= 3 ? (x.a === 'T' ? 'True' : 'False') : `${L[x.a]}) ${x.o[x.a]}`;
-    h += `<div class="ak ${ok ? 'ok' : 'bad'}"><b>Q${k}　${ok ? '答對了' : '再想想'}　正確答案：${esc(right)}</b>${k <= 3 ? `<p class="zh">${esc(x.zh)}</p>` : ''}<p>${esc(x.why)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button></div>`;
+  <p>${R.sub ? `是非題與選擇題 ${s.o} / 10；手寫問答 ${s.w} / 4` : `是非題與選擇題送出後才會計分（已作答 ${s.n} / 10）；手寫問答 ${s.w} / 4`}</p>
+  <p style="margin-top:6px">10 題全部作答後按「送出答案」，會顯示答對幾題、答錯幾題，並解釋每個錯題。答對 8 題以上會得到星星。想再試一次，按「再測驗一次」，選項的順序會重新排列。</p></div>
+  <div class="sec"><h3>答案與解析 <small>送出答案後才會出現</small></h3>`;
+  if (!R.sub) h += `<p>先在左頁完成 10 題並送出，這裡就會出現每一題的正確答案和解析。</p>`;
+  else for (let k = 1; k <= 10; k++) {
+    const x = rtItem(sp, k), ok = R.a[k] === x.a;
+    h += `<div class="ak ${ok ? 'ok' : 'bad'}"><b>Q${k}　${ok ? '答對了' : '再想想'}　正確答案：${esc(rtAnsText(k, x, x.a))}</b>${k <= 3 ? `<p class="zh">${esc(x.zh)}</p>` : ''}<p>${esc(x.why)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button></div>`;
   }
   h += `</div><div class="sec"><h3>手寫問答的參考答案</h3>`;
   rt.wr.forEach((x, i) => {
@@ -2756,18 +2881,13 @@ function rightRt(sp) {
    <li><span><b>Content 內容（1 分）：</b>有沒有回答題目問的事？可以直接用課文裡的句子。</span></li>
    <li><span><b>Complete sentence 完整句子（0.5 分）：</b>有「誰」和「做什麼」嗎？可以把題目的字放進答案開頭，例如 The baker went …。</span></li>
    <li><span><b>Capital / Period 大寫與句號（0.5 分）：</b>句子第一個字母大寫，最後有句號。人名和地名也要大寫。</span></li></ol></div>
-  <div class="sec parent"><h3>家長怎麼帶</h3><p>先讓孩子做左頁的是非和選擇題，看右頁的解析。手寫題請孩子自己先寫，再用三個檢查對照。你不需要懂每個字，只要看「有沒有句號、第一個字母有沒有大寫」，再請他唸一遍答案。</p></div>`;
+  <div class="sec parent"><h3>家長怎麼帶</h3><p>先讓孩子做左頁的是非和選擇題，送出後一起看錯題的解釋，再測驗一次。手寫題請孩子自己先寫，再用三個檢查對照。你不需要懂每個字，只要看「有沒有句號、第一個字母有沒有大寫」，再請他唸一遍答案。</p></div>`;
   return h;
 }
 function rtRefresh(sp) {
   const L = $('#pgL'), R = $('#pgR'), a = L.scrollTop, b = R.scrollTop;
   L.innerHTML = leftRt(sp); R.innerHTML = rightRt(sp); L.scrollTop = a; R.scrollTop = b; saveP();
 }
-function rtCheckDone(sp) {
-  const s = rtScore(sp);
-  if (s.n >= 10) { if (s.o >= 8) award(sp.pid); else toast(`答對 ${s.o} / 10，再試一次拿星星！`, 2800); }
-}
-
 function speakQuick(t) { stopAll(); setTimeout(() => speakText(t), 160); }
 
 document.addEventListener('click', async e => {
@@ -2787,12 +2907,20 @@ document.addEventListener('click', async e => {
     case 'goto': { const i = SPREADS.findIndex(s => s.id === t.dataset.id); goTo(i, i > S.i ? 1 : -1); break; }
     case 'tocgo': $('#toc').hidden = true; goTo(+t.dataset.i, +t.dataset.i > S.i ? 1 : -1); break;
     case 'voicepick': { const v = speechSynthesis.getVoices().find(x => x.voiceURI === t.dataset.u); if (v) { voice = v; S.voiceURI = v.voiceURI; saveP(); $$('[data-act="voicepick"]').forEach(b => b.classList.toggle('cur', b === t)); speakQuick('Hello! Let us read together.'); } break; }
-    case 'rtans': { const R = rtState(sp), k = +t.dataset.n; if (R.a[k] != null) break; R.a[k] = t.dataset.t === 'tf' ? t.dataset.v : +t.dataset.v; rtRefresh(sp); rtCheckDone(sp); break; }
+    case 'rtans': { const R = rtState(sp), k = +t.dataset.n; if (R.sub) break; R.a[k] = t.dataset.t === 'tf' ? t.dataset.v : +t.dataset.v; rtRefresh(sp); break; }
+    case 'rtsubmit': { const R = rtState(sp), s = rtScore(sp); if (s.n < 10) { toast(`還有 ${10 - s.n} 題沒作答`); break; } R.sub = 1; const s2 = rtScore(sp); rtRefresh(sp); $('#pgL').scrollTop = 0; if (s2.o >= 8) award(sp.pid); toast(s2.o === 10 ? '滿分！太棒了！' : `答對 ${s2.o} 題，看看錯題的解釋再挑戰一次！`, 3200); break; }
+    case 'rtreset': { const R = rtState(sp); R.a = {}; R.c = {}; R.show = {}; R.sub = 0; rtShuffle(R, sp); rtRefresh(sp); $('#pgL').scrollTop = 0; toast('重新開始，這次一定可以滿分！'); break; }
+    case 'qlv': { const n = +t.dataset.lv; if (n === S.lv) break; stopAll(); S.lv = n; reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp); $('#pgL').scrollTop = 0; if (n === 3) playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break; }
+    case 'qreset': resetQ(sp); break;
+    case 'qtcheck': typedCheckAll(sp); break;
+    case 'qthint': { const q = sp.q, lv = S.lv, T = readTyped(q, lv); const i = q.rows.findIndex((r, j) => !(T.res[j] && T.res[j].ok)); if (i < 0) break; T.hm[i] = nextWord(fullOf(q, lv, i), q.rows[i]); $('#typed').innerHTML = typedHtml(q, lv); break; }
+    case 'qtshow': { const q = sp.q, lv = S.lv, T = readTyped(q, lv); T.shown = !T.shown; $('#typed').innerHTML = typedHtml(q, lv); break; }
+    case 'qzhtoggle': { const T = QSTATE[sp.q.pid].t[3]; T.zh = !T.zh; reLeftQ(sp); break; }
+    case 'qslow': { const old = S.slow; S.slow = true; await playItems([{ text: sp.q.q }], { mark: false, useMine: false }); S.slow = old; break; }
     case 'chk': { const R = rtState(sp), k = +t.dataset.n, j = +t.dataset.j; const c = R.c[k] || (R.c[k] = [0, 0, 0]); c[j] = c[j] ? 0 : 1; rtRefresh(sp); break; }
     case 'rtshow': { const R = rtState(sp); (R.show || (R.show = {}))[+t.dataset.n] = 1; rtRefresh(sp); break; }
     case 'rtmodel': { const x = rtItem(sp, +t.dataset.n); playItems([{ text: x.model }], { mark: false, useMine: false }); break; }
     case 'rtspeak': { const x = rtItem(sp, +t.dataset.n); playItems([{ text: x.q }], { mark: false, useMine: false }); break; }
-    case 'rtreset': { const R = rtState(sp); R.a = {}; R.c = {}; R.show = {}; rtRefresh(sp); $('#pgL').scrollTop = 0; toast('已經重新開始，加油！'); break; }
     case 'shelf': showShelf(); break;
     case 'openbook': openBook(t.dataset.b); break;
     case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
@@ -2839,6 +2967,9 @@ $('#book').addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty =
 $('#book').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) > 90 && Math.abs(dy) < 50) go(dx < 0 ? 1 : -1); }, { passive: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopAll(); });
 
+
+document.addEventListener('input', e => { const t = e.target; if (t.matches && t.matches('.tin')) { const sp = SP(); if (sp && sp.kind === 'q') { QSTATE[sp.q.pid].t[S.lv].vals[+t.dataset.i] = t.value; } } });
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('.tin')) { e.preventDefault(); const sp = SP(); if (sp && sp.kind === 'q') typedCheckAll(sp); } });
 /* ============ 第二課插圖 ============ */
 const lolli = (cx, cy, r, col = '#e23b3b') => `<g transform="translate(${cx} ${cy}) scale(${r / 80})" stroke-linecap="round">
   <rect x="-5" y="60" width="10" height="110" rx="4" fill="#f3e2c4" stroke="${OUT}" stroke-width="4"/>
