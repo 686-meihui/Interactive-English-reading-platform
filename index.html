@@ -316,6 +316,19 @@ table.vt tr:hover td{background:var(--accent-soft)}
 .wq .rc{color:#1f7a3a;font-weight:700}
 .wq p{margin:6px 0;line-height:1.6}
 
+/* built-in keyboard */
+.okb{flex:0 0 100%;width:100%;padding:6px 0 8px;font-family:var(--f-ui);border-bottom:2px solid var(--line);margin-bottom:8px}
+.kr{display:flex;gap:5px;margin:0 0 5px}
+.kr.pad{padding:0 4%}
+.kk{flex:1 1 0;min-width:0;min-height:46px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font-weight:700;font-size:1.1rem;padding:0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.kk:active{background:var(--hl)}
+.kk.wide{flex:1.5 1 0;background:var(--accent-soft)}
+.kk.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.kk.space{flex:4 1 0;font-size:.95rem}
+.kk.go{flex:2 1 0;background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-size:1rem}
+.trow.active .tin{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.tin[readonly]{caret-color:transparent}
+
 @media (max-width:900px){
   .book{grid-template-columns:1fr}
   .book::after{display:none}
@@ -2254,7 +2267,7 @@ const ART = {
 };
 
 /* ============ 狀態 ============ */
-const S = { voiceURI: null, bookId: null, view: 'shelf', lv: 1, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
+const S = { voiceURI: null, bookId: null, view: 'shelf', lv: 1, kb: (typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches) || (navigator.maxTouchPoints || 0) > 0, kbRow: 0, shift: false, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
 const P = { done: {}, pos: {}, rt: {} };
 const PKEY = 'wwo-ebook-v1';
 let BOOK = null, SPREADS = [], QS = [], countable = [];
@@ -2264,13 +2277,13 @@ function loadP() {
     const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
     P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {};
     if (!j.pos && typeof j.i === 'number') P.pos.wwo = j.i;
-    if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId;
+    if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId; if (typeof j.kb === 'boolean') S.kb = j.kb;
   } catch (e) { }
 }
 function saveP() {
   try {
     if (BOOK && S.view === 'book') P.pos[BOOK.id] = S.i;
-    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, mode: S.mode, voiceURI: S.voiceURI }));
+    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, mode: S.mode, voiceURI: S.voiceURI }));
   } catch (e) { }
 }
 
@@ -2289,37 +2302,58 @@ function solveTiles(q) {
 
 const qn = s => s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
 const lk = s => qn(s).toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
-function makeRows(text, alts) {
+const STOP = new Set('a an the is are was were be been am to of in on at by for with and or but so as that this these those it its they them their he she his her him we our you your i me my do does did not no can will would could should there here when if then than from into over after before because while who what which how why like also very too'.split(' '));
+function autoKeys(text) { const seen = new Set(), out = []; lk(text).split(' ').forEach(w => { if (w.length >= 3 && !STOP.has(w) && !seen.has(w)) { seen.add(w); out.push(w); } }); return out; }
+function tileKeys(tiles) {
+  const out = [];
+  tiles.forEach(t => { const ws = lk(t).split(' ').filter(Boolean); while (ws.length && STOP.has(ws[0])) ws.shift(); while (ws.length && STOP.has(ws[ws.length - 1])) ws.pop(); if (ws.length) out.push(ws.join(' ')); });
+  return out;
+}
+function wEq(w, k) {
+  if (w === k) return true; if (w.length < 4 || k.length < 4) return false;
+  let i = 0; while (i < w.length && i < k.length && w[i] === k[i]) i++;
+  return i >= Math.max(4, Math.ceil(Math.min(w.length, k.length) * .8)) && Math.abs(w.length - k.length) <= 4;
+}
+function kwHave(tw, kw) { const ks = lk(kw).split(' ').filter(Boolean); for (let i = 0; i + ks.length <= tw.length; i++) if (ks.every((k, j) => wEq(tw[i + j], k))) return true; return false; }
+function makeRows(q, qmode) {
   const rows = [];
-  text.split('\n').forEach(line => {
+  q.model.split('\n').forEach(line => {
     let label = ''; const m = line.match(/^(Beginning|Middle|End):\s*/); if (m) { label = m[1]; line = line.slice(m[0].length); }
     const parts = (line.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) || [line]).map(x => x.trim()).filter(Boolean);
     parts.forEach((p, i) => {
       const w = p.split(' '), n = Math.min(4, Math.max(2, Math.round(w.length * .25)));
-      rows.push({ label: i === 0 ? label : '', text: p, starter: w.slice(0, n).join(' ') });
+      rows.push({ label: i === 0 ? label : '', text: p, starter: w.slice(0, n).join(' '), sets: [] });
     });
   });
-  if (rows.length === 1 && alts && alts.length) rows[0].alts = alts;
+  if (qmode === 'fill') {
+    let ri = 0; const per = rows.map(() => []);
+    q.blanks.forEach(b => { let f = -1; for (let r = ri; r < rows.length; r++) if (kwHave(lk(rows[r].text).split(' '), lk(b))) { f = r; break; } if (f < 0) f = ri; ri = f; per[f].push(lk(b)); });
+    rows.forEach((r, i) => r.sets.push(per[i].length ? { words: per[i], need: 1 } : { words: autoKeys(r.text), need: .7 }));
+  } else if (rows.length === 1) {
+    rows[0].sets.push({ words: tileKeys(q.tiles), need: 1 });
+    const seen = new Set([tileKeys(q.tiles).slice().sort().join('|')]);
+    (q.alts || []).forEach(a => { const k = autoKeys(a), sig = k.slice().sort().join('|'); if (!seen.has(sig)) { seen.add(sig); rows[0].sets.push({ words: k, need: .7 }); } });
+  } else rows.forEach(r => r.sets.push({ words: autoKeys(r.text), need: .7 }));
   return rows;
 }
 function typedCheck(input, row) {
   const s = qn(input); if (!s) return { ok: false, msg: '還沒有輸入喔。' };
-  const cands = [row.text, ...(row.alts || [])], k = lk(s), hit = cands.find(c => lk(c) === k);
-  if (!hit) {
-    let best = 0; cands.forEach(c => { const a = lk(c).split(' '), b = k.split(' '); let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; best = Math.max(best, i); });
-    return { ok: false, msg: best ? `前面「${k.split(' ').slice(0, best).join(' ')}」是對的，後面再檢查一下。` : '開頭不太一樣，按「提示」看看。' };
-  }
+  const tw = lk(s).split(' ').filter(Boolean), minW = Math.max(3, Math.ceil(row.text.split(' ').length * .4));
+  let best = null;
+  row.sets.forEach(st => { const miss = st.words.filter(k => !kwHave(tw, k)), have = st.words.length - miss.length; const ok = st.words.length === 0 || have / st.words.length >= st.need - 1e-9; if (!best || (ok && !best.ok) || (ok === best.ok && miss.length < best.miss.length)) best = { ok, miss }; });
+  if (!best.ok) return { ok: false, miss: best.miss, msg: best.miss.length >= row.sets[0].words.length ? '和答案還不太一樣，按「提示」看看。' : `再想想看，還少了 ${best.miss.length} 個關鍵字，按「提示」看看。` };
+  if (tw.length < minW) return { ok: false, miss: best.miss, msg: '關鍵字都有了！再多寫一些，要寫成一個完整的句子。' };
   const issues = [], first = (s.match(/[A-Za-z]/) || [''])[0];
   if (first && first !== first.toUpperCase()) issues.push('句首的第一個字母要大寫');
   if (!/[.!?]["”’')]*$/.test(s)) issues.push('句尾要有句號');
-  hit.split(' ').slice(1).map(w => w.replace(/[^A-Za-z’']/g, '')).filter(w => /^[A-Z]/.test(w)).forEach(w => { if (!new RegExp('(^|[^A-Za-z])' + w.replace(/’/g, "['’]") + '(?![A-Za-z])').test(s)) issues.push(`「${w}」要大寫`); });
-  return issues.length ? { ok: false, msg: '內容對了！但是' + [...new Set(issues)].join('、') + '。' } : { ok: true };
+  row.text.split(' ').slice(1).map(w => w.replace(/[^A-Za-z’']/g, '')).filter(w => /^[A-Z]/.test(w)).forEach(w => { if (!new RegExp('(^|[^A-Za-z])' + w.replace(/’/g, "['’]") + '(?![A-Za-z])').test(s)) issues.push(`「${w}」要大寫`); });
+  return { ok: true, note: issues.length ? '小提醒：' + [...new Set(issues)].join('、') + '，考試時會扣分喔。' : '' };
 }
 function nextWord(input, row) {
-  const k = lk(input), b = k ? k.split(' ') : []; let best = null, bi = -1;
-  [row.text, ...(row.alts || [])].forEach(c => { const a = lk(c).split(' '); let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; if (i > bi) { bi = i; best = a; } });
-  if (bi >= best.length) return '句子的字都對了，記得句尾的句號。';
-  return `下一個字是「${best[bi]}」（共 ${best[bi].length} 個字母）。`;
+  const r = typedCheck(input, row);
+  if (r.ok) return '關鍵字都有了！';
+  if (r.miss && r.miss.length) return `提示：句子裡要有「${r.miss[0]}」這個字（詞）。`;
+  return r.msg;
 }
 function prepBook(bk) {
   bk.spreads.forEach(sp => {
@@ -2353,7 +2387,7 @@ function prepBook(bk) {
       q.model = q.ans;
       QSTATE[q.pid] = { placed: [], wrong: false, done: false };
     }
-    q.rows = makeRows(q.model, bk.qmode === 'unscramble' ? q.alts : null);
+    q.rows = makeRows(q, bk.qmode);
     QSTATE[q.pid].t = { 2: newT(), 3: newT() };
   });
   if (bk.rt) bk.spreads.push({ id: 'rt', pid: bk.kp + 'rt', kind: 'rt', label: 'Reading Test · 閱讀測驗', rt: bk.rt });
@@ -2538,7 +2572,8 @@ function updDock() {
       <div class="hint">${x ? '選取的句子：' + esc(x.en.length > 34 ? x.en.slice(0, 34) + '…' : x.en) : '點一句課文，就能聽、能錄那一句。虛線單字可以點來看中文。'}</div>`;
   } else if (sp.kind === 'q') {
     const q = sp.q, st = QSTATE[q.pid], key = q.pid, has = DB.keys.has(key), isRec = S.recKey === key, ok = qAny(q) || S.reveal[q.pid];
-    d.innerHTML = `
+    const kbd = (S.lv >= 2 && S.kb && !qDoneLv(q, S.lv)) ? kbHtml() : '';
+    d.innerHTML = kbd + `
       ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="qans" ${ok ? '' : 'disabled'}>${ICON.spk}聽完整答案</button>`}
       ${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec">${ICON.mic}錄我的回答</button>`}
       <button class="btn" data-act="mine" ${has ? '' : 'disabled'}>${ICON.play}聽我的</button>
@@ -2644,21 +2679,27 @@ const qAny = q => { const st = QSTATE[q.pid]; return st.done || st.t[2].done || 
 const qDoneLv = (q, l) => { const st = QSTATE[q.pid]; return l === 1 ? st.done : st.t[l].done; };
 function winHtml(q) {
   const lv = S.lv; if (!qDoneLv(q, lv)) return '';
-  return `<div class="win">太棒了！完整的句子是：<div class="ans" style="margin-top:6px;font-weight:700">${nl(q.model)}</div><div style="margin-top:8px;font-weight:500">現在換你大聲說一遍，再按「錄我的回答」。</div>
+  return `<div class="win">太棒了！完整的句子是：<div class="ans" style="margin-top:6px;font-weight:700">${nl(q.model)}</div><div style="margin-top:8px;font-weight:500">現在換你大聲說一遍，再按「錄我的回答」。</div>${lv >= 2 && QSTATE[q.pid].t[lv].note ? `<div class="tmsg" style="margin-top:6px">${esc(QSTATE[q.pid].t[lv].note)}</div>` : ''}
   <div class="tctl" style="margin-top:10px"><button class="btn sm" data-act="qreset">再練習一次</button>${lv < 3 ? `<button class="btn sm pri" data-act="qlv" data-lv="${lv + 1}">挑戰第 ${lv + 1} 關</button>` : ''}</div></div>`;
 }
 function lvTabs(q) {
   const labs = [BOOK.qmode === 'fill' ? '填空' : '排句子', '引導打字', '聽題打字'];
   return `<div class="lvtabs">${[1, 2, 3].map(l => `<button class="lvt" data-act="qlv" data-lv="${l}" aria-pressed="${S.lv === l}"><span class="lv">第 ${l} 關</span><span class="lb">${labs[l - 1]}</span>${starsHtml(P.done[lvKey(q, l)])}</button>`).join('')}</div>`;
 }
+function kbHtml() {
+  const up = S.shift, key = (k, l) => `<button class="kk" data-act="kkey" data-k="${esc(k)}">${esc(l || k)}</button>`, L = s => [...s].map(c => key(c, up ? c.toUpperCase() : c)).join('');
+  return `<div class="okb" aria-label="內建鍵盤"><div class="kr">${L('qwertyuiop')}</div><div class="kr pad">${L('asdfghjkl')}</div>
+  <div class="kr"><button class="kk wide${up ? ' on' : ''}" data-act="kkey" data-k="SHIFT" aria-label="大寫">⇧</button>${L('zxcvbnm')}<button class="kk wide" data-act="kkey" data-k="BACK" aria-label="刪除">⌫</button></div>
+  <div class="kr">${key("'")}${key(',')}${key('.')}${key('?')}${key('!')}${key('-')}<button class="kk space" data-act="kkey" data-k=" ">空白</button><button class="kk go" data-act="kkey" data-k="ENTER">檢查</button></div></div>`;
+}
 function typedHtml(q, lv) {
-  const T = QSTATE[q.pid].t[lv];
+  const T = QSTATE[q.pid].t[lv], own = S.kb && !T.done;
   const rows = q.rows.map((r, i) => {
     const res = T.res[i], lab = r.label || (q.rows.length > 1 ? `第 ${i + 1} 句` : '');
-    return `<div class="trow${res ? (res.ok ? ' ok' : ' bad') : ''}">${lab ? `<div class="tlab">${esc(lab)}</div>` : ''}<div class="tline">${lv === 2 ? `<span class="starter">${esc(r.starter)}</span>` : ''}<input class="tin" data-i="${i}" value="${esc(T.vals[i] || '')}" ${T.done ? 'readonly' : ''} autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${lv === 2 ? '接著打後面的字' : '打出完整的句子'}"></div>
+    return `<div class="trow${res ? (res.ok ? ' ok' : ' bad') : ''}${own && (S.kbRow || 0) === i ? ' active' : ''}" data-act="kbrow" data-i="${i}">${lab ? `<div class="tlab">${esc(lab)}</div>` : ''}<div class="tline">${lv === 2 ? `<span class="starter">${esc(r.starter)}</span>` : ''}<input class="tin" data-i="${i}" value="${esc(T.vals[i] || '')}" ${T.done || own ? 'readonly' : ''} ${own ? 'inputmode="none"' : ''} autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="${lv === 2 ? '接著打後面的字' : '打出完整的句子'}"></div>
     ${res && !res.ok ? `<div class="tmsg">${esc(res.msg)}</div>` : ''}${T.hm[i] ? `<div class="tmsg hint">${esc(T.hm[i])}</div>` : ''}${T.shown ? `<div class="tmsg ans">參考答案：${esc(r.text)}</div>` : ''}</div>`;
   }).join('');
-  return rows + `<div class="tctl"><button class="btn sm pri" data-act="qtcheck" ${T.done ? 'disabled' : ''}>檢查答案</button><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button></div>`;
+  return rows + `<div class="tctl"><button class="btn sm pri" data-act="qtcheck" ${T.done ? 'disabled' : ''}>檢查答案</button><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button><button class="btn sm" data-act="kbtoggle">${S.kb ? '改用系統鍵盤' : '改用內建鍵盤'}</button></div>${S.kb && !T.done && q.rows.length > 1 ? '<div class="tmsg hint">點一下要寫的那一句，再用下面的鍵盤打字。</div>' : ''}`;
 }
 function leftQ(sp) {
   const q = sp.q, un = BOOK.qmode === 'unscramble', lv = S.lv, st = QSTATE[q.pid];
@@ -2678,6 +2719,17 @@ function leftQ(sp) {
   h += `<div id="win">${winHtml(q)}</div><div class="dock" id="dock"></div>`;
   return h;
 }
+function kbChar(c) {
+  const sp = SP(), q = sp.q, T = QSTATE[q.pid].t[S.lv]; if (T.done) return;
+  const i = S.kbRow || 0; T.vals[i] = (T.vals[i] || '') + c; const inp = $(`#typed .tin[data-i="${i}"]`); if (inp) inp.value = T.vals[i];
+}
+function kbPress(k) {
+  const sp = SP(); if (!sp || sp.kind !== 'q' || S.lv < 2) return; const q = sp.q, T = QSTATE[q.pid].t[S.lv]; if (T.done) return;
+  if (k === 'SHIFT') { S.shift = !S.shift; updDock(); return; }
+  if (k === 'ENTER') { typedCheckAll(sp); return; }
+  if (k === 'BACK') { const i = S.kbRow || 0; T.vals[i] = (T.vals[i] || '').slice(0, -1); const inp = $(`#typed .tin[data-i="${i}"]`); if (inp) inp.value = T.vals[i]; return; }
+  kbChar(S.shift && /^[a-z]$/.test(k) ? k.toUpperCase() : k); if (S.shift) { S.shift = false; updDock(); }
+}
 function reLeftQ(sp) { const L = $('#pgL'), y = L.scrollTop; L.innerHTML = leftQ(sp); L.scrollTop = y; updDock(); }
 function readTyped(q, lv) { const T = QSTATE[q.pid].t[lv]; $$('#typed .tin').forEach(e => { T.vals[+e.dataset.i] = e.value; }); return T; }
 const fullOf = (q, lv, i) => (lv === 2 ? q.rows[i].starter + ' ' : '') + (QSTATE[q.pid].t[lv].vals[i] || '').trim();
@@ -2685,15 +2737,18 @@ function typedCheckAll(sp) {
   const q = sp.q, lv = S.lv, T = readTyped(q, lv);
   q.rows.forEach((r, i) => { T.res[i] = typedCheck(fullOf(q, lv, i), r); T.hm[i] = null; });
   if (T.res.every(r => r.ok)) {
-    T.done = true; award(lvKey(q, lv));
+    T.done = true; T.note = T.res.map(r => r.note).filter(Boolean)[0] || ''; award(lvKey(q, lv));
     $('#typed').innerHTML = typedHtml(q, lv); $('#win').innerHTML = winHtml(q); $('#pgR').innerHTML = rightQ(sp); updDock();
     playItems([{ text: q.say }], { mark: false, useMine: false });
-  } else { $('#typed').innerHTML = typedHtml(q, lv); toast('再檢查看看，按「提示」會告訴你下一個字', 2200); }
+  } else {
+    const f = T.res.findIndex(r => !r.ok); if (f >= 0) S.kbRow = f;
+    $('#typed').innerHTML = typedHtml(q, lv); toast('再檢查看看，按「提示」會告訴你需要的關鍵字', 2400);
+  }
 }
 function resetQ(sp) {
   const q = sp.q, st = QSTATE[q.pid], lv = S.lv;
   if (lv === 1) { if (BOOK.qmode === 'fill') { st.fills = q.blanks.map(() => null); st.hint = {}; } else { st.placed = []; st.wrong = false; } st.done = false; }
-  else st.t[lv] = { vals: [], res: [], hm: [], done: false, shown: false, zh: st.t[lv].zh };
+  else { st.t[lv] = { vals: [], res: [], hm: [], done: false, shown: false, zh: st.t[lv].zh }; S.kbRow = 0; S.shift = false; }
   reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp);
 }
 function rightQ(sp) {
@@ -2890,6 +2945,7 @@ function rtRefresh(sp) {
 }
 function speakQuick(t) { stopAll(); setTimeout(() => speakText(t), 160); }
 
+document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('[data-act="kkey"]'); if (!t) return; e.preventDefault(); window.__kkTs = Date.now(); kbPress(t.dataset.k); });
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-act]'); if (!t) { if (!e.target.closest('.vw')) $('#gloss').hidden = true; return; }
   const a = t.dataset.act, sp = SP();
@@ -2917,6 +2973,9 @@ document.addEventListener('click', async e => {
     case 'qtshow': { const q = sp.q, lv = S.lv, T = readTyped(q, lv); T.shown = !T.shown; $('#typed').innerHTML = typedHtml(q, lv); break; }
     case 'qzhtoggle': { const T = QSTATE[sp.q.pid].t[3]; T.zh = !T.zh; reLeftQ(sp); break; }
     case 'qslow': { const old = S.slow; S.slow = true; await playItems([{ text: sp.q.q }], { mark: false, useMine: false }); S.slow = old; break; }
+    case 'kbrow': { const i = +t.dataset.i; if (sp.kind === 'q' && S.lv >= 2 && i !== S.kbRow) { S.kbRow = i; $$('#typed .trow').forEach((r, j) => r.classList.toggle('active', S.kb && j === i)); } break; }
+    case 'kkey': if (Date.now() - (window.__kkTs || 0) < 600) break; kbPress(t.dataset.k); break;
+    case 'kbtoggle': { S.kb = !S.kb; saveP(); const T = readTyped(sp.q, S.lv); $('#typed').innerHTML = typedHtml(sp.q, S.lv); updDock(); toast(S.kb ? '已切換成內建鍵盤，不會遮住畫面' : '已切換成系統鍵盤'); break; }
     case 'chk': { const R = rtState(sp), k = +t.dataset.n, j = +t.dataset.j; const c = R.c[k] || (R.c[k] = [0, 0, 0]); c[j] = c[j] ? 0 : 1; rtRefresh(sp); break; }
     case 'rtshow': { const R = rtState(sp); (R.show || (R.show = {}))[+t.dataset.n] = 1; rtRefresh(sp); break; }
     case 'rtmodel': { const x = rtItem(sp, +t.dataset.n); playItems([{ text: x.model }], { mark: false, useMine: false }); break; }
@@ -2969,7 +3028,22 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) stopA
 
 
 document.addEventListener('input', e => { const t = e.target; if (t.matches && t.matches('.tin')) { const sp = SP(); if (sp && sp.kind === 'q') { QSTATE[sp.q.pid].t[S.lv].vals[+t.dataset.i] = t.value; } } });
-document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('.tin')) { e.preventDefault(); const sp = SP(); if (sp && sp.kind === 'q') typedCheckAll(sp); } });
+document.addEventListener('keydown', e => {
+  const sp = S.view === 'book' ? SP() : null; if (!sp || sp.kind !== 'q' || S.lv < 2) return;
+  const T = QSTATE[sp.q.pid].t[S.lv]; if (T.done || e.ctrlKey || e.metaKey || e.altKey) return;
+  const tgt = e.target, inTin = tgt.matches && tgt.matches('.tin');
+  if (!S.kb) { if (e.key === 'Enter' && inTin) { e.preventDefault(); typedCheckAll(sp); } return; }
+  if (tgt.matches && tgt.matches('input,textarea') && !inTin) return;
+  if (e.key === 'Enter') { e.preventDefault(); typedCheckAll(sp); }
+  else if (e.key === 'Backspace') { e.preventDefault(); kbPress('BACK'); }
+  else if (e.key.length === 1 && e.key !== ' ') { e.preventDefault(); kbChar(e.key); }
+  else if (e.key === ' ') { e.preventDefault(); kbChar(' '); }
+});
+document.addEventListener('focusin', e => { const t = e.target; if (t.matches && t.matches('.tin') && !S.kb) { S.kbRow = +t.dataset.i; setTimeout(() => { try { t.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (x) { } }, 320); } });
+if (window.visualViewport) {
+  const fit = () => { const vv = visualViewport, open = vv.height < innerHeight * .8; document.body.style.height = open ? vv.height + 'px' : ''; if (open) window.scrollTo(0, 0); };
+  visualViewport.addEventListener('resize', fit);
+}
 /* ============ 第二課插圖 ============ */
 const lolli = (cx, cy, r, col = '#e23b3b') => `<g transform="translate(${cx} ${cy}) scale(${r / 80})" stroke-linecap="round">
   <rect x="-5" y="60" width="10" height="110" rx="4" fill="#f3e2c4" stroke="${OUT}" stroke-width="4"/>
