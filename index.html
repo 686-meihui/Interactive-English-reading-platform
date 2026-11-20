@@ -219,6 +219,19 @@ table.vt tr:hover td{background:var(--accent-soft)}
 .toc-item span.t{flex:1;min-width:0;font-weight:500}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paperL);padding:10px 18px;border-radius:999px;font-weight:500;z-index:60;max-width:92vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
+.fx{position:fixed;inset:0;z-index:70;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.fx.show{opacity:1}
+.fxcard{background:var(--card);color:var(--ink);border:3px solid var(--hl);border-radius:22px;padding:18px 26px;text-align:center;box-shadow:var(--shadow);max-width:88vw;transform:scale(.7);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.fx.show .fxcard{transform:scale(1)}
+.fxt{font-family:var(--f-display);font-size:28px;font-weight:600}.fxs{margin-top:6px;font-size:17px;color:var(--ink2);font-weight:500}
+.cf{position:absolute;top:-6vh;font-size:26px;animation:cfall 2.2s ease-in forwards}
+@keyframes cfall{to{transform:translateY(112vh) rotate(540deg)}}
+.fbk{position:fixed;inset:0;z-index:75;background:rgba(15,20,35,.5);display:flex;align-items:center;justify-content:center;padding:16px}.fbk[hidden]{display:none}
+.fbk .bx{background:var(--card);color:var(--ink);border-radius:22px;padding:20px;max-width:480px;width:100%;box-shadow:var(--shadow)}
+.fbk h3{margin:0 0 8px;font-family:var(--f-display);font-size:24px}.fbk p{margin:6px 0;font-size:17px;line-height:1.5}.fbk .sm2{font-size:13px;color:var(--ink2)}
+.fbk .rate{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.fbk .rate button{flex:1;min-width:110px;padding:12px 8px;border-radius:14px;border:2px solid var(--line);background:var(--paperL);color:var(--ink);font:600 17px var(--f-ui);cursor:pointer}
+.fbk .rate button.on{background:var(--accent-soft);border-color:var(--accent)}
+
 
 
 [hidden]{display:none!important}
@@ -389,6 +402,7 @@ table.vt tr:hover td{background:var(--accent-soft)}
   </nav>
 </div>
 <aside class="toc" id="toc" hidden><div class="panel" id="tocPanel"></div></aside>
+<div class="fx" id="fx" aria-live="polite"></div><div class="fbk" id="fbk" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="gloss" id="gloss" hidden></div>
 <input type="file" id="upl" accept="audio/*" hidden>
@@ -2275,7 +2289,7 @@ const QSTATE = {};
 function loadP() {
   try {
     const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
-    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {};
+    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {}; P.reps = j.reps || {}; P.fb = j.fb || {}; P.best = j.best || {};
     if (!j.pos && typeof j.i === 'number') P.pos.wwo = j.i;
     if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId; if (typeof j.kb === 'boolean') S.kb = j.kb;
   } catch (e) { }
@@ -2283,7 +2297,7 @@ function loadP() {
 function saveP() {
   try {
     if (BOOK && S.view === 'book') P.pos[BOOK.id] = S.i;
-    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, mode: S.mode, voiceURI: S.voiceURI }));
+    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, reps: P.reps, fb: P.fb, best: P.best, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, mode: S.mode, voiceURI: S.voiceURI }));
   } catch (e) { }
 }
 
@@ -2487,6 +2501,34 @@ function recDel(k) {
   return new Promise(res => { try { const tx = DB.db.transaction('rec', 'readwrite'); tx.objectStore('rec').delete(k); tx.oncomplete = res; tx.onerror = res; } catch (e) { res(); } });
 }
 const REC = { mr: null, stream: null, blocked: false };
+function recText(key) { const sp = SP(); if (!sp) return ''; if (sp.kind === 'q') return sp.q.say || sp.q.model || ''; const x = (sp.sents || []).find(s => s.key === key); return x ? (x.text || x.en || '') : ''; }
+async function analyzeRec(blob) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; const ac = new AC(); const buf = await ac.decodeAudioData(await blob.arrayBuffer()); try { ac.close(); } catch (e) { }
+    const d = buf.getChannelData(0), fr = Math.max(1, Math.floor(buf.sampleRate * .05)); let voiced = 0, tot = 0, peak = 0, sum = 0;
+    for (let i = 0; i + fr <= d.length; i += fr) { let e = 0; for (let k = 0; k < fr; k++) { const v = d[i + k]; e += v * v; if (Math.abs(v) > peak) peak = Math.abs(v); } e = Math.sqrt(e / fr); tot++; if (e > .012) { voiced++; sum += e; } }
+    return { dur: buf.duration, voiced: tot ? voiced / tot : 0, vol: voiced ? sum / voiced : 0, peak };
+  } catch (e) { return null; }
+}
+async function recFeedback(key, blob) {
+  const txt = recText(key), words = (txt.match(/[A-Za-z']+/g) || []).length || 6, want = words / 2.3, a = await analyzeRec(blob), box = $('#fbk');
+  let title = '🎤 錄好了！', lines = [], good = true;
+  if (a) {
+    if (a.vol < .02 || a.peak < .08) { lines.push('🔈 聲音有點小，下次靠近麥克風、大聲一點。'); good = false; } else lines.push('🔊 聲音很清楚。');
+    if (a.dur < want * .45) { lines.push('⏱ 有點短，是不是漏掉一些字？再完整說一次。'); good = false; }
+    else if (a.dur > want * 3.2 + 3) { lines.push('⏱ 有點久，試著連貫一點說。'); }
+    else lines.push('⏱ 長度剛剛好。');
+    if (a.voiced < .15) { lines.push('🗣 中間停頓比較多，可以再順一點。'); good = false; }
+    title = good ? '🎉 錄得很棒！' : '💪 再試一次會更好！';
+  } else lines.push('已存好你的聲音，按「聽我的」聽聽看。');
+  const cur = (P.fb[key] || {}).r;
+  box.innerHTML = `<div class="bx"><h3>${title}</h3>${lines.map(l => `<p>${l}</p>`).join('')}<p class="sm2">（機器只能檢查音量和長度，發音準不準請家長聽聽看，再幫孩子選一個鼓勵。）</p><div class="rate" data-key="${esc(key)}"><button data-r="great" class="${cur === 'great' ? 'on' : ''}">🌟 發音很棒</button><button data-r="good" class="${cur === 'good' ? 'on' : ''}">👍 很清楚</button><button data-r="again" class="${cur === 'again' ? 'on' : ''}">💪 再練一次</button></div><div class="tctl" style="margin-top:12px"><button class="btn pri" data-fbclose="1">完成</button></div></div>`;
+  box.hidden = false; if (good) celebrate('🎤 ' + (PRAISE[Math.random() * PRAISE.length | 0]), '', 16);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('#fbk [data-r]'); if (b) { const key = b.parentNode.dataset.key; P.fb[key] = { r: b.dataset.r, t: Date.now() }; saveP(); $$('#fbk [data-r]').forEach(x => x.classList.toggle('on', x === b)); if (b.dataset.r !== 'again') { P.reps[key + '.rec'] = (P.reps[key + '.rec'] || 0) + 1; saveP(); } toast(b.dataset.r === 'great' ? '🌟 太棒了！繼續保持' : b.dataset.r === 'good' ? '👍 很好！' : '💪 沒關係，多練幾次就會更好', 1800); return; }
+  if (e.target.closest('#fbk [data-fbclose]') || e.target.id === 'fbk') $('#fbk').hidden = true;
+});
 async function toggleRec(key) {
   if (REC.mr) { REC.mr.stop(); return; }
   stopAll();
@@ -2500,7 +2542,7 @@ async function toggleRec(key) {
         stream.getTracks().forEach(t => t.stop());
         const blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
         REC.mr = null; S.recKey = null;
-        if (blob.size > 800) { await recSet(key, blob); toast('錄好了！按「聽我的」就能聽到自己的聲音'); } else toast('錄音太短了，再試一次');
+        if (blob.size > 800) { await recSet(key, blob); toast('錄好了！按「聽我的」就能聽到自己的聲音'); recFeedback(key, blob); } else toast('錄音太短了，再試一次');
         afterRecChange();
       };
       REC.mr = mr; S.recKey = key; mr.start(); updDock(); toast('錄音中⋯⋯說完請按「停止錄音」');
@@ -2532,9 +2574,29 @@ function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.c
 function starsHtml(n) { return ICON.star.replace('class="star"', 'class="star' + (n ? ' on' : '') + '"'); }
 function updStars() {
   const n = countable.filter(s => P.done[s.pid]).length;
-  $('#starCount').innerHTML = ICON.star.replace('class="star"', 'class="star on"') + `<span>${n} / ${countable.length}</span>`;
+  const reps = countable.reduce((a, s) => a + (P.reps[s.pid] || 0) + (P.reps[s.pid + '.2'] || 0) + (P.reps[s.pid + '.3'] || 0), 0);
+  $('#starCount').innerHTML = ICON.star.replace('class="star"', 'class="star on"') + `<span>${n} / ${countable.length}</span>` + (reps ? `<span title="練習章" style="margin-left:8px">🏅 ${reps}</span>` : '');
 }
-function award(id) { if (!P.done[id]) { P.done[id] = 1; saveP(); updStars(); toast('得到一顆星星！'); } }
+let fxTm;
+function celebrate(title, sub, n = 26) {
+  const f = $('#fx'); if (!f) return; const E = ['⭐', '🌟', '✨', '🎉', '🎈', '🍭'];
+  f.innerHTML = `<div class="fxcard"><div class="fxt">${title}</div>${sub ? `<div class="fxs">${sub}</div>` : ''}</div>` + Array.from({ length: n }, () => `<span class="cf" style="left:${Math.random() * 96}vw;animation-delay:${(Math.random() * .6).toFixed(2)}s;font-size:${20 + Math.random() * 16 | 0}px">${E[Math.random() * E.length | 0]}</span>`).join('');
+  f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); clearTimeout(fxTm); fxTm = setTimeout(() => f.classList.remove('show'), 2600);
+}
+const PRAISE = ['太棒了！', '好厲害！', '答對了！', '你真聰明！', '讚讚讚！'];
+function award(id) {
+  const first = !P.done[id]; if (first) P.done[id] = 1; const n = P.reps[id] = (P.reps[id] || 0) + 1; saveP(); updStars();
+  const pr = PRAISE[Math.random() * PRAISE.length | 0];
+  if (first) celebrate('🌟 ' + pr + ' 得到一顆星星！', '星星記錄在右上角', 40);
+  else celebrate('🎉 ' + pr + ' 練習章 +1 🏅', `這題已經練了 ${n} 次，越練越熟！（星星每題只有一顆，練習章會一直累積）`, 24);
+}
+function rtReward(sp, o) {
+  const id = sp.pid, prev = P.best[id] || 0, first = o >= 8 && !P.done[id]; P.best[id] = Math.max(prev, o); P.reps[id] = (P.reps[id] || 0) + 1; if (o >= 8) P.done[id] = 1; saveP(); updStars();
+  const best = `最佳成績：${P.best[id]} / 10` + (o > prev && prev ? '（破紀錄！）' : '');
+  if (o === 10) celebrate('🏆 滿分！10 / 10', first ? '得到一顆星星！' : '太完美了！' + best, 70);
+  else if (o >= 8) celebrate(`⭐ 答對 ${o} 題！${first ? '得到一顆星星' : ''}`, best + '，再挑戰一次拿滿分！', 40);
+  else celebrate(`💪 答對 ${o} 題，進步中！`, '答對 8 題以上就有星星。看看錯題的解釋，再試一次！' + (prev ? best : ''), 14);
+}
 
 /* ============ 左頁：課文 ============ */
 function sentHtml(x, sp, extra = '') {
@@ -2853,7 +2915,7 @@ async function onChip(w) {
     if (st.fills.every(f => f != null)) {
       st.done = true; $('#win').innerHTML = winHtml(q); award(sp.pid); $('#pgR').innerHTML = rightQ(sp); updDock();
       playItems([{ text: q.say }], { mark: false, useMine: false });
-    } else { speakQuick(w); }
+    } else { toast('答對了 ✓', 900); speakQuick(w); }
   } else {
     const el = $$('#bank .chip').find(c => c.dataset.w === w); if (el) { el.classList.add('bad'); setTimeout(() => el.classList.remove('bad'), 450); }
     toast('再試試看，想一想這個空格要填什麼', 1800);
@@ -2964,7 +3026,7 @@ document.addEventListener('click', async e => {
     case 'tocgo': $('#toc').hidden = true; goTo(+t.dataset.i, +t.dataset.i > S.i ? 1 : -1); break;
     case 'voicepick': { const v = speechSynthesis.getVoices().find(x => x.voiceURI === t.dataset.u); if (v) { voice = v; S.voiceURI = v.voiceURI; saveP(); $$('[data-act="voicepick"]').forEach(b => b.classList.toggle('cur', b === t)); speakQuick('Hello! Let us read together.'); } break; }
     case 'rtans': { const R = rtState(sp), k = +t.dataset.n; if (R.sub) break; R.a[k] = t.dataset.t === 'tf' ? t.dataset.v : +t.dataset.v; rtRefresh(sp); break; }
-    case 'rtsubmit': { const R = rtState(sp), s = rtScore(sp); if (s.n < 10) { toast(`還有 ${10 - s.n} 題沒作答`); break; } R.sub = 1; const s2 = rtScore(sp); rtRefresh(sp); $('#pgL').scrollTop = 0; if (s2.o >= 8) award(sp.pid); toast(s2.o === 10 ? '滿分！太棒了！' : `答對 ${s2.o} 題，看看錯題的解釋再挑戰一次！`, 3200); break; }
+    case 'rtsubmit': { const R = rtState(sp), s = rtScore(sp); if (s.n < 10) { toast(`還有 ${10 - s.n} 題沒作答`); break; } R.sub = 1; const s2 = rtScore(sp); rtRefresh(sp); $('#pgL').scrollTop = 0; rtReward(sp, s2.o); break; }
     case 'rtreset': { const R = rtState(sp); R.a = {}; R.c = {}; R.show = {}; R.sub = 0; rtShuffle(R, sp); rtRefresh(sp); $('#pgL').scrollTop = 0; toast('重新開始，這次一定可以滿分！'); break; }
     case 'qlv': { const n = +t.dataset.lv; if (n === S.lv) break; stopAll(); S.lv = n; reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp); $('#pgL').scrollTop = 0; if (n === 3) playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break; }
     case 'qreset': resetQ(sp); break;
