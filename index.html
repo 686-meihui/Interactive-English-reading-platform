@@ -219,6 +219,41 @@ table.vt tr:hover td{background:var(--accent-soft)}
 .toc-item span.t{flex:1;min-width:0;font-weight:500}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paperL);padding:10px 18px;border-radius:999px;font-weight:500;z-index:60;max-width:92vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
+.gvin{max-width:1000px}
+.gvtabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;font-family:var(--f-ui)}
+.gvtabs button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:10px 18px;font-weight:700;font-size:1rem;min-height:46px}
+.gvtabs button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gvc{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px 18px;margin:0 0 16px;font-family:var(--f-ui);line-height:1.6;color:var(--ink);text-align:left}
+.gvc h3{margin:0 0 8px;font-family:var(--f-display);font-size:1.25rem}.gvc p{margin:6px 0;color:var(--ink)}
+.gvol{margin:6px 0;padding-left:1.3em}.gvol li{margin:8px 0}
+.gvnote{background:var(--warn);border-radius:12px;padding:8px 12px;font-size:.95rem}
+.gvgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.gvgrid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px}
+.gvgrid .gvc,.gvgrid3 .gvc{margin:0}
+.gvq{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 18px}.gvq div{display:flex;flex-direction:column;border-bottom:1px dashed var(--line);padding:4px 0}.gvq b{color:var(--accent)}
+.gcard .gh{display:flex;gap:10px;align-items:center;margin-bottom:6px}.gcard .ge{font-size:2rem}.gcard .gt b{display:block;font-family:var(--f-display);font-size:1.2rem}.gcard .gt span{color:var(--ink2);font-weight:600}
+.gvul{margin:6px 0;padding-left:1.2em}.gvul li{margin:4px 0}.gvul small,.gex small,.pex small{display:block;color:var(--ink2)}
+.gex,.pex{background:var(--accent-soft);border-radius:12px;padding:8px 12px;margin-top:8px;font-family:var(--f-read);font-size:1.05rem}.gex .btn,.pex .btn{margin-top:6px}
+.pcard{border-width:3px}.pbar{color:#fff;border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.pbar b{font-size:1.25rem}
+.pwho{font-weight:700}.pchip{color:var(--ink2)}.pbk{font-size:.9rem;color:var(--ink2)}
+mark.mk{background:#fff176;color:inherit;border-radius:4px;padding:0 2px;font-weight:700}
+.gitem{cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:flex-start}.gitem:hover{border-color:var(--accent)}.gitem small{color:var(--ink2)}
+.rnd .ri{font-size:2rem}.rnd .rs{margin-top:6px;font-weight:700}.rnd .rs .star{width:20px;height:20px;vertical-align:-4px}
+.gvpass{font-family:var(--f-read);font-size:calc(var(--fs)*clamp(1.3rem,2.1vw,1.8rem));line-height:1.75;margin:6px 0 10px}.gvpass .pl{margin:2px 0}
+.gvzh{background:var(--warn);border-radius:12px;padding:8px 12px;margin:8px 0;font-size:1rem}
+.gw{display:inline-block;padding:0 3px;margin:1px 0;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.gw:hover{background:var(--accent-soft)}.gw.on{background:#fff176;border-color:#e3c24b}.gw.bad{background:#ffd4d0;border-color:#e2574c}.gw.hl{animation:pulse 1s infinite;background:#c7f0d8;border-color:#2f9b5a}
+.gvq1{font-weight:700;font-size:1.1rem}.gvstep{display:inline-block;margin:0 0 8px;color:var(--ink2);font-size:.9rem}
+.gvopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:10px 0}
+.gvopt{border:3px solid var(--line);background:var(--paperL);color:var(--ink);border-radius:16px;padding:12px 14px;text-align:left;font-family:var(--f-ui);min-height:64px;display:flex;flex-direction:column;gap:2px}
+.gvopt b{font-size:1.1rem}.gvopt small{color:var(--ink2)}.gvopt:hover:not([disabled]){border-color:var(--accent)}
+.gvopt.good{background:#d6f5e3;border-color:#2f9b5a}.gvopt.badc{background:#ffe0dd;border-color:#e2574c}.gvopt.dim{opacity:.5}
+.gvmsg{background:#ffe9e6;border:2px solid #e2574c;border-radius:12px;padding:8px 12px;margin:8px 0;font-weight:600}.gvmsg.ok{background:#e1f6ea;border-color:#2f9b5a}
+.gvfb{border-radius:14px;padding:10px 14px;margin-top:10px}.gvfb.ok{background:#e1f6ea;border:2px solid #2f9b5a}.gvfb.no{background:#fff1dc;border:2px solid #e0a43a}.gvfb p{margin:4px 0}
+.gvbar{height:10px;background:var(--line);border-radius:6px;margin:0 0 12px;overflow:hidden}.gvbar i{display:block;height:100%;background:var(--accent);transition:width .3s}.gvprog{font-weight:700;align-self:center}
+.gvwin h3{font-size:1.4rem}.gvbig{font-size:3rem;font-family:var(--f-display);font-weight:600;margin:0}.gvbig small{font-size:1.2rem;color:var(--ink2)}
+.gvsent{background:var(--accent-soft);border-radius:12px;padding:10px 12px;margin:8px 0;font-family:var(--f-read);font-size:1.1rem}.gvsent .btn{margin-left:8px}
+.gvlist{display:flex;flex-direction:column;gap:6px;margin:10px 0}.gvrow{display:flex;gap:10px;border-radius:12px;padding:8px 10px;background:var(--paperL)}.gvrow small{display:block;color:var(--ink2);font-weight:400}.gvrow.bad{background:#fff1dc}.gvrow.help{background:#eef8e8}
+
 .fx{position:fixed;inset:0;z-index:70;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
 .fx.show{opacity:1}
 .fxcard{background:var(--card);color:var(--ink);border:3px solid var(--hl);border-radius:22px;padding:18px 26px;text-align:center;box-shadow:var(--shadow);max-width:88vw;transform:scale(.7);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
@@ -392,6 +427,7 @@ table.vt tr:hover td{background:var(--accent-soft)}
     <section class="page right" id="pgR" aria-label="教師手冊頁"></section>
   </main>
   <section class="shelf" id="shelf" hidden></section>
+  <section class="shelf" id="gv" hidden></section>
   <nav class="pager">
     <button class="flip" id="bPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg><span>上一頁</span></button>
     <div class="mid">
@@ -2196,6 +2232,839 @@ function unscrFor(bk, q) {
   let sh, tries = 0; do { sh = t.map((x, i) => [rnd(), x]).sort((a, b) => a[0] - b[0]).map(a => a[1]); tries++; } while (tries < 20 && sh.join('|') === t.join('|'));
   q.tiles = sh; q.order = solveTiles(q); q.uzh = UNSCR_ZH[bk.id] && UNSCR_ZH[bk.id][q.no - 1];
 }
+/* ============ 第四課：Pepita and the Bully（pp.264–285） ============ */
+const SPREADS4 = [
+{ id:'cover', kind:'cover', label:'封面與使用說明' },
+
+{ id:'pb0', kind:'read', label:'課前準備 · p.264', art:'pbprep',
+  left:[
+    {k:'h', s:[T('Prepare to Read','準備閱讀')]},
+    {k:'label', text:'Genre Study 文體學習'},
+    {k:'p', s:[T('Realistic fiction stories are made up but could happen in real life.','寫實小說是編出來的故事，但可能在真實生活中發生。'),
+            T('As you read Pepita and the Bully, look for:','閱讀《Pepita 和惡霸》時，請留意：')]},
+    {k:'li', s:[T('characters who act and talk like real people','角色像真人一樣說話、做事')]},
+    {k:'li', s:[T('events that could really happen','真的可能發生的事件')]},
+    {k:'li', s:[T('setting in modern time in a place that could be real','發生在現代、可能真實存在的地點')]},
+    {k:'label', text:'Set a Purpose 設定閱讀目的'},
+    {k:'p', s:[T('As you read, retell the story.','閱讀時，請重述這個故事。'),
+            T('Use your own words to tell what happened in the beginning, middle, and end of the story.','用你自己的話，說出故事的開頭、中間、結尾發生了什麼事。')]},
+    {k:'label', text:'Power Words 重點單字'},
+    {k:'words', s:[T('wrinkled','皺起的'),T('frown','皺眉'),T('yanked','猛拉'),T('dragged','拖、拉'),T('mumbled','含糊地說'),T('nearby','在附近'),T('excuses','藉口'),T('hesitant','猶豫的')]},
+    {k:'label', text:'Meet the Author 認識作者'},
+    {k:'p', s:[T('Meet Ofelia Dumas Lachtman.','認識作者 Ofelia Dumas Lachtman。')]},
+  ],
+  vocab:[
+    ['realistic fiction','ˌriəˈlɪstɪk ˈfɪkʃən','寫實小說','The genre is realistic fiction.','realistic fiction'],
+    ['retell','riˈtɛl','重述','Retell the story in order.','retell'],
+    ['wrinkled','ˈrɪŋkəld','皺起的','Her face wrinkled up.','wrinkled'],
+    ['frown','fraʊn','皺眉頭','He had a big frown.','frown'],
+    ['yank','jæŋk','猛地一拉','She yanked my braid.','yanked'],
+    ['mumble','ˈmʌmbəl','含糊地小聲說','He mumbled an answer.','mumbled'],
+    ['nearby','ˈnɪrˌbaɪ','在附近的','A dog is nearby.','nearby'],
+    ['excuse','ɪkˈskjus','藉口','Stop making excuses.','excuses'],
+    ['hesitant','ˈhɛzətənt','猶豫的','He gave a hesitant nod.','hesitant'],
+  ],
+  phrases:[
+    ['made up','編造的、虛構的'],['could happen in real life','可能在真實生活中發生'],['look for ...','尋找…'],
+    ['in your own words','用你自己的話'],['beginning, middle, and end','開頭、中間、結尾'],['act and talk like real people','像真人一樣做事、說話'],
+  ],
+  patterns:[
+    ['Realistic fiction stories are made up but could happen in real life.',[['Realistic fiction stories','S'],['are made up','V'],['but could happen','V'],['in real life.','X']],'are made up ＝ 被編造出來的（被動語態）。could ＝ 可能。but 連接兩個想法：編的，但可能發生。'],
+    ['Use your own words to tell what happened.',[['Use','V'],['your own words','O'],['to tell what happened.','X']],'to + 原形動詞 ＝ 為了…。what happened ＝ 發生了什麼事（過去式）。'],
+  ],
+  verbs:[['read','read','read','閱讀（過去式唸 /rɛd/）'],['tell','told','told','告訴、講述'],['happen','happened','happened','發生'],['use','used','used','使用'],['act','acted','acted','表現、行動'],['talk','talked','talked','說話']],
+  exam:'Q1 文體：realistic fiction（寫實小說）就在這一頁。三個線索：像真人的角色、真的可能發生的事、現代的真實地點。Q7 開頭中間結尾：這一頁的 Set a Purpose 就是要你「重述故事」。',
+  parent:'問孩子：「寫實小說是編出來的，還是真人真事？」（編的，但可能發生。）再問：「有魔法或會說話的動物嗎？」（沒有，那是幻想故事。）'
+},
+
+{ id:'pb1', kind:'read', label:'課文 1 · pp.266–268', art:'pbbus',
+  left:[
+    {k:'title', s:[T('Pepita and the Bully','Pepita 和惡霸')], by:'by Ofelia Dumas Lachtman · illustrated by Alex Pardo DeLange'},
+    {k:'p', s:[T('Pepita waved goodbye to the bus driver.','Pepita 向公車司機揮手說再見。'),
+            T('She raced down Pepper Street, her black braids bouncing behind her.','她飛奔過 Pepper 街，黑色的辮子在她身後跳動。'),
+            T('She was in a hurry to get home and talk to Mamá.','她急著回家找媽媽說話。'),
+            T('She wanted to tell her that three days in her new school were enough.','她想告訴媽媽，在新學校待三天已經夠了。'),
+            T('She did not want to go there again.','她不想再去那裡了。')]},
+    {k:'p', s:[T('Pepita’s face wrinkled up into a big frown.','Pepita 的臉皺成一個大大的苦瓜臉。'),
+            T('She was sorry because she really liked Miss Chu, her teacher.','她覺得很遺憾，因為她真的很喜歡她的老師 Chu 老師。'),
+            T('Miss Chu had black eyes and a soft, sunny smile.','Chu 老師有一雙黑眼睛和柔和、燦爛的笑容。'),
+            T('Pepita also liked her classroom with bright bulletin boards and cut-out, red letters that said, “Welcome to a New School Year.”','Pepita 也喜歡她的教室，有明亮的布告欄和剪下來的紅色字母，寫著「歡迎來到新學年」。'),
+            T('She especially liked the playground with its tall shady tree and benches.','她特別喜歡有高大樹蔭和長椅的操場。'),
+            T('But she did not like Babette.','但是她不喜歡 Babette。'),
+            T('She had brown hair, blue eyes, and skin that looked like peach ice cream, but she was not nice.','Babette 有棕色頭髮、藍眼睛，皮膚像蜜桃冰淇淋，但是她不友善。')]},
+    {k:'p', s:[T('Pepita’s frown grew bigger when she remembered her first day of school.','Pepita 想起上學第一天，苦瓜臉就變得更大了。'),
+            T('She had gone up to Babette and said, “Hello, my name’s Pepita. What’s yours?”','她曾經走向 Babette，說：「哈囉，我的名字是 Pepita。你叫什麼名字？」','Pepita'),
+            T('“Pepita, yuck,” Babette said.','「Pepita，噁，」Babette 說。','Babette'),
+            T('“That’s not a name. That’s nothing but a noise.”','「那不是名字。那只是一個噪音。」','Babette'),
+            T('Pepita felt her face grow hot. She was angry.','Pepita 覺得她的臉變熱了。她很生氣。'),
+            T('“It is so a name,” she said, “and it’s mine!”','「那就是名字，」她說，「而且是我的！」','Pepita'),
+            T('Babette just turned and walked away.','Babette 只是轉身走開了。')]},
+  ],
+  vocab:[
+    ['wave','weɪv','揮手','I wave goodbye.','waved'],
+    ['race','reɪs','飛奔、賽跑','He races home.','raced'],
+    ['braid','breɪd','辮子','She has long braids.','braids?'],
+    ['hurry','ˈhɝi','匆忙','I am in a hurry.','hurry'],
+    ['frown','fraʊn','皺眉','She has a big frown.','frown'],
+    ['playground','ˈpleɪˌɡraʊnd','操場','We play on the playground.','playground'],
+    ['shady','ˈʃeɪdi','有樹蔭的','Sit under the shady tree.','shady'],
+    ['noise','nɔɪz','噪音','That is just noise.','noise'],
+    ['angry','ˈæŋɡri','生氣的','He is angry.','angry'],
+  ],
+  phrases:[
+    ['wave goodbye to ...','向…揮手道別'],['in a hurry to ...','急著要…'],['three days are enough','三天就夠了'],
+    ['go up to ...','走向…'],['nothing but a noise','不過是個噪音'],['turn and walk away','轉身走開'],['grow hot','（臉）變熱'],
+  ],
+  patterns:[
+    ['She was in a hurry to get home and talk to Mamá.',[['She','S'],['was','V'],['in a hurry','X'],['to get home and talk to Mamá.','X']],'in a hurry to + 原形動詞 ＝ 急著要做…。get home ＝ 回到家。'],
+    ['Pepita felt her face grow hot.',[['Pepita','S'],['felt','V'],['her face','O'],['grow hot.','X']],'feel + 人／物 + 原形動詞 ＝ 感覺到…變得…。這句在故事裡一再出現，是在表現 Pepita 生氣。'],
+    ['“It is so a name,” she said, “and it’s mine!”',[['“It is so a name,”','X'],['she','S'],['said,','V'],['“and it’s mine!”','X']],'so 在這裡是加強語氣：「它就是名字啦！」mine ＝ 我的（所有格代名詞）。'],
+  ],
+  verbs:[['wave','waved','waved','揮手'],['race','raced','raced','飛奔'],['want','wanted','wanted','想要'],['like','liked','liked','喜歡'],['go','went（文中 had gone）','gone','去'],['say','said','said','說'],['feel','felt','felt','覺得'],['turn','turned','turned','轉身'],['walk','walked','walked','走']],
+  notes:[['She had gone up to Babette','had gone 是「過去完成式」：先發生的事。Pepita 想起「第一天」（更早的過去），所以用 had + 過去分詞。二年級先記住：had gone ＝ 之前就已經去了。']],
+  exam:'Q2 視角：全篇用 Pepita、she、her 來說，是第三人稱。Q4 背景：Pepper Street、新學校、操場（playground with a tall shady tree）。Q8 主要人物：Pepita 和 Babette 第一次出現在這裡。',
+  parent:'請孩子用中文說：「Pepita 為什麼不想去學校？」（因為 Babette 對她不友善。）再問：「Pepita 喜歡學校的哪些地方？」（老師、教室、操場。）'
+},
+
+{ id:'pb2', kind:'read', label:'課文 2 · pp.269–270', art:'pbrecess',
+  left:[
+    {k:'p', s:[T('On the second day, Miss Chu asked her students to talk about their favorite things.','第二天，Chu 老師請學生們談談自己最喜歡的東西。'),
+            T('Pepita told them her dog Lobo could understand Spanish.','Pepita 告訴大家，她的狗 Lobo 聽得懂西班牙語。')]},
+    {k:'p', s:[T('At recess, Babette said, “I’ll bet your dog has fleas.”','下課時，Babette 說：「我敢說你的狗有跳蚤。」','Babette'),
+            T('Pepita felt her face grow hot. She was angry.','Pepita 覺得她的臉變熱了。她很生氣。'),
+            T('“He does not!” she cried.','「他沒有！」她大叫。','Pepita'),
+            T('Babette just turned and walked away.','Babette 只是轉身走開了。')]},
+    {k:'p', s:[T('And today was even worse.','而今天更糟。'),
+            T('Babette yanked her braids and said, “Your braids look like two raggedy ropes. You should cut them off.”','Babette 猛拉她的辮子，說：「你的辮子看起來像兩條破爛的繩子。你應該把它們剪掉。」','Babette'),
+            T('Pepita felt her face grow hot. She was really angry.','Pepita 覺得她的臉變熱了。她真的很生氣。'),
+            T('“They are not ropes,” she cried. “They’re braids! And if you pull them again, I’ll tell Miss Chu!”','「它們不是繩子，」她大叫。「它們是辮子！如果你再拉，我就告訴 Chu 老師！」','Pepita'),
+            T('Babette yelled, “Tattletale, tattletale,” and turned and walked away.','Babette 大喊：「愛告狀的人，愛告狀的人」，然後轉身走開了。','Babette')]},
+    {k:'p', s:[T('Pepita was glad when the school day was over.','學校一天結束時，Pepita 很高興。'),
+            T('Yes, she thought as she raced home, three days are enough.','是的，她一邊飛奔回家，一邊想：三天夠了。'),
+            T('I don’t want to go to that school again.','我不想再去那所學校了。')]},
+  ],
+  vocab:[
+    ['favorite','ˈfeɪvərɪt','最喜歡的','Red is my favorite color.','favorite'],
+    ['understand','ˌʌndɚˈstænd','了解、聽懂','My dog understands me.','understand'],
+    ['recess','ˈriˌsɛs','下課休息','We play at recess.','recess'],
+    ['flea','fli','跳蚤','The dog has fleas.','fleas?'],
+    ['raggedy','ˈræɡədi','破破爛爛的','Raggedy ropes.','raggedy'],
+    ['cut off','kʌt ɔf','剪掉','Cut it off.','cut'],
+    ['tattletale','ˈtætəlˌteɪl','愛告狀的人','Do not be a tattletale.','tattletale'],
+    ['yell','jɛl','大叫','She yelled loudly.','yelled'],
+    ['glad','ɡlæd','高興的','I am glad.','glad'],
+  ],
+  phrases:[
+    ['talk about','談論'],['I’ll bet ...','我敢說…'],['even worse','更糟'],['look like ...','看起來像…'],
+    ['cut off','剪掉'],['tell Miss Chu','告訴 Chu 老師'],['pull again','再拉一次'],['be over','結束'],
+  ],
+  patterns:[
+    ['Babette said, “I’ll bet your dog has fleas.”',[['Babette','S'],['said,','V'],['“I’ll bet','X'],['your dog','S'],['has','V'],['fleas.”','O']],'I’ll bet ＝ 我敢說。bet 後面接一個完整的句子。has ＝ 有（第三人稱單數）。'],
+    ['Your braids look like two raggedy ropes.',[['Your braids','S'],['look like','V'],['two raggedy ropes.','O']],'look like + 名詞 ＝ 看起來像…。'],
+    ['If you pull them again, I’ll tell Miss Chu!',[['If you pull them again,','X'],['I','S'],['will tell','V'],['Miss Chu!','O']],'If + 現在式, will + 原形動詞 ＝ 如果…，我就會…。I’ll ＝ I will。'],
+  ],
+  verbs:[['ask','asked','asked','請求、問'],['tell','told','told','告訴'],['understand','understood','understood','了解'],['say','said','said','說'],['cry','cried','cried','大叫、哭'],['yank','yanked','yanked','猛拉'],['yell','yelled','yelled','大喊'],['think','thought','thought','想'],['pull','pulled','pulled','拉']],
+  exam:'Q7 開頭：Babette 一直對 Pepita 說難聽的話——這就是故事的「問題」。Q9 細節題：Pepita 每次都 felt her face grow hot（臉變熱）、很生氣。Q2 視角：旁白還是用 Pepita、she 講故事。',
+  parent:'請孩子找出 Babette 說了哪三句壞話（名字、狗、辮子）。再問：「如果是你，被這樣說會怎麼想？」讓孩子練習說出自己的感受。'
+},
+
+{ id:'pb3', kind:'read', label:'課文 3 · pp.271–273', art:'pbneighbors',
+  left:[
+    {k:'p', s:[T('In the middle of the block, Pepita saw Mrs. Green digging in her garden.','在街區中間，Pepita 看見 Green 太太正在她的花園裡挖土。'),
+            T('“Hello, Mrs. Green,” she said, “Can I ask you something? Do you think my name is funny?”','「哈囉，Green 太太，」她說，「我可以問您一件事嗎？您覺得我的名字很好笑嗎？」','Pepita'),
+            T('“Why no, Pepita,” Mrs. Green answered. “Your name has a very lovely sound. It reminds me of bright little flowers.”','「怎麼會呢，Pepita，」Green 太太回答。「你的名字聽起來非常可愛。它讓我想到明亮的小花。」','Mrs. Green'),
+            T('Pepita nodded and smiled. “That’s nice,” she said. “Thank you, Mrs. Green.”','Pepita 點點頭，笑了。「真好，」她說。「謝謝您，Green 太太。」','Pepita')]},
+    {k:'p', s:[T('A few houses down the block, Pepita saw José, the mailman, stepping out of his truck.','再往前走幾戶人家，Pepita 看見郵差 José 正從他的車子走下來。'),
+            T('“Hello, Señor José,” she called. “Can I ask you something? Do you think Lobo understands Spanish?”','「哈囉，José 先生，」她喊道。「我可以問您一件事嗎？您覺得 Lobo 聽得懂西班牙語嗎？」','Pepita'),
+            T('“Why, yes, Pepita, I do,” the mailman answered. “I told him to sit. And when he did, I said, ‘Buen perrito. Good little dog,’ and he wagged and wagged his tail. Of course he understands Spanish.”','「當然啊，Pepita，我覺得他聽得懂，」郵差回答。「我叫他坐下。他坐下時，我說：『Buen perrito（西班牙語：乖狗狗）。Good little dog』，他就一直搖尾巴。他當然聽得懂西班牙語。」','José'),
+            T('Pepita nodded and smiled. “I thought so, too,” she said. “Thank you, Señor José.”','Pepita 點點頭，笑了。「我也這麼想，」她說。「謝謝您，José 先生。」','Pepita')]},
+    {k:'p', s:[T('When Pepita was near her own house, she saw Mrs. Becker standing by her easel, painting a pot of red geraniums.','當 Pepita 快到自己家時，她看見 Becker 太太站在畫架旁，正在畫一盆紅色的天竺葵。'),
+            T('“Hello, Mrs. Becker,” she said. “Can I ask you something? Do you think my braids look like raggedy ropes?”','「哈囉，Becker 太太，」她說。「我可以問您一件事嗎？您覺得我的辮子看起來像破爛的繩子嗎？」','Pepita'),
+            T('“Why, no, Pepita,” Mrs. Becker answered. “Your braids are very lovely. They remind me of black satin ribbons shining in the sun.”','「怎麼會呢，Pepita，」Becker 太太回答。「你的辮子非常漂亮。它們讓我想到在陽光下閃閃發亮的黑色緞帶。」','Mrs. Becker'),
+            T('Pepita nodded and smiled. “That’s nice,” she said. “Thank you, Mrs. Becker.”','Pepita 點點頭，笑了。「真好，」她說。「謝謝您，Becker 太太。」','Pepita')]},
+  ],
+  vocab:[
+    ['block','blɑk','街區','The shop is on my block.','block'],
+    ['garden','ˈɡɑrdn','花園','She digs in the garden.','garden'],
+    ['lovely','ˈlʌvli','可愛的、美好的','A lovely sound.','lovely'],
+    ['remind','rɪˈmaɪnd','使想起','It reminds me of flowers.','remind'],
+    ['mailman','ˈmeɪlˌmæn','郵差','The mailman has a truck.','mailman'],
+    ['wag','wæɡ','搖（尾巴）','The dog wags his tail.','wagged'],
+    ['easel','ˈizəl','畫架','She paints at her easel.','easel'],
+    ['satin','ˈsætn','緞面的','A satin ribbon.','satin'],
+    ['nod','nɑd','點頭','He nodded yes.','nodded'],
+  ],
+  phrases:[
+    ['in the middle of the block','在街區中間'],['Can I ask you something?','我可以問您一件事嗎？'],['remind me of ...','讓我想到…'],
+    ['a few houses down','再往前幾戶人家'],['step out of','走出…'],['nod and smile','點頭微笑'],['of course','當然'],['shining in the sun','在陽光下閃耀'],
+  ],
+  patterns:[
+    ['Can I ask you something?',[['Can','V'],['I','S'],['ask','V'],['you','O'],['something?','O']],'Can I ... ? ＝ 我可以…嗎？是有禮貌地請求。ask you something ＝ 問你一件事。'],
+    ['It reminds me of bright little flowers.',[['It','S'],['reminds me of','V'],['bright little flowers.','O']],'remind A of B ＝ 讓 A 想起 B。it 是單數，所以 remind 要加 s。'],
+    ['Do you think my name is funny?',[['Do you think','X'],['my name','S'],['is','V'],['funny?','X']],'Do you think + 句子？ ＝ 你覺得…嗎？think 後面接一個完整的句子。'],
+  ],
+  verbs:[['see','saw','seen','看見'],['say','said','said','說'],['answer','answered','answered','回答'],['nod','nodded','nodded','點頭'],['smile','smiled','smiled','微笑'],['call','called','called','呼喊'],['think','thought','thought','認為'],['wag','wagged','wagged','搖（尾巴）'],['shine','shone / shined','shone / shined','照耀、閃耀']],
+  exam:'Q9 細節題：Pepita 去問三位鄰居，結果每個人都說她的名字、狗、辮子很好。Q10 推論題：為什麼她去問別人？因為想弄清楚 Babette 說的是不是真的。Q11 統整題：遇到問題，可以去找信任的大人談一談。',
+  parent:'請孩子看三組對話，找出重複的句型：Can I ask you something? / Why no, Pepita. / Pepita nodded and smiled. 這是故事的「重複結構」，很容易出現在測驗裡。'
+},
+
+{ id:'pb4', kind:'read', label:'課文 4 · pp.274–275', art:'pbfamily',
+  left:[
+    {k:'p', s:[T('When Pepita got home, she found her mother in the kitchen.','Pepita 回到家，在廚房找到她的媽媽。'),
+            T('“Mamá,” she said, “I can’t go back to that school again.”','「媽媽，」她說，「我不能再回到那所學校了。」','Pepita'),
+            T('“Why?” Mamá asked. “I thought you liked your new school.”','「為什麼？」媽媽問。「我以為你喜歡你的新學校。」','Mamá'),
+            T('“So did I,” Pepita said, “until I talked to Babette.”','「我也是，」Pepita 說，「直到我跟 Babette 說了話。」','Pepita'),
+            T('“And who is Babette?” Mamá asked.','「那 Babette 是誰？」媽媽問。','Mamá'),
+            T('“Babette is a bully,” Pepita said. “She’s mean to me, Mamá. I’m not going back to school.”','「Babette 是個惡霸，」Pepita 說。「她對我很壞，媽媽。我不要回學校了。」','Pepita'),
+            T('“No, no,” Mamá said, “that cannot be. School is important. But let’s see what Papá has to say.”','「不行不行，」媽媽說，「那不可以。上學很重要。不過我們來聽聽爸爸怎麼說。」','Mamá')]},
+    {k:'p', s:[T('At supper that night, Pepita told her family what Babette had said to her.','那天晚上吃晚餐時，Pepita 告訴家人 Babette 對她說了什麼。'),
+            T('“She says my name is nothing but noise, that Lobo has fleas, and that my braids are raggedy ropes. And she yanked them! That’s why I’m not going back to school!”','「她說我的名字只是噪音，說 Lobo 有跳蚤，說我的辮子是破爛的繩子。而且她還猛拉辮子！所以我不要回學校了！」','Pepita'),
+            T('“I see,” Papá said, “but you have to go to school. So tomorrow if Babette yanks your braids again, you must tell your teacher. But if Babette says mean things to you, either you can answer her politely or you can walk away. But whatever you do, you must be kind.”','「我明白了，」爸爸說，「可是你必須去上學。所以明天如果 Babette 再拉你的辮子，你一定要告訴老師。但如果 Babette 對你說難聽的話，你可以有禮貌地回答她，也可以走開。不管你怎麼做，你都必須要親切。」','Papá'),
+            T('“Kind?” Pepita asked. “Is that like nice?”','「親切？」Pepita 問。「是像友善的意思嗎？」','Pepita'),
+            T('Papá nodded. “Yes, nice will do.”','爸爸點點頭。「對，友善就可以了。」','Papá'),
+            T('Pepita’s brother Juan said, “Just don’t fight with her. Bullies like fights.”','Pepita 的哥哥 Juan 說：「就是不要跟她打架。惡霸就喜歡打架。」','Juan')]},
+  ],
+  vocab:[
+    ['bully','ˈbʊli','惡霸、霸凌者','A bully is mean to others.','bully|bullies'],
+    ['mean','min','刻薄的、壞心的','She is mean to me.','mean'],
+    ['important','ɪmˈpɔrtənt','重要的','School is important.','important'],
+    ['supper','ˈsʌpɚ','晚餐','We eat supper at six.','supper'],
+    ['politely','pəˈlaɪtli','有禮貌地','Answer politely.','politely'],
+    ['kind','kaɪnd','親切的','Be kind.','kind'],
+    ['fight','faɪt','打架','Do not fight.','fight'],
+    ['teacher','ˈtitʃɚ','老師','Tell your teacher.','teacher'],
+  ],
+  phrases:[
+    ['go back to ...','回到…'],['nothing but','只是、不過是'],['walk away','走開'],['answer politely','有禮貌地回答'],
+    ['whatever you do','不管你做什麼'],['have to','必須'],['tell your teacher','告訴老師'],['mean to me','對我很壞'],
+  ],
+  patterns:[
+    ['Babette is a bully.',[['Babette','S'],['is','V'],['a bully.','O']],'be 動詞 + 名詞 ＝ 是…。a bully ＝ 一個惡霸。'],
+    ['Either you can answer her politely or you can walk away.',[['Either','X'],['you','S'],['can answer','V'],['her','O'],['politely','X'],['or you can walk away.','X']],'either ... or ... ＝ 不是…就是…，二選一。politely 是副詞，說明「怎麼回答」。'],
+    ['You must tell your teacher.',[['You','S'],['must tell','V'],['your teacher.','O']],'must + 原形動詞 ＝ 一定要。比 have to 語氣更強。'],
+  ],
+  verbs:[['find','found','found','找到'],['think','thought','thought','認為'],['say','said','said','說'],['tell','told','told','告訴'],['have','had','had','有；必須（have to）'],['talk','talked','talked','說話'],['fight','fought','fought','打架'],['walk','walked','walked','走']],
+  exam:'Q3 中心主旨：Papá 給的建議是 be kind（要親切），Juan 說 don’t fight（不要打架）。這就是故事想教我們的。Q8 主要人物：Mamá、Papá、Juan 都在這裡出現。Q11 統整題：遇到惡霸可以 tell your teacher、answer politely 或 walk away。',
+  parent:'請孩子說出爸爸給的三個建議：tell your teacher / answer politely / walk away。再問：「如果你遇到有人對你說難聽的話，你會選哪一個？」'
+},
+
+{ id:'pb5', kind:'read', label:'課文 5 · pp.276–277', art:'pbbed',
+  left:[
+    {k:'p', s:[T('In bed Pepita tossed and turned and tumbled until her blankets were in a tangle.','在床上，Pepita 翻來覆去，直到毯子纏成一團。'),
+            T('She dragged her doll Dora out from under the blankets and placed her against the pillow.','她把洋娃娃 Dora 從毯子底下拖出來，放在枕頭旁邊。'),
+            T('“Dora,” she said, “tomorrow Babette will say mean things to me.”','「Dora，」她說，「明天 Babette 會對我說難聽的話。」','Pepita'),
+            T('Dora’s face looked sad.','Dora 的臉看起來很難過。')]},
+    {k:'p', s:[T('Pepita sat up straight and punched the pillow. “What if she tries to hit me?!”','Pepita 坐直身體，打了一下枕頭。「如果她想打我怎麼辦？！」','Pepita'),
+            T('Dora disappeared under the blankets.','Dora 消失在毯子底下。'),
+            T('Pepita pulled her out again. “Don’t worry, Dora,” she said, “I’ll think of something.”','Pepita 又把她拉出來。「別擔心，Dora，」她說，「我會想到辦法的。」','Pepita'),
+            T('Dora huddled close. They snuggled together and fell asleep.','Dora 緊緊依偎過來。她們窩在一起，睡著了。')]},
+    {k:'p', s:[T('In the morning, Pepita got out of bed slowly.','早上，Pepita 慢慢地下床。'),
+            T('She dressed slowly. She ate breakfast slowly.','她慢慢地穿衣服。她慢慢地吃早餐。'),
+            T('She twisted and turned and muttered and mumbled while Mamá brushed and braided her hair.','在媽媽幫她梳頭、編辮子時，她扭來扭去，嘴裡碎碎念、含糊嘀咕。'),
+            T('But no matter what Pepita did, nothing slowed down the clock.','但不管 Pepita 怎麼做，什麼都沒辦法讓時鐘慢下來。'),
+            T('It was time to go to school.','該去上學了。')]},
+    {k:'p', s:[T('“Mamá,” Pepita complained, “three days are enough.”','「媽媽，」Pepita 抱怨說，「三天夠了。」','Pepita'),
+            T('But Mamá said, “School is important, and if you don’t hurry, you’ll be late.”','但媽媽說：「上學很重要，而且如果你不快一點，就會遲到了。」','Mamá')]},
+  ],
+  vocab:[
+    ['toss and turn','tɔs ænd tɝn','翻來覆去睡不著','I toss and turn at night.','tossed and turned'],
+    ['blanket','ˈblæŋkɪt','毯子','A warm blanket.','blankets?'],
+    ['tangle','ˈtæŋɡəl','糾纏成一團','The rope is in a tangle.','tangle'],
+    ['drag','dræɡ','拖、拉','She dragged the doll.','dragged'],
+    ['worry','ˈwɝi','擔心','Do not worry.','worry'],
+    ['huddle','ˈhʌdl','依偎、擠在一起','The puppies huddle close.','huddled'],
+    ['snuggle','ˈsnʌɡl','依偎','They snuggle together.','snuggled'],
+    ['complain','kəmˈpleɪn','抱怨','She complained about school.','complained'],
+    ['late','leɪt','遲到的','Do not be late.','late'],
+  ],
+  phrases:[
+    ['in a tangle','纏成一團'],['sit up straight','坐直'],['What if ...?','如果…怎麼辦？'],['think of something','想出辦法'],
+    ['fall asleep','睡著'],['no matter what','不管…'],['slow down','慢下來'],['be in time / be late','準時／遲到'],
+  ],
+  patterns:[
+    ['What if she tries to hit me?',[['What if','X'],['she','S'],['tries to hit','V'],['me?','O']],'What if + 句子？ ＝ 如果…怎麼辦？用來說出擔心的事。tries to + 原形動詞 ＝ 試著要…。'],
+    ['No matter what Pepita did, nothing slowed down the clock.',[['No matter what Pepita did,','X'],['nothing','S'],['slowed down','V'],['the clock.','O']],'no matter what ＝ 不管…。nothing ＝ 什麼都沒有。slow down ＝ 使慢下來。'],
+    ['If you don’t hurry, you’ll be late.',[['If you don’t hurry,','X'],['you','S'],['will be','V'],['late.','X']],'If + 現在式, will + 原形動詞 ＝ 如果…，就會…。don’t hurry ＝ 不趕快。'],
+  ],
+  verbs:[['toss','tossed','tossed','翻動'],['turn','turned','turned','轉'],['drag','dragged','dragged','拖'],['place','placed','placed','放置'],['sit','sat','sat','坐'],['pull','pulled','pulled','拉'],['fall','fell','fallen','掉落；fall asleep 睡著'],['eat','ate','eaten','吃'],['get','got','got / gotten','得到；get out of bed 起床'],['brush','brushed','brushed','梳']],
+  exam:'Q9 細節題：Pepita 害怕，所以跟 Dora 說話、翻來覆去睡不著。Q10 推論題：為什麼要冷靜？因為擔心讓她睡不好，什麼都慢慢做。Q7 中間：這一段是 Pepita 想辦法面對問題的準備。',
+  parent:'請孩子用動作演出：tossed and turned（翻來覆去）、slowly（慢慢地）。再問：「Pepita 為什麼什麼事都做得很慢？」（因為她不想去學校。）'
+},
+
+{ id:'pb6', kind:'read', label:'課文 6 · pp.278–280', art:'pbplayground',
+  left:[
+    {k:'p', s:[T('So Pepita went to school.','於是 Pepita 去上學了。'),
+            T('Her classroom was sunny and bright. Her teacher smiled at her.','她的教室又明亮又溫暖。老師對她微笑。'),
+            T('But across the room Babette wrinkled up her nose and made an ugly face.','但是教室另一邊，Babette 皺起鼻子，做了一個醜醜的鬼臉。')]},
+    {k:'p', s:[T('At recess Mindy asked Pepita to play hopscotch.','下課時，Mindy 邀請 Pepita 玩跳房子。'),
+            T('Pepita was about to say yes, but she saw Babette standing nearby.','Pepita 正要說好，但她看見 Babette 站在附近。'),
+            T('She gave Mindy a friendly wave, went to the farthest corner of the playground and sat under the shady tree.','她友善地向 Mindy 揮揮手，走到操場最遠的角落，坐在樹蔭下。'),
+            T('Babette was right behind her.','Babette 就跟在她後面。')]},
+    {k:'p', s:[T('“That’s my bench,” Babette said. “I don’t like you sitting there.”','「那是我的長椅，」Babette 說。「我不喜歡你坐在那裡。」','Babette'),
+            T('Pepita stood up. “What do you like?” she asked, and started to walk away.','Pepita 站起來。「那你喜歡什麼？」她問，然後開始走開。','Pepita'),
+            T('“I don’t like you for sure,” Babette said.','「我肯定不喜歡你，」Babette 說。','Babette')]},
+    {k:'p', s:[T('Pepita felt her face grow hot. She was angry.','Pepita 覺得她的臉變熱了。她很生氣。'),
+            T('She stopped and turned. “Maybe you don’t like anything at all,” she called.','她停下來，轉過身。「也許你什麼都不喜歡，」她喊道。','Pepita'),
+            T('“Maybe you don’t even like your name. Maybe you don’t even like yourself. And I’ll bet you don’t even have a dog!”','「也許你連自己的名字都不喜歡。也許你連自己都不喜歡。而且我敢說你根本沒有狗！」','Pepita')]},
+  ],
+  vocab:[
+    ['classroom','ˈklæsˌrum','教室','Our classroom is bright.','classroom'],
+    ['hopscotch','ˈhɑpˌskɑtʃ','跳房子（遊戲）','We play hopscotch.','hopscotch'],
+    ['nearby','ˈnɪrˌbaɪ','在附近','She stood nearby.','nearby'],
+    ['friendly','ˈfrɛndli','友善的','A friendly wave.','friendly'],
+    ['corner','ˈkɔrnɚ','角落','The farthest corner.','corner'],
+    ['bench','bɛntʃ','長椅','Sit on the bench.','bench'],
+    ['maybe','ˈmeɪbi','也許','Maybe you are right.','maybe'],
+    ['ugly','ˈʌɡli','醜的','An ugly face.','ugly'],
+  ],
+  phrases:[
+    ['across the room','教室的另一邊'],['make an ugly face','做鬼臉'],['be about to ...','正要…'],['right behind','緊跟在後面'],
+    ['for sure','肯定地'],['not ... at all','一點也不…'],['stand up','站起來'],['start to walk away','開始走開'],
+  ],
+  patterns:[
+    ['Pepita was about to say yes.',[['Pepita','S'],['was about to say','V'],['yes.','O']],'be about to + 原形動詞 ＝ 正要…（事情快發生了）。'],
+    ['I don’t like you sitting there.',[['I','S'],['don’t like','V'],['you sitting there.','O']],'don’t like + 人 + V-ing ＝ 不喜歡你做…。sitting there ＝ 坐在那裡。'],
+    ['Maybe you don’t even like yourself.',[['Maybe','X'],['you','S'],['don’t even like','V'],['yourself.','O']],'Maybe ＝ 也許。even ＝ 甚至。yourself ＝ 你自己（反身代名詞）。'],
+  ],
+  verbs:[['go','went','gone','去'],['smile','smiled','smiled','微笑'],['ask','asked','asked','邀請、問'],['see','saw','seen','看見'],['give','gave','given','給'],['sit','sat','sat','坐'],['stand','stood','stood','站'],['start','started','started','開始'],['stop','stopped','stopped','停下']],
+  exam:'Q7 中間：這是高潮——Pepita 沒有打架，但也忍不住說了氣話。Q9 細節題：Pepita 生氣時 felt her face grow hot，然後 she called。Q2 視角：旁白仍是第三人稱。',
+  parent:'請孩子預測：「Babette 聽到這些話會怎麼樣？」（下一頁她哭了。）也可以問：「如果你是 Pepita，你會怎麼說？」'
+},
+
+{ id:'pb7', kind:'read', label:'課文 7 · pp.281–282', art:'pbplay',
+  left:[
+    {k:'p', s:[T('“You aren’t nice,” Babette said, and a tear rolled down her cheek. “You aren’t nice at all.”','「你不友善，」Babette 說，一滴眼淚滑下她的臉頰。「你一點都不友善。」','Babette'),
+            T('Pepita’s mouth dropped wide open.','Pepita 的嘴巴張得大大的。'),
+            T('Her brother had told her not to fight. Papá had told her to be kind. And look what she had done! Babette was crying!','她的哥哥叫她不要打架。爸爸叫她要親切。看看她做了什麼！Babette 哭了！')]},
+    {k:'p', s:[T('“Most times I’m nice,” Pepita said, “and I’m polite, too. But you say mean things. Maybe if you stop being mean, somebody would ask you to play, too.”','「大部分時候我是友善的，」Pepita 說，「而且我也很有禮貌。可是你會說難聽的話。也許如果你不再壞心，就會有人也邀請你一起玩了。」','Pepita'),
+            T('“I wouldn’t play if you were playing because I don’t like your braids,” Babette said.','「如果你在玩，我才不會玩，因為我不喜歡你的辮子，」Babette 說。','Babette'),
+            T('“See? You’re being mean.”','「看吧？你又在壞心了。」','Pepita'),
+            T('“I wouldn’t play if you were playing because you have a funny name,” Babette said.','「如果你在玩，我才不會玩，因為你的名字很好笑，」Babette 說。','Babette'),
+            T('“You’re just being mean again. Anyway, Pepita’s who I am.”','「你又在壞心了。不管怎樣，Pepita 就是我。」','Pepita')]},
+    {k:'p', s:[T('“But I might play,” Babette said, “if . . .”','「但是我也許會玩，」Babette 說，「如果……」','Babette'),
+            T('“Stop making excuses!” Pepita said. “Do you want to play or don’t you?”','「不要再找藉口了！」Pepita 說。「你到底要不要玩？」','Pepita'),
+            T('Babette bit her lip, sniffed and gave a hesitant little nod.','Babette 咬了咬嘴唇，吸了吸鼻子，猶豫地輕輕點了點頭。')]},
+    {k:'p', s:[T('“Okay,” Pepita said, “but you’d better blow your nose.”','「好吧，」Pepita 說，「不過你最好擤一下鼻子。」','Pepita'),
+            T('She handed Babette a tissue from her pocket.','她從口袋裡拿出一張面紙遞給 Babette。'),
+            T('Then she swung around and raced toward the center of the yard.','然後她轉過身，飛奔到操場中央。'),
+            T('“Wait, Mindy! Wait for us! Babette and I want to play!”','「等一下，Mindy！等等我們！Babette 和我想一起玩！」','Pepita')]},
+  ],
+  vocab:[
+    ['tear','tɪr','眼淚','A tear rolled down.','tear'],
+    ['cheek','tʃik','臉頰','Her cheek is wet.','cheek'],
+    ['polite','pəˈlaɪt','有禮貌的','Be polite.','polite'],
+    ['excuse','ɪkˈskjus','藉口','Stop making excuses.','excuses'],
+    ['hesitant','ˈhɛzətənt','猶豫的','A hesitant nod.','hesitant'],
+    ['sniff','snɪf','吸鼻子','She sniffed.','sniffed'],
+    ['tissue','ˈtɪʃu','面紙','Here is a tissue.','tissue'],
+    ['hand','hænd','遞給','She handed me a pen.','handed'],
+    ['yard','jɑrd','院子、操場','The center of the yard.','yard'],
+  ],
+  phrases:[
+    ['a tear rolled down her cheek','一滴眼淚滑下臉頰'],['drop wide open','張得大大的'],['most times','大部分的時候'],['stop being mean','不再壞心'],
+    ['make excuses','找藉口'],['blow your nose','擤鼻涕'],['hand ... a tissue','遞給…一張面紙'],['swing around','轉過身'],['Wait for us!','等等我們！'],
+  ],
+  patterns:[
+    ['Maybe if you stop being mean, somebody would ask you to play, too.',[['Maybe','X'],['if you stop being mean,','X'],['somebody','S'],['would ask','V'],['you','O'],['to play, too.','X']],'stop + V-ing ＝ 停止做…。if 子句說條件，後面說結果。would ＝ 會（較委婉的可能性）。'],
+    ['Do you want to play or don’t you?',[['Do you want to play','X'],['or don’t you?','X']],'A or not? 用 or 把「要」和「不要」放在一起，是在逼對方立刻決定，語氣很直接。'],
+    ['She handed Babette a tissue from her pocket.',[['She','S'],['handed','V'],['Babette','O'],['a tissue','O'],['from her pocket.','X']],'hand + 人 + 東西 ＝ 把東西遞給某人。一個動詞後面有兩個受詞。'],
+  ],
+  verbs:[['say','said','said','說'],['roll','rolled','rolled','滾動'],['drop','dropped','dropped','掉下'],['tell','told','told','告訴'],['do','did / done','done','做（文中 what she had done）'],['cry','cried','cried','哭'],['bite','bit','bitten','咬'],['give','gave','given','給'],['hand','handed','handed','遞給'],['swing','swung','swung','轉動']],
+  exam:'Q7 結尾：Pepita 沒有打架，反而遞面紙、邀請 Babette 一起玩——這就是故事的「解決」（resolution）。Q3 主旨：Papá 的建議 be kind 真的有用。Q11 統整題：冷靜之後可以說清楚、遞出友善。',
+  parent:'請孩子重述結尾：「後來發生了什麼？」（Pepita 遞面紙給 Babette，邀她一起玩。）再問：「這跟爸爸說的 be kind 有什麼關係？」'
+},
+];
+
+const QS4 = [
+ { no:1, cat:'Genre', zh:'文體', q:'What is the genre of this text? How do you know?', qzh:'這篇文章的文體是什麼？你怎麼知道？',
+   frame:'The genre is {{realistic}} fiction. I know because the characters act and talk like {{real}} people, and the events could really {{happen}}.',
+   bank:['realistic','real','happen','fantasy','poem','magic'],
+   ans:'The genre is realistic fiction. I know because the characters act and talk like real people, and the events could really happen.',
+   azh:'這篇文章的文體是寫實小說。我知道是因為角色像真人一樣說話、做事，而且這些事真的可能發生。',
+   tip:'請孩子翻回 p.264 的 Genre Study（課前準備頁），裡面有三個線索：像真人的角色、真的可能發生的事、現代的真實地點。再回課文找：Pepita 搭公車、上學、跟媽媽說話，都是真實生活。',
+   words:[['realistic fiction','寫實小說'],['genre','文體'],['real people','真人'],['could happen','可能發生'],['made up','編造的']],
+   pat:'I know because ... ＝ 我知道是因為…（回答「你怎麼知道？」的標準句型）。',
+   jump:['pb0','pb1'], parent:'問孩子：「故事裡有魔法或會說話的動物嗎？」（沒有）「這樣的事會發生在你身上嗎？」（會）所以是寫實小說。'},
+ { no:2, cat:'Point of View', zh:'敘事視角', q:'What point of view is this story told from?', qzh:'這個故事是用誰的視角寫的？',
+   frame:'This text is told from the {{third}}-person point of view. The author uses words like “{{she}}” and “Pepita” to tell what happens, but the narrator never says “{{I}}”.',
+   bank:['third','she','I','first','second','you'],
+   ans:'This text is told from the third-person point of view. The author uses words like “she” and “Pepita” to tell what happens, but the narrator never says “I”.',
+   azh:'這篇文章是用第三人稱的視角寫的。作者用「她（she）」和「Pepita」來講述發生的事，而旁白從來不說「我（I）」。',
+   tip:'請孩子看 p.266 第一句：Pepita waved goodbye to the bus driver. She raced down Pepper Street... 說故事的人是旁邊看的人，用 Pepita、she、her 來說。引號裡的 I（例如 “I don’t want to go to that school again.”）是角色在說話，不是旁白。',
+   words:[['point of view','視角、觀點'],['third person','第三人稱'],['narrator','旁白、敘述者'],['author','作者'],['tell','講述']],
+   pat:'第一人稱 I / we；第二人稱 you；第三人稱 he / she / they / 人名。',
+   jump:['pb1','pb2'], parent:'遊戲：請孩子在 p.266 圈出所有的 she 和 her，數數看有幾個。再問：「如果由 Pepita 自己來說，故事會變成用 I 來說，對不對？」'},
+ { no:3, cat:'Central Idea', zh:'中心主旨', q:'What is the central idea of the text?', qzh:'這篇文章的中心主旨是什麼？',
+   frame:'The central idea is that you can stand up for yourself without {{fighting}}. Pepita is {{kind}} to Babette, and in the end they {{play}} together.',
+   bank:['fighting','kind','play','hitting','hide','run'],
+   ans:'The central idea is that you can stand up for yourself without fighting. Pepita is kind to Babette, and in the end they play together.',
+   azh:'中心主旨是：你可以保護自己、為自己說話，而不必打架。Pepita 對 Babette 很親切，最後她們一起玩。',
+   tip:'中心主旨是「作者最想教我們的一件事」。看 p.275：Papá 說 you must be kind，Juan 說 Don’t fight with her。到結尾 Pepita 沒有打架，反而遞面紙給 Babette，邀她一起玩，問題就解決了。',
+   words:[['central idea','中心主旨'],['stand up for yourself','為自己挺身而出'],['kind','親切的'],['fight','打架'],['in the end','最後']],
+   pat:'The central idea is that + 一個完整的句子。 ＝ 中心主旨是…',
+   jump:['pb4','pb7'], parent:'問孩子：「如果有人對你說很難聽的話，爸爸教 Pepita 怎麼做？」（告訴老師、有禮貌地回答、走開，而且要親切。）'},
+ { no:4, cat:'Setting', zh:'背景', q:'What is the setting of the story?', qzh:'這個故事的背景（時間與地點）是什麼？',
+   frame:'The story takes place in modern times, in Pepita’s {{neighborhood}}, at her new {{school}}, at her {{house}}, and on the playground under a tall shady {{tree}}.',
+   bank:['neighborhood','school','house','tree','castle','ship'],
+   ans:'The story takes place in modern times, in Pepita’s neighborhood, at her new school, at her house, and on the playground under a tall shady tree.',
+   azh:'故事發生在現代，地點在 Pepita 的社區、她的新學校、她家，還有大樹蔭下的操場。',
+   tip:'背景有「時間」和「地點」。時間：現在（公車、郵差、面紙）。地點：p.266 Pepper Street、p.267 教室和操場、p.274 廚房、p.278 操場的大樹下。',
+   words:[['setting','背景'],['neighborhood','社區'],['playground','操場'],['shady tree','有樹蔭的樹'],['modern times','現代']],
+   pat:'The story takes place in / at ... ＝ 故事發生在…（in 用在大地點，at 用在小地點）。',
+   jump:['pb1','pb6'], parent:'請孩子數數故事一共去了幾個地方：街上、教室、操場、廚房、房間。再請他說出最重要的兩個。'},
+ { no:5, cat:'Author’s Purpose', zh:'作者目的', q:'What is the author’s purpose for writing this text? How do you know?', qzh:'作者為什麼要寫這篇文章？你怎麼知道？',
+   frame:'The author’s purpose is to {{entertain}} readers. I know because it is a made-up {{story}} about a girl who solves a problem, and it also shows that being {{kind}} can help.',
+   bank:['entertain','story','kind','inform','persuade','facts'],
+   ans:'The author’s purpose is to entertain readers. I know because it is a made-up story about a girl who solves a problem, and it also shows that being kind can help.',
+   azh:'作者的目的是讓讀者覺得有趣（娛樂）。我知道是因為這是一個編出來的故事，講一個女孩解決問題，也讓我們看到親切很有幫助。',
+   tip:'複習 P.I.E.：Persuade 說服、Inform 提供資訊、Entertain 娛樂。這篇是有人物、有對話、有情節的編造故事，所以是 entertain。它也有一點點教訓（be kind），但主要是講故事。',
+   words:[['author’s purpose','作者目的'],['entertain','娛樂'],['inform','告知資訊'],['persuade','說服'],['made-up story','編造的故事']],
+   pat:'The author’s purpose is to + 動詞（entertain / inform / persuade）。',
+   jump:['pb0','pb7'], parent:'問孩子：「這篇是在教我們事實，還是講一個好看的故事？」讓孩子在 P、I、E 三個字母中圈出 E。'},
+ { no:6, cat:'Topic', zh:'主題', q:'What is the topic of this text? How do you know?', qzh:'這篇文章的主題是什麼？你怎麼知道？',
+   frame:'The topic is a girl named {{Pepita}} who has a problem with a {{bully}}. I know because the title is Pepita and the Bully, and Babette says {{mean}} things to her.',
+   bank:['Pepita','bully','mean','cook','fly','shop'],
+   ans:'The topic is a girl named Pepita who has a problem with a bully. I know because the title is Pepita and the Bully, and Babette says mean things to her.',
+   azh:'主題是一個叫 Pepita 的女孩，和一個惡霸之間的問題。我知道是因為標題是《Pepita 和惡霸》，而且 Babette 對她說了難聽的話。',
+   tip:'主題（topic）是「這篇在講什麼」，用幾個字就能說完。看標題 Pepita and the Bully：誰（Pepita）＋什麼事（bully，惡霸）。再從課文找證據：Babette 說名字像噪音、狗有跳蚤、辮子像繩子。',
+   words:[['topic','主題'],['title','標題'],['bully','惡霸'],['mean things','難聽的話'],['problem','問題']],
+   pat:'The topic is + 名詞片語（不用寫成完整句子）。',
+   jump:['pb1','pb4'], parent:'請孩子只用 5 個字以內說出這篇的主題（例如：a girl and a bully）。'},
+ { no:7, cat:'Beginning · Middle · End', zh:'開頭、中間、結尾', q:'What happens at the beginning, middle, and end of the story?', qzh:'故事的開頭、中間、結尾分別發生了什麼事？',
+   frame:'Beginning: Pepita does not want to go to school because Babette is {{mean}} to her.\nMiddle: Her family tells her to be {{kind}} and not to fight.\nEnd: Pepita and Babette {{play}} together with Mindy.',
+   bank:['mean','kind','play','happy','lost','sleep'],
+   ans:'Beginning: Pepita does not want to go to school because Babette is mean to her.\nMiddle: Her family tells her to be kind and not to fight.\nEnd: Pepita and Babette play together with Mindy.',
+   azh:'開頭：Pepita 不想去上學，因為 Babette 對她很壞。\n中間：她的家人叫她要親切、不要打架。\n結尾：Pepita 和 Babette 一起跟 Mindy 玩。',
+   tip:'開頭（p.266–270）：問題出現——Babette 說難聽的話、拉辮子。中間（p.271–280）：她去問鄰居、跟家人討論、回到學校面對 Babette。結尾（p.281–282）：Pepita 遞面紙給 Babette，邀她一起玩，問題解決。',
+   words:[['beginning','開頭'],['middle','中間'],['end','結尾'],['problem','問題'],['solution','解決方法']],
+   pat:'Beginning / Middle / End + 冒號 + 一個完整的句子。',
+   jump:['pb1','pb4','pb7'], parent:'用三格漫畫幫孩子整理：①Babette 很壞 ②家人給建議 ③一起玩。再請孩子用自己的話說。'},
+ { no:8, cat:'Main Characters', zh:'主要人物', q:'Who are the main characters in the story?', qzh:'這個故事的主要人物是誰？',
+   frame:'The main characters are {{Pepita}} and {{Babette}}. Pepita’s family, Miss Chu, and her friend {{Mindy}} are also in the story.',
+   bank:['Pepita','Babette','Mindy','Captain','Wolf','Prince'],
+   ans:'The main characters are Pepita and Babette. Pepita’s family, Miss Chu, and her friend Mindy are also in the story.',
+   azh:'主要人物是 Pepita 和 Babette。Pepita 的家人、Chu 老師，還有她的朋友 Mindy 也出現在故事裡。',
+   tip:'主要人物是「故事一直出現、最重要的人」。Pepita 幾乎每一頁都有，Babette 是造成問題的人。Mindy、Mamá、Papá、Juan、Miss Chu、三位鄰居是其他的角色。',
+   words:[['main characters','主要人物'],['family','家人'],['teacher','老師'],['friend','朋友'],['also','也']],
+   pat:'The main characters are A and B. ＝ 主要人物是 A 和 B。',
+   jump:['pb1','pb4'], parent:'請孩子玩「配對遊戲」：Pepita ↔ 主角；Babette ↔ 惡霸；Lobo ↔ 狗；Dora ↔ 洋娃娃。'},
+ { no:9, cat:'RCQT 細節題', zh:'細節題', q:'What do people do when conflicts make them angry?', qzh:'當衝突讓人生氣時，人們會怎麼做？',
+   frame:'When Babette is mean, Pepita feels her face grow {{hot}} and she gets {{angry}}. She {{talks}} to her neighbors and family, and she does not {{fight}}.',
+   bank:['hot','angry','talks','fight','laughs','sleeps'],
+   ans:'When Babette is mean, Pepita feels her face grow hot and she gets angry. She talks to her neighbors and family, and she does not fight.',
+   azh:'當 Babette 很壞時，Pepita 覺得臉變熱、很生氣。她去跟鄰居和家人談，而且沒有打架。',
+   tip:'用故事裡的例子回答：p.268、p.269 都寫了 Pepita felt her face grow hot. She was angry.（臉變熱、很生氣）。她去問 Mrs. Green、José、Mrs. Becker，晚餐時告訴家人（p.275）。Juan 說 Don’t fight。',
+   words:[['angry','生氣的'],['feel her face grow hot','覺得臉變熱'],['neighbor','鄰居'],['family','家人'],['not fight','不打架']],
+   pat:'When + 句子, 主詞 + 動詞。 ＝ 當…的時候，…',
+   jump:['pb1','pb3','pb4'], parent:'問孩子：「你生氣的時候身體會有什麼感覺？」再說說看，可以用什麼辦法冷靜下來。'},
+ { no:10, cat:'RCQT 推論題', zh:'推論題', q:'Why is it important to cool down when you feel angry?', qzh:'生氣的時候，為什麼冷靜下來很重要？',
+   frame:'It is important to cool down because angry people cannot think {{clearly}}. When Pepita remembers Papá’s advice to be {{kind}}, she hands Babette a tissue and asks her to {{play}}.',
+   bank:['clearly','kind','play','fast','loudly','sleep'],
+   ans:'It is important to cool down because angry people cannot think clearly. When Pepita remembers Papá’s advice to be kind, she hands Babette a tissue and asks her to play.',
+   azh:'冷靜下來很重要，因為生氣的人沒辦法清楚思考。Pepita 想起爸爸說要親切，就遞面紙給 Babette，邀請她一起玩。',
+   tip:'推論題要用「線索＋自己的想法」。p.281：Pepita 一生氣就說了氣話，Babette 哭了。後來她冷靜下來，想起 Papá 說 be kind，才想出好辦法：遞面紙、邀請 Babette 一起玩。',
+   words:[['cool down','冷靜下來'],['think clearly','清楚思考'],['advice','建議'],['tissue','面紙'],['invite','邀請']],
+   pat:'It is important to + 動詞 + because + 句子。 ＝ …很重要，因為…',
+   jump:['pb6','pb7'], parent:'問孩子：「Pepita 生氣時說的話，有讓問題變好嗎？」（沒有，Babette 哭了。）再請他想想冷靜之後做了什麼。'},
+ { no:11, cat:'RCQT 統整題', zh:'統整題', q:'What can people do to solve a conflict after they have calmed down?', qzh:'冷靜下來之後，人們可以怎麼做來解決衝突？',
+   frame:'After they have calmed down, people can {{talk}} about the problem and ask for {{advice}}. Pepita listens to her family, stays {{kind}}, and invites Babette to play.',
+   bank:['talk','advice','kind','run','shout','hide'],
+   ans:'After they have calmed down, people can talk about the problem and ask for advice. Pepita listens to her family, stays kind, and invites Babette to play.',
+   azh:'冷靜下來之後，人們可以談一談問題，也可以請別人給建議。Pepita 聽家人的話、保持親切，並邀請 Babette 一起玩。',
+   tip:'統整題要把前面的線索放在一起：p.271–273 去問鄰居、p.275 家人給建議（tell your teacher / answer politely / walk away / be kind）、p.282 邀請對方一起玩。',
+   words:[['calm down','冷靜下來'],['talk about','談論'],['ask for advice','請求建議'],['listen','聽'],['invite','邀請']],
+   pat:'After + 句子, people can + 動詞。 ＝ …之後，人們可以…',
+   jump:['pb4','pb7'], parent:'請孩子用「First, next, finally」說出 Pepita 的三個做法：問鄰居、聽家人建議、邀請 Babette 一起玩。'},
+];
+
+const RT4 = {
+  tf: [
+    { q:'Pepita has been at her new school for three days.', a:'T', zh:'Pepita 在新學校已經三天了。', why:'正確。課文說 three days in her new school were enough.（在新學校待三天已經夠了。）', j:'pb1' },
+    { q:'Mrs. Green thinks Pepita’s name is funny.', a:'F', zh:'Green 太太覺得 Pepita 的名字很好笑。', why:'錯誤。Green 太太說 Your name has a very lovely sound.（你的名字聽起來非常可愛。）', j:'pb3' },
+    { q:'Papá tells Pepita to fight back with Babette.', a:'F', zh:'爸爸叫 Pepita 跟 Babette 打回去。', why:'錯誤。爸爸說 you must be kind（你必須親切），哥哥 Juan 也說 Don’t fight with her。', j:'pb4' },
+  ],
+  mc: [
+    { q:'What is the genre of this text?', qzh:'這篇文章的文體是什麼？', o:['fantasy','realistic fiction','poem'], a:1, why:'角色像真人，事情也可能真的發生，所以是寫實小說（realistic fiction）。p.264 有 Genre Study。', j:'pb0' },
+    { q:'What point of view is this story told from?', qzh:'這個故事是用誰的視角寫的？', o:['first person','second person','third person'], a:2, why:'旁白用 Pepita、she、her 來說，從來不說 I，所以是第三人稱。', j:'pb1' },
+    { q:'What is the author’s purpose for writing this story?', qzh:'作者為什麼要寫這個故事？', o:['To inform us with facts about bullies.','To entertain us with a story about a girl and a bully.','To persuade us to buy a doll.'], a:1, why:'這是編造的故事，有人物、對話、情節，目的是娛樂（entertain）。', j:'pb7' },
+    { q:'What is the setting of this story?', qzh:'這個故事的背景是什麼？', o:['a school and neighborhood today','a castle long ago','a farm in space'], a:0, why:'地點是 Pepper Street、學校、操場，是現在的社區。', j:'pb1' },
+    { q:'What does Mrs. Becker say about Pepita’s braids?', qzh:'Becker 太太怎麼說 Pepita 的辮子？', o:['They look like raggedy ropes.','They remind her of black satin ribbons shining in the sun.','They are too long.'], a:1, why:'課文說 They remind me of black satin ribbons shining in the sun.', j:'pb3' },
+    { q:'What is the central idea of this story?', qzh:'這個故事的中心主旨是什麼？', o:['You can stand up for yourself without fighting.','Dogs can understand Spanish.','Bullies always win.'], a:0, why:'Pepita 沒有打架，用親切的方式解決問題，最後和 Babette 一起玩。', j:'pb7' },
+    { q:'What happens at the end of the story?', qzh:'故事結尾發生了什麼事？', o:['Babette runs away.','Pepita invites Babette to play.','Miss Chu cuts Pepita’s braids.'], a:1, why:'結尾 Pepita 遞面紙給 Babette，說 Babette and I want to play!（Babette 和我想一起玩！）', j:'pb7' },
+  ],
+  wr: [
+    { q:'What problem does Pepita have at the beginning of the story?', qzh:'故事開頭，Pepita 遇到什麼問題？', model:'The problem is Babette is mean to Pepita.', zh:'問題是 Babette 對 Pepita 很壞。', keys:'Babette / mean / bully / yanked her braids / said mean things', tip:'開頭（p.266–270）：Babette 說她的名字像噪音、狗有跳蚤、辮子像繩子，還猛拉她的辮子。', j:'pb2' },
+    { q:'What lesson does Pepita learn by the end of the story?', qzh:'到故事結尾，Pepita 學到什麼？', model:'Pepita learns that being kind can solve a problem.', zh:'Pepita 學到親切可以解決問題。', keys:'kind / nice / not fight / play together / solve the problem', tip:'爸爸說 you must be kind。結尾 Pepita 遞面紙、邀請 Babette，問題就解決了。', j:'pb7' },
+  ],
+};
+/* ============ 第五課：Be a Hero! Work It Out!（pp.286–295） ============ */
+const SPREADS5 = [
+{ id:'cover', kind:'cover', label:'封面與使用說明' },
+
+{ id:'hr0', kind:'read', label:'課前準備 · p.286', art:'hrprep',
+  left:[
+    {k:'h', s:[T('Prepare to Read','準備閱讀')]},
+    {k:'label', text:'Genre Study 文體學習'},
+    {k:'p', s:[T('Infographics give information quickly and in a visual way.','資訊圖表能快速、用視覺的方式提供資訊。'),
+            T('As you read Be a Hero! Work It Out!, notice:','閱讀《當英雄！把問題解決吧！》時，請注意：')]},
+    {k:'li', s:[T('the purpose of the infographic','這張資訊圖表的目的')]},
+    {k:'li', s:[T('how pictures, symbols, and words work together','圖片、符號和文字如何一起運作')]},
+    {k:'li', s:[T('words or phrases that stand out','特別突出的字或詞')]},
+    {k:'li', s:[T('what the author wants you to learn','作者想讓你學到什麼')]},
+    {k:'label', text:'Set a Purpose 設定閱讀目的'},
+    {k:'p', s:[T('Authors have different purposes for writing.','作者寫作有不同的目的。'),
+            T('Read to find the author’s purpose for writing this text.','閱讀時，找出作者寫這篇文章的目的。'),
+            T('This will help you explain what the author wants you to know or learn from reading this text.','這會幫助你說明，作者想讓你從這篇文章知道或學到什麼。')]},
+    {k:'label', text:'Build Background 建立背景知識'},
+    {k:'p', s:[T('Bullying','霸凌')]},
+    {k:'label', text:'Meet the Author 認識作者'},
+    {k:'p', s:[T('Meet Ruben Cooley.','認識作者 Ruben Cooley。')]},
+  ],
+  vocab:[
+    ['infographic','ˌɪnfoʊˈɡræfɪk','資訊圖表','An infographic uses pictures and words.','infographics?'],
+    ['information','ˌɪnfɚˈmeɪʃən','資訊','It gives information quickly.','information'],
+    ['visual','ˈvɪʒuəl','視覺的','A visual way to learn.','visual'],
+    ['symbol','ˈsɪmbəl','符號','A symbol stands for an idea.','symbols'],
+    ['stand out','stænd aʊt','突出、醒目','The words stand out.','stand out'],
+    ['purpose','ˈpɝpəs','目的','What is the purpose?','purposes?'],
+    ['bullying','ˈbʊliɪŋ','霸凌','Bullying is not okay.','bullying'],
+  ],
+  phrases:[
+    ['give information','提供資訊'],['in a visual way','用視覺的方式'],['work together','一起運作'],['stand out','突出、醒目'],
+    ['have different purposes','有不同的目的'],['learn from reading','從閱讀中學到'],
+  ],
+  patterns:[
+    ['Infographics give information quickly and in a visual way.',[['Infographics','S'],['give','V'],['information','O'],['quickly and in a visual way.','X']],'give information ＝ 提供資訊。quickly 是副詞（快速地）；in a visual way ＝ 用視覺的方式。'],
+    ['Read to find the author’s purpose.',[['Read','V'],['to find','X'],['the author’s purpose.','O']],'to + 原形動詞 ＝ 為了…。找出作者的目的，是閱讀的任務。'],
+  ],
+  verbs:[['give','gave','given','給、提供'],['read','read','read','閱讀（過去式唸 /rɛd/）'],['notice','noticed','noticed','注意到'],['work','worked','worked','運作、工作'],['learn','learned','learned','學習'],['know','knew','known','知道']],
+  exam:'Q1 文體：infographic（資訊圖表）就在這一頁，記住：快速、用圖片＋符號＋文字傳達資訊。Q5 作者目的：這一頁的 Set a Purpose 就是要你找出作者的目的。',
+  parent:'問孩子：「infographic 是用長長的段落講，還是用圖片、數字和簡短的字？」（後者。）再請他在家找一張海報或說明書當例子。'
+},
+
+{ id:'hr1', kind:'read', label:'課文 1 · p.287（圖表總覽）', art:'hrsteps',
+  left:[
+    {k:'title', s:[T('BE A HERO! Work It Out!','當英雄！把問題解決吧！')], by:'by Ruben Cooley'},
+    {k:'label', text:'6 Steps to Work It Out 解決問題的六個步驟'},
+    {k:'li', s:[T('1. Identify the problem.','1. 找出問題。')]},
+    {k:'li', s:[T('2. Think about the problem.','2. 想一想這個問題。')]},
+    {k:'li', s:[T('3. Attack the problem, not the person.','3. 對付問題，不要攻擊人。')]},
+    {k:'li', s:[T('4. Listen and have an open mind.','4. 傾聽，並保持開放的心。')]},
+    {k:'li', s:[T('5. Be respectful of feelings.','5. 尊重別人的感受。')]},
+    {k:'li', s:[T('6. Know that everyone makes mistakes—own up to yours.','6. 要知道每個人都會犯錯——要承認自己的錯。')]},
+    {k:'label', text:'Knock out these enemies 把這些敵人打倒'},
+    {k:'li', s:[T('Hitting · Making threats · Pushing','打人 · 威脅 · 推人')]},
+    {k:'li', s:[T('Name-calling · Making excuses','叫人家綽號、罵人 · 找藉口')]},
+    {k:'li', s:[T('Not listening · Making mean faces · Bullying','不聽別人說 · 做難看的臉 · 霸凌')]},
+  ],
+  vocab:[
+    ['identify','aɪˈdɛntəˌfaɪ','找出、辨認','Identify the problem.','identify'],
+    ['attack','əˈtæk','攻擊、對付','Attack the problem.','attack'],
+    ['open mind','ˈoʊpən maɪnd','開放的心胸','Have an open mind.','open mind'],
+    ['respectful','rɪˈspɛktfəl','尊重的','Be respectful of feelings.','respectful'],
+    ['feelings','ˈfilɪŋz','感受','Respect their feelings.','feelings'],
+    ['mistake','mɪˈsteɪk','錯誤','Everyone makes mistakes.','mistakes'],
+    ['own up','oʊn ʌp','承認（錯誤）','Own up to your mistake.','own up'],
+    ['enemy','ˈɛnəmi','敵人','Knock out these enemies.','enemies'],
+    ['threat','θrɛt','威脅','Do not make threats.','threats'],
+    ['name-calling','ˈneɪm ˌkɔlɪŋ','罵人、叫難聽的綽號','Name-calling hurts.','name-calling'],
+    ['excuse','ɪkˈskjus','藉口','Stop making excuses.','excuses'],
+  ],
+  phrases:[
+    ['work it out','把問題解決掉'],['identify the problem','找出問題'],['attack the problem, not the person','對付問題，不要攻擊人'],['have an open mind','保持開放的心'],
+    ['be respectful of feelings','尊重別人的感受'],['own up to ...','承認…'],['make a mistake','犯錯'],['make excuses','找藉口'],['make threats','威脅人'],
+  ],
+  patterns:[
+    ['Identify the problem.',[['Identify','V'],['the problem.','O']],'命令句：動詞原形開頭，沒有主詞。用來給建議或指示。'],
+    ['Attack the problem, not the person.',[['Attack','V'],['the problem,','O'],['not the person.','O']],'A, not B ＝ 是 A，不是 B。強調要對付的是「問題」，不是「人」。'],
+    ['Know that everyone makes mistakes—own up to yours.',[['Know','V'],['that everyone makes mistakes','O'],['—own up to yours.','V']],'Know that + 句子 ＝ 要知道…。yours ＝ your mistakes（你的錯）。own up to ＝ 承認。'],
+  ],
+  verbs:[['identify','identified','identified','找出'],['think','thought','thought','想'],['attack','attacked','attacked','攻擊'],['listen','listened','listened','傾聽'],['know','knew','known','知道'],['make','made','made','做、犯（錯）'],['hit','hit','hit','打（三態相同）'],['push','pushed','pushed','推']],
+  notes:[['命令句','這張圖表的六個步驟都是命令句，用動詞原形開頭：Identify... Think... Attack... Listen... Be... Know...。這是 infographic 常見的寫法，短短的，直接說要做什麼。'],['Be + 形容詞','Be respectful of feelings. 是 Be 開頭的命令句，後面接形容詞，意思是「要有尊重的態度」。']],
+  exam:'Q1 文體：這就是 infographic——編號的步驟（1–6）、簡短的字、粗體標題。Q6 主題：六個步驟 ＝ 解決問題的方法。Q9 細節題：Enemies（敵人）包含 Hitting、Pushing、Name-calling 等。',
+  parent:'請孩子用手指著 1 到 6 說：「第一步是什麼？第二步是什麼？」再問：「敵人有幾個？」（八個。）把六個步驟貼在冰箱上，每天讀一遍。'
+},
+
+{ id:'hr2', kind:'read', label:'課文 2 · pp.288–289', art:'hrcaptain',
+  left:[
+    {k:'p', s:[T('“Hello, citizens! Captain Problem Solver here!”','「哈囉，市民們！我是解決問題隊長！」','Captain'),
+            T('I have been told there are some problems on the streets.','有人告訴我，街上出現一些問題。'),
+            T('Some kids don’t know how to solve problems.','有些孩子不知道怎麼解決問題。'),
+            T('No, not math problems—problems with each other.','不是，不是數學問題——是跟彼此之間的問題。'),
+            T('I need your help spreading the word about my tips!','我需要你們幫忙，把我的小撇步傳出去！')]},
+    {k:'p', s:[T('Let’s break these down a little.','我們來把這些拆開，說明一下。'),
+            T('When you are sharing my tips, these are three important ones to start with.','當你和別人分享我的小撇步時，這是要先從三個重要的開始。'),
+            T('When there is a problem, kids should first identify that there is a problem.','出現問題時，孩子們應該先確認有問題存在。'),
+            T('People don’t agree all the time.','人們並不是每次都意見一致。'),
+            T('So they should think about what the problem is before doing anything.','所以他們在做任何事之前，應該先想一想問題是什麼。'),
+            T('Remember to attack the problem, not the person.','記得要對付問題，不要攻擊人。'),
+            T('That would just make the problem worse!','那只會讓問題變得更糟！')]},
+    {k:'label', text:'First Three Tips 前三個小撇步'},
+    {k:'li', s:[T('1. Identify the problem.','1. 找出問題。')]},
+    {k:'li', s:[T('2. Think about the problem.','2. 想一想這個問題。')]},
+    {k:'li', s:[T('3. Attack the problem, not the person.','3. 對付問題，不要攻擊人。')]},
+  ],
+  vocab:[
+    ['citizen','ˈsɪtəzən','市民、公民','Hello, citizens!','citizens?'],
+    ['captain','ˈkæptɪn','隊長、船長','Captain Problem Solver.','captain'],
+    ['solve','sɑlv','解決','Kids can solve problems.','solve'],
+    ['problem','ˈprɑbləm','問題','There is a problem.','problems?'],
+    ['spread the word','sprɛd ðə wɝd','把消息傳開','Spread the word about my tips.','spreading the word'],
+    ['tip','tɪp','小撇步、建議','Here is a tip.','tips?'],
+    ['agree','əˈɡri','同意','People don’t agree.','agree'],
+    ['worse','wɝs','更糟','That makes it worse.','worse'],
+  ],
+  phrases:[
+    ['I have been told ...','有人告訴我…'],['solve problems','解決問題'],['with each other','彼此之間'],['spread the word about','把…傳開'],
+    ['break down','拆解、說明'],['start with','從…開始'],['all the time','總是、每次'],['make the problem worse','讓問題更糟'],
+  ],
+  patterns:[
+    ['I need your help spreading the word about my tips!',[['I','S'],['need','V'],['your help','O'],['spreading the word about my tips!','X']],'need your help + V-ing ＝ 需要你幫忙做…。spreading the word ＝ 把消息傳開。'],
+    ['Some kids don’t know how to solve problems.',[['Some kids','S'],['don’t know','V'],['how to solve problems.','O']],'how to + 原形動詞 ＝ 如何做…。don’t know ＝ 不知道。'],
+    ['That would just make the problem worse!',[['That','S'],['would just make','V'],['the problem','O'],['worse!','X']],'make + 名詞 + 形容詞 ＝ 使…變得…。worse 是 bad 的比較級（更糟）。'],
+  ],
+  verbs:[['tell','told','told','告訴'],['need','needed','needed','需要'],['share','shared','shared','分享'],['agree','agreed','agreed','同意'],['think','thought','thought','想'],['remember','remembered','remembered','記得'],['make','made','made','使']],
+  notes:[['第一人稱的聲音','Captain Problem Solver 用 I、my 和讀者說話：“I need your help...” “my tips”。所以這篇的敘事視角是第一人稱（說話的人是英雄自己）。他同時用 you、your 對讀者喊話，這是為了說服（persuade）你加入。'],['Citizens','citizens ＝ 市民們。英雄稱呼讀者為「市民」，是在邀請你成為一起幫忙的人。']],
+  exam:'Q2 視角：Captain 說 “I have been told...”、“my tips”，所以是第一人稱。Q5 作者目的：他說 I need your help spreading the word（我需要你幫忙傳出去），目的是 persuade（說服）。Q10 為什麼要冷靜：先 think about the problem 再行動，才不會 make it worse。',
+  parent:'請孩子用動作演出「Hello, citizens!」再問：「Captain 想請大家做什麼？」（把他的 tips 告訴大家。）'
+},
+
+{ id:'hr3', kind:'read', label:'課文 3 · pp.290–291', art:'hrnext',
+  left:[
+    {k:'p', s:[T('So what can kids do? Share the next three tips!','那麼孩子們可以做什麼呢？一起分享接下來的三個小撇步！')]},
+    {k:'label', text:'Next Three Tips 接下來的三個小撇步'},
+    {k:'li', s:[T('4. Listen and have an open mind.','4. 傾聽，並保持開放的心。')]},
+    {k:'li', s:[T('5. Be respectful of feelings.','5. 尊重別人的感受。')]},
+    {k:'li', s:[T('6. Know that everyone makes mistakes—own up to yours.','6. 要知道每個人都會犯錯——要承認自己的錯。')]},
+    {k:'p', s:[T('Kids should listen to each other.','孩子們應該彼此傾聽。'),
+            T('Someone else might have a different idea of what happened.','別人可能對發生的事有不同的想法。'),
+            T('It could be just a misunderstanding.','那可能只是一個誤會。'),
+            T('Listening to each other also shows that the other person’s feelings are being respected.','彼此傾聽也表示對方的感受有被尊重。'),
+            T('Knowing someone cares about your feelings makes you feel better, right?','知道有人在乎你的感受，會讓你覺得好過一些，對吧？'),
+            T('It can help with problem solving, too!','它也能幫助解決問題！')]},
+    {k:'p', s:[T('Finally, owning up to mistakes is part of life.','最後，承認錯誤是生活的一部分。'),
+            T('As you share my tips with other kids, make sure you know this one well.','當你把我的小撇步分享給其他孩子時，一定要把這一條記熟。'),
+            T('Practice it yourself!','自己先練習！'),
+            T('Everyone can make mistakes, and admitting you have made one can be hard.','每個人都可能犯錯，而承認自己犯了錯可能很難。'),
+            T('It makes you a brave citizen to admit you have made one!','能夠承認犯了錯，會讓你成為勇敢的市民！')]},
+  ],
+  vocab:[
+    ['listen','ˈlɪsən','傾聽','Listen to each other.','listen|listening'],
+    ['different','ˈdɪfrənt','不同的','A different idea.','different'],
+    ['misunderstanding','ˌmɪsʌndɚˈstændɪŋ','誤會','It was a misunderstanding.','misunderstanding'],
+    ['respect','rɪˈspɛkt','尊重','We respect each other.','respected'],
+    ['care','kɛr','在乎','He cares about you.','cares'],
+    ['admit','ədˈmɪt','承認','Admit your mistake.','admitting|admit'],
+    ['brave','breɪv','勇敢的','A brave citizen.','brave'],
+    ['practice','ˈpræktɪs','練習','Practice it yourself.','practice'],
+    ['finally','ˈfaɪnəli','最後','Finally, own up to mistakes.','finally'],
+  ],
+  phrases:[
+    ['listen to each other','彼此傾聽'],['a different idea of ...','對…有不同的想法'],['just a misunderstanding','只是個誤會'],['care about your feelings','在乎你的感受'],
+    ['part of life','生活的一部分'],['make sure ...','確保…'],['own up to mistakes','承認錯誤'],['It makes you brave.','這讓你很勇敢。'],
+  ],
+  patterns:[
+    ['Someone else might have a different idea of what happened.',[['Someone else','S'],['might have','V'],['a different idea','O'],['of what happened.','X']],'might + 原形動詞 ＝ 可能。what happened ＝ 發生的事（過去式）。'],
+    ['Knowing someone cares about your feelings makes you feel better.',[['Knowing someone cares about your feelings','S'],['makes','V'],['you','O'],['feel better.','X']],'V-ing 開頭可以當主詞（知道…這件事）。make + 人 + 原形動詞 ＝ 讓人覺得…。'],
+    ['It makes you a brave citizen to admit you have made one.',[['It','S'],['makes','V'],['you','O'],['a brave citizen','O'],['to admit you have made one.','X']],'It makes you ... to ... ＝ 做…讓你變成…。one ＝ a mistake（一個錯誤）。'],
+  ],
+  verbs:[['share','shared','shared','分享'],['listen','listened','listened','傾聽'],['happen','happened','happened','發生'],['know','knew','known','知道'],['care','cared','cared','在乎'],['feel','felt','felt','覺得'],['make','made','made','犯（錯）；使'],['admit','admitted','admitted','承認'],['practice','practiced','practiced','練習']],
+  exam:'Q3 主旨：要好好解決問題，要傾聽、尊重感受、承認錯誤。Q9 細節題：listen 的原因——別人可能有不同的想法，也可能只是誤會。Q10 為什麼要冷靜：承認錯誤很難，要冷靜下來才做得到。Q11 統整題：冷靜之後可以 listen、be respectful、own up。',
+  parent:'請孩子說一次他犯過的小錯，再用一句話：“I made a mistake. I’m sorry.” 家長也示範承認自己的小錯，讓孩子知道這是「勇敢」的事。'
+},
+
+{ id:'hr4', kind:'read', label:'課文 4 · p.292', art:'hrenemies',
+  left:[
+    {k:'label', text:'Stop the Enemies! 阻止這些敵人！'},
+    {k:'p', s:[T('POW! Enemies to Stop: Hitting • Bullying • Pushing • Making excuses • Making threats • Name-calling • Not listening • Making mean faces','碰！要阻止的敵人：打人 • 霸凌 • 推人 • 找藉口 • 威脅 • 罵人 • 不聽人說 • 做難看的臉')]},
+    {k:'p', s:[T('These are the enemies that can stop kids from solving a problem and make the problem worse.','這些敵人會讓孩子沒辦法解決問題，還會讓問題變得更糟。'),
+            T('Look for them every day and help stop them!','每天都要留意它們，並幫忙阻止它們！')]},
+    {k:'p', s:[T('My work here is done.','我在這裡的工作完成了。'),
+            T('Thank you for sharing my tips about problem solving, citizens!','謝謝你們分享我解決問題的小撇步，市民們！'),
+            T('I know with your help, we will have more citizens on the streets being problem solvers!','我知道有了你們的幫忙，街上會有更多市民成為解決問題的人！')]},
+    {k:'p', s:[T('Be a problem solver superhero like me!','像我一樣，成為解決問題的超級英雄吧！','Captain')]},
+  ],
+  vocab:[
+    ['enemy','ˈɛnəmi','敵人','Stop the enemies.','enemies'],
+    ['hit','hɪt','打','Do not hit.','hitting'],
+    ['push','pʊʃ','推','Do not push.','pushing'],
+    ['threat','θrɛt','威脅','Do not make threats.','threats'],
+    ['excuse','ɪkˈskjus','藉口','No more excuses.','excuses'],
+    ['mean face','min feɪs','難看的臉、做鬼臉嘲笑','Do not make mean faces.','mean faces'],
+    ['stop','stɑp','阻止','Stop the enemies.','stop|stopping'],
+    ['superhero','ˈsupɚˌhɪroʊ','超級英雄','Be a superhero.','superhero'],
+    ['solver','ˈsɑlvɚ','解決者','A problem solver.','solvers?'],
+  ],
+  phrases:[
+    ['stop kids from solving a problem','阻止孩子解決問題'],['make the problem worse','讓問題更糟'],['look for ...','留意…'],['every day','每天'],
+    ['My work here is done.','我的工作完成了。'],['with your help','有了你們的幫忙'],['problem solver','解決問題的人'],['like me','像我一樣'],
+  ],
+  patterns:[
+    ['These are the enemies that can stop kids from solving a problem.',[['These','S'],['are','V'],['the enemies','O'],['that can stop kids from solving a problem.','X']],'that 引導形容詞子句，說明是哪種敵人。stop A from V-ing ＝ 阻止 A 做…。'],
+    ['Look for them every day and help stop them!',[['Look for','V'],['them','O'],['every day','X'],['and help stop them!','V']],'Look for ＝ 留意。help + 原形動詞 ＝ 幫忙做…。命令句，沒有主詞。'],
+    ['Be a problem solver superhero like me!',[['Be','V'],['a problem solver superhero','O'],['like me!','X']],'Be + 名詞 ＝ 成為…。like me ＝ 像我一樣。最後一句是在「說服」讀者行動。'],
+  ],
+  verbs:[['stop','stopped','stopped','阻止'],['make','made','made','使'],['look','looked','looked','看、留意'],['help','helped','helped','幫助'],['thank','thanked','thanked','感謝'],['share','shared','shared','分享'],['know','knew','known','知道'],['have','had','had','有'],['be','was / were','been','是']],
+  notes:[['POW! 與符號','POW! 是擬聲詞，像漫畫裡的「碰！」。資訊圖表常用這類醒目的字、圖示和顏色，讓你快速注意到重點。'],['說服的語氣','最後一句 Be a problem solver superhero like me! 是在叫讀者行動。這就是作者想 persuade（說服）讀者的證據。']],
+  exam:'Q5 作者目的：persuade（說服）——證據：Look for them every day and help stop them! / Be a problem solver superhero like me! Q9 細節題：敵人有 Hitting、Pushing、Name-calling 等。Q11 統整題：Stop the enemies + 用六個步驟解決問題。',
+  parent:'請孩子玩「敵人 vs. 英雄」：家長念一個行為（Hitting! Listening!），孩子回答 Enemy 或 Hero。'
+},
+];
+
+const QS5 = [
+ { no:1, cat:'Genre', zh:'文體', q:'What is the genre of this text? How do you know?', qzh:'這篇文章的文體是什麼？你怎麼知道？',
+   frame:'The genre is {{infographic}}. I know because it gives {{information}} quickly with {{pictures}}, symbols, numbers, and words that stand out.',
+   bank:['infographic','information','pictures','fantasy','poem','drama'],
+   ans:'The genre is infographic. I know because it gives information quickly with pictures, symbols, numbers, and words that stand out.',
+   azh:'這篇的文體是資訊圖表。我知道是因為它用圖片、符號、數字和醒目的文字，快速提供資訊。',
+   tip:'請孩子翻回 p.286 的 Genre Study：Infographics give information quickly and in a visual way（資訊圖表能快速、用視覺的方式提供資訊）。再回 p.287 找證據：編號的步驟 1–6、粗體標題、簡短的字。',
+   words:[['infographic','資訊圖表'],['genre','文體'],['information','資訊'],['symbols','符號'],['stand out','醒目']],
+   pat:'I know because ... ＝ 我知道是因為…（回答「你怎麼知道？」的標準句型）。',
+   jump:['hr0','hr1'], parent:'問孩子：「這篇是長長的故事，還是像海報一樣的說明？」（像海報。）再請他指出 6 個步驟的數字。'},
+ { no:2, cat:'Point of View', zh:'敘事視角', q:'What point of view is this text told from?', qzh:'這篇文章是用誰的視角寫的？',
+   frame:'This text is told from the {{first}}-person point of view. The hero says “{{I}}” and “my {{tips}}” when he talks to the reader.',
+   bank:['first','I','tips','second','third','he'],
+   ans:'This text is told from the first-person point of view. The hero says “I” and “my tips” when he talks to the reader.',
+   azh:'這篇文章是用第一人稱的視角寫的。英雄對讀者說話時用「我（I）」和「我的小撇步（my tips）」。',
+   tip:'請孩子看 p.288：“Captain Problem Solver here! I have been told... I need your help spreading the word about my tips!” 說話的人是英雄自己，用 I 和 my，所以是第一人稱。他也用 you、your 對讀者說話，但主要說話的人是「我」。',
+   words:[['point of view','視角、觀點'],['first person','第一人稱'],['hero','英雄'],['narrator','說話的人'],['tips','小撇步']],
+   pat:'第一人稱 I / my / we；第二人稱 you / your；第三人稱 he / she / they。',
+   jump:['hr2'], parent:'遊戲：請孩子在 p.288 圈出所有的 I 和 my。再問：「是誰在說話？」（Captain Problem Solver。）'},
+ { no:3, cat:'Central Idea', zh:'中心主旨', q:'What is the central idea of the text?', qzh:'這篇文章的中心主旨是什麼？',
+   frame:'The central idea is that kids can {{solve}} problems without hurting others by listening and being {{respectful}}. Kids should attack the problem, not the {{person}}.',
+   bank:['solve','respectful','person','fight','hide','win'],
+   ans:'The central idea is that kids can solve problems without hurting others by listening and being respectful. Kids should attack the problem, not the person.',
+   azh:'中心主旨是：孩子可以靠傾聽和尊重來解決問題，不必傷害別人。要對付問題，不要攻擊人。',
+   tip:'中心主旨是「作者最想教我們的一件事」。看六個步驟：找出問題、想一想、對付問題不是人、傾聽、尊重感受、承認錯誤。把它們合起來，就是「用好的方法解決問題」。',
+   words:[['central idea','中心主旨'],['solve problems','解決問題'],['respectful','尊重的'],['attack the problem','對付問題'],['listen','傾聽']],
+   pat:'The central idea is that + 一個完整的句子。 ＝ 中心主旨是…',
+   jump:['hr1','hr3'], parent:'問孩子：「六個步驟裡，你覺得最難的是哪一個？為什麼？」讓孩子練習用 because 回答。'},
+ { no:4, cat:'Setting', zh:'背景', q:'What is the setting of the text?', qzh:'這篇文章的背景（時間與地點）是什麼？',
+   frame:'There is no single setting because it is an {{infographic}}. The hero talks about problems on the {{streets}}, where kids meet and {{play}} together.',
+   bank:['infographic','streets','play','desert','castle','ocean'],
+   ans:'There is no single setting because it is an infographic. The hero talks about problems on the streets, where kids meet and play together.',
+   azh:'這篇沒有單一的背景，因為它是資訊圖表。英雄談的是街上的問題，也就是孩子們見面、一起玩的地方。',
+   tip:'資訊圖表不是故事，沒有固定的時間和地點。但是英雄在 p.288 說：I have been told there are some problems on the streets.（街上出現一些問題）。如果題目一定要選地點，可以說 on the streets（街上）。',
+   words:[['setting','背景'],['no single setting','沒有單一的背景'],['streets','街道'],['kids','孩子們'],['meet','見面']],
+   pat:'There is no ... because ... ＝ 沒有…，因為…',
+   jump:['hr0','hr2'], parent:'請孩子想想：「這是一張海報還是一個故事？」再請他說出這個圖表會貼在什麼地方。'},
+ { no:5, cat:'Author’s Purpose', zh:'作者目的', q:'What is the author’s purpose for writing this text? How do you know?', qzh:'作者為什麼要寫這篇文章？你怎麼知道？',
+   frame:'The author’s purpose is to {{persuade}} readers. I know because the hero asks kids to {{share}} his tips and gives six {{steps}} to solve problems.',
+   bank:['persuade','share','steps','inform','entertain','joke'],
+   ans:'The author’s purpose is to persuade readers. I know because the hero asks kids to share his tips and gives six steps to solve problems.',
+   azh:'作者的目的是說服讀者。我知道是因為英雄請孩子們分享他的小撇步，並給了六個解決問題的步驟。',
+   tip:'複習 P.I.E.：Persuade 說服、Inform 告知、Entertain 娛樂。這篇叫你「做事」：Look for them every day and help stop them! / Be a problem solver superhero like me! 這就是 persuade（說服）。p.293 Turn and Talk 也問：英雄想說服你做什麼？',
+   words:[['author’s purpose','作者目的'],['persuade','說服'],['inform','告知資訊'],['entertain','娛樂'],['share','分享']],
+   pat:'The author’s purpose is to + 動詞（persuade / inform / entertain）。',
+   jump:['hr2','hr4'], parent:'問孩子：「英雄想請你做什麼？」（把小撇步分享出去，成為解決問題的人。）有「請你做某件事」的，通常就是 persuade。'},
+ { no:6, cat:'Topic', zh:'主題', q:'What is the topic of this text? How do you know?', qzh:'這篇文章的主題是什麼？你怎麼知道？',
+   frame:'The topic is how kids can {{solve}} {{problems}} with each other. I know because the text gives six {{tips}} and warns about enemies like hitting and name-calling.',
+   bank:['solve','problems','tips','cook','fly','shop'],
+   ans:'The topic is how kids can solve problems with each other. I know because the text gives six tips and warns about enemies like hitting and name-calling.',
+   azh:'主題是孩子們如何解決彼此之間的問題。我知道是因為文章給了六個小撇步，並警告大家要避開打人、罵人這些敵人。',
+   tip:'主題（topic）是「這篇在講什麼」。看標題 Be a Hero! Work It Out!，再看 p.287 的六個步驟：都是在講怎麼解決問題。',
+   words:[['topic','主題'],['title','標題'],['solve problems','解決問題'],['tips','小撇步'],['enemies','敵人']],
+   pat:'The topic is + 名詞片語（不用寫成完整句子）。',
+   jump:['hr1','hr2'], parent:'請孩子用 5 個字以內說出主題（例如：solving problems）。'},
+ { no:7, cat:'Beginning · Middle · End', zh:'開頭、中間、結尾', q:'What happens at the beginning, middle, and end of the text?', qzh:'文章的開頭、中間、結尾分別說了什麼？',
+   frame:'Beginning: Captain Problem Solver says some kids do not know how to {{solve}} problems.\nMiddle: He shares {{six}} tips, such as listening and being respectful of {{feelings}}.\nEnd: He says owning up to mistakes makes you {{brave}}, and he asks everyone to stop the enemies.',
+   bank:['solve','six','feelings','brave','cook','three'],
+   ans:'Beginning: Captain Problem Solver says some kids do not know how to solve problems.\nMiddle: He shares six tips, such as listening and being respectful of feelings.\nEnd: He says owning up to mistakes makes you brave, and he asks everyone to stop the enemies.',
+   azh:'開頭：解決問題隊長說有些孩子不知道怎麼解決問題。\n中間：他分享六個小撇步，例如傾聽和尊重別人的感受。\n結尾：他說承認錯誤讓你很勇敢，並請大家阻止那些敵人。',
+   tip:'資訊圖表也可以整理成開頭、中間、結尾。開頭（p.288）：英雄出現，說明有問題。中間（p.289–291）：六個小撇步。結尾（p.291–292）：承認錯誤、阻止敵人、號召大家。',
+   words:[['beginning','開頭'],['middle','中間'],['end','結尾'],['tips','小撇步'],['enemies','敵人']],
+   pat:'Beginning / Middle / End + 冒號 + 一個完整的句子。',
+   jump:['hr2','hr3','hr4'], parent:'請孩子用三個字回答：開頭（有問題）、中間（六招）、結尾（阻止敵人）。'},
+ { no:8, cat:'Main Characters', zh:'主要人物', q:'Who are the main characters in the text?', qzh:'這篇文章的主要人物是誰？',
+   frame:'There are no story characters because it is an {{infographic}}. The speaker is {{Captain}} Problem Solver, a superhero, and he talks to the {{kids}} (citizens).',
+   bank:['infographic','Captain','kids','Pepita','Baker','Wolf'],
+   ans:'There are no story characters because it is an infographic. The speaker is Captain Problem Solver, a superhero, and he talks to the kids (citizens).',
+   azh:'這篇沒有故事裡的角色，因為它是資訊圖表。說話的人是超級英雄解決問題隊長，他對孩子們（市民）說話。',
+   tip:'資訊圖表不是故事，沒有真正的角色。但是有一位「說話的英雄」Captain Problem Solver，他對讀者（citizens，市民）說話。這類題目可以說明：no story characters，再補一句 the speaker is ...。',
+   words:[['main characters','主要人物'],['speaker','說話的人'],['superhero','超級英雄'],['citizens','市民'],['kids','孩子們']],
+   pat:'There are no ... because ... ＝ 沒有…，因為…',
+   jump:['hr2'], parent:'請孩子說：「誰在說話？」（Captain Problem Solver。）「他在跟誰說話？」（kids / citizens。）'},
+ { no:9, cat:'RCQT 細節題', zh:'細節題', q:'What do people do when conflicts make them angry?', qzh:'當衝突讓人生氣時，人們會怎麼做？',
+   frame:'When conflicts make them angry, some kids {{hit}}, push, make threats, or call {{names}}. The hero says these are {{enemies}} because they make the problem worse.',
+   bank:['hit','names','enemies','sing','dance','sleep'],
+   ans:'When conflicts make them angry, some kids hit, push, make threats, or call names. The hero says these are enemies because they make the problem worse.',
+   azh:'當衝突讓人生氣時，有些孩子會打人、推人、威脅別人，或叫別人難聽的綽號。英雄說這些是敵人，因為它們讓問題變得更糟。',
+   tip:'看 p.287 和 p.292 的 Enemies 清單：Hitting、Making threats、Pushing、Name-calling、Making excuses、Not listening、Making mean faces、Bullying。p.292 說 These are the enemies that can stop kids from solving a problem and make the problem worse.',
+   words:[['hit','打'],['push','推'],['make threats','威脅'],['call names','罵人'],['enemies','敵人']],
+   pat:'When + 句子, some kids + 動詞。 ＝ 當…時，有些孩子會…',
+   jump:['hr1','hr4'], parent:'請孩子從八個敵人裡，說出三個他在學校看過的，再想想可以怎麼阻止。'},
+ { no:10, cat:'RCQT 推論題', zh:'推論題', q:'Why is it important to cool down when you feel angry?', qzh:'生氣的時候，為什麼冷靜下來很重要？',
+   frame:'It is important to cool down because angry kids may {{push}} or make {{threats}}. When you calm down, you can {{think}} about the problem and listen to others.',
+   bank:['push','threats','think','sing','jump','cook'],
+   ans:'It is important to cool down because angry kids may push or make threats. When you calm down, you can think about the problem and listen to others.',
+   azh:'冷靜下來很重要，因為生氣的孩子可能會推人或威脅別人。冷靜之後，你就能思考問題，也能聽別人說話。',
+   tip:'推論題要用線索加自己的想法。p.289：So they should think about what the problem is before doing anything.（做任何事之前，先想想問題是什麼。）p.289：attack the problem... That would just make the problem worse! 氣頭上動手只會更糟。',
+   words:[['cool down','冷靜下來'],['calm down','冷靜'],['think about','想一想'],['listen to others','聽別人說'],['worse','更糟']],
+   pat:'It is important to + 動詞 + because + 句子。 ＝ …很重要，因為…',
+   jump:['hr2','hr3'], parent:'請孩子示範深呼吸三次（數到三）。再問：「冷靜之後，第一個要做的是什麼？」（找出問題。）'},
+ { no:11, cat:'RCQT 統整題', zh:'統整題', q:'What can people do to solve a conflict after they have calmed down?', qzh:'冷靜下來之後，人們可以怎麼做來解決衝突？',
+   frame:'After they have calmed down, kids can identify the {{problem}}, {{listen}} with an open mind, be respectful of {{feelings}}, and own up to their {{mistakes}}.',
+   bank:['problem','listen','feelings','mistakes','hit','hide'],
+   ans:'After they have calmed down, kids can identify the problem, listen with an open mind, be respectful of feelings, and own up to their mistakes.',
+   azh:'冷靜下來之後，孩子們可以找出問題、用開放的心傾聽、尊重別人的感受，並承認自己的錯誤。',
+   tip:'統整題要把六個步驟中適合的放在一起：1 identify the problem、2 think about the problem、4 listen and have an open mind、5 be respectful of feelings、6 own up to your mistakes。至少說三個就好。',
+   words:[['identify the problem','找出問題'],['open mind','開放的心'],['respectful','尊重的'],['feelings','感受'],['own up to mistakes','承認錯誤']],
+   pat:'After + 句子, kids can + 動詞, 動詞, and 動詞。 ＝ …之後，孩子們可以…',
+   jump:['hr1','hr3'], parent:'請孩子用手指數：「第一步…第二步…」，把六個步驟都說一遍。'},
+];
+
+const RT5 = {
+  tf: [
+    { q:'The hero’s name is Captain Problem Solver.', a:'T', zh:'英雄的名字是解決問題隊長。', why:'正確。p.288 說 Captain Problem Solver here!（我是解決問題隊長！）', j:'hr2' },
+    { q:'The hero says hitting is a good way to solve problems.', a:'F', zh:'英雄說打人是解決問題的好方法。', why:'錯誤。Hitting（打人）是八個 enemies（敵人）之一，會讓問題變得更糟。', j:'hr4' },
+    { q:'The infographic gives six tips for working out a problem.', a:'T', zh:'這張資訊圖表給了六個解決問題的小撇步。', why:'正確。p.287 的標題是 6 Steps to Work It Out。', j:'hr1' },
+  ],
+  mc: [
+    { q:'What is the genre of this text?', qzh:'這篇文章的文體是什麼？', o:['poem','infographic','fantasy'], a:1, why:'資訊圖表（infographic）能快速、用視覺的方式提供資訊。p.286 有 Genre Study。', j:'hr0' },
+    { q:'What point of view is the hero using when he says “my tips”?', qzh:'當英雄說「我的小撇步」時，用的是什麼視角？', o:['first person','second person','third person'], a:0, why:'英雄用 I、my 說話，所以是第一人稱。', j:'hr2' },
+    { q:'What is the author’s purpose for writing this text?', qzh:'作者為什麼要寫這篇文章？', o:['To entertain us with a funny story.','To persuade us to be problem solvers.','To teach us how to cook.'], a:1, why:'英雄請我們分享小撇步、成為解決問題的人，所以是 persuade（說服）。', j:'hr4' },
+    { q:'What is Tip 3?', qzh:'第 3 個小撇步是什麼？', o:['Listen and have an open mind.','Attack the problem, not the person.','Be respectful of feelings.'], a:1, why:'p.287 的第 3 個步驟是 Attack the problem, not the person.', j:'hr1' },
+    { q:'Which one is an enemy?', qzh:'下面哪一個是敵人？', o:['Listening','Making excuses','Having an open mind'], a:1, why:'Making excuses（找藉口）在 Enemies 清單裡；Listening 和 open mind 是好方法。', j:'hr4' },
+    { q:'What does the hero say about owning up to mistakes?', qzh:'英雄怎麼說承認錯誤這件事？', o:['It makes you a brave citizen.','It is easy to do.','Only grown-ups need to do it.'], a:0, why:'p.291：It makes you a brave citizen to admit you have made one!', j:'hr3' },
+    { q:'What is the central idea of this text?', qzh:'這篇文章的中心主旨是什麼？', o:['Kids can solve problems by using good steps.','Superheroes can fly.','Math problems are hard.'], a:0, why:'六個步驟就是在教孩子用好的方法解決問題。', j:'hr1' },
+  ],
+  wr: [
+    { q:'What should kids do first when there is a problem?', qzh:'出現問題時，孩子們應該先做什麼？', model:'Kids should first identify the problem.', zh:'孩子們應該先找出問題。', keys:'identify / think about the problem / find the problem', tip:'p.289：When there is a problem, kids should first identify that there is a problem.', j:'hr2' },
+    { q:'Why does the hero say kids should listen to each other?', qzh:'為什麼英雄說孩子們應該彼此傾聽？', model:'Kids should listen because someone may have a different idea or it may be a misunderstanding.', zh:'孩子們應該傾聽，因為別人可能有不同的想法，或那可能只是個誤會。', keys:'different idea / misunderstanding / feelings / respected / open mind', tip:'答案在 p.290：Someone else might have a different idea of what happened. It could be just a misunderstanding.', j:'hr3' },
+  ],
+};
+Object.assign(UNSCR, {
+ pb: {
+  1:['The genre','is','realistic fiction','because','the characters','act like','real people','.'],
+  2:['The author','uses','the words','“she”','and','“Pepita”','to tell','the story','.'],
+  3:['The central idea','is that','you can','stand up','for yourself','without','fighting','.'],
+  4:['The story','takes place','at','Pepita’s school','and','in her','neighborhood','.'],
+  5:['The author’s purpose','is','to entertain','readers','with','a story','about','a bully','.'],
+  6:['The topic','is','a girl','who has','a problem','with','a bully','.'],
+  7:['In the end','Pepita','and','Babette','play','together','.'],
+  8:['The main characters','are','Pepita','and','Babette','.'],
+  9:['When Babette','is mean','Pepita','feels','her face','grow hot','.'],
+  10:['It is important','to cool down','because','angry people','cannot','think clearly','.'],
+  11:['After','they','calm down','people','can talk','about the problem','.'],
+ },
+ hr: {
+  1:['The genre','is','an infographic','because','it gives','information','quickly','.'],
+  2:['The hero','says','“I”','and','“my tips”','to','the reader','.'],
+  3:['People','can solve','problems','by','listening','and','being respectful','.'],
+  4:['There is','no','single setting','because','it is','an infographic','.'],
+  5:['The author’s purpose','is','to persuade','kids','to','share','the tips','.'],
+  6:['The topic','is','how kids','can solve','problems','with','each other','.'],
+  7:['At the end','the hero','says','owning up','to mistakes','is brave','.'],
+  8:['The speaker','is','Captain Problem Solver','and','he talks to','the kids','.'],
+  9:['Hitting','pushing','and','name-calling','are','enemies','.'],
+  10:['It is important','to cool down','because','angry kids','may','make threats','.'],
+  11:['After','they','calm down','kids','can listen','with an open mind','.'],
+ },
+});
+UNSCR_ALTS.pb = { 8: ['The main characters are Babette and Pepita.'] };
+UNSCR_ALTS.hr = {};
+UNSCR_ZH.pb = ['文體是寫實小說，因為角色的行為像真實的人。','作者用「她」和「Pepita」這些字來講故事。','中心思想是：你可以不用打架，也能為自己站出來。','故事發生在 Pepita 的學校和她住的社區。','作者的目的是用一個關於惡霸的故事來娛樂讀者。','主題是一個女孩和惡霸之間的問題。','最後，Pepita 和 Babette 一起玩。','主要人物是 Pepita 和 Babette。','Babette 很兇的時候，Pepita 覺得臉變得很熱。','冷靜下來很重要，因為生氣的人沒辦法清楚思考。','冷靜下來之後，人們可以談一談這個問題。'];
+UNSCR_ZH.hr = ['文體是資訊圖表，因為它很快地提供資訊。','英雄對讀者說「我」和「我的小撇步」。','人們可以靠傾聽和尊重來解決問題。','沒有單一的背景，因為它是資訊圖表。','作者的目的是說服孩子們分享這些小撇步。','主題是孩子們如何解決彼此之間的問題。','最後，英雄說承認錯誤很勇敢。','說話的人是解決問題隊長，他對孩子們說話。','打人、推人和罵人都是敵人。','冷靜下來很重要，因為生氣的孩子可能會威脅別人。','冷靜下來之後，孩子們可以用開放的心傾聽。'];
 /* ============ 小工具 ============ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -2908,11 +3777,11 @@ function render(dir = 0) {
 function renderShelf() {
   const sh = $('#shelf');
   sh.innerHTML = `<div class="shelf-in"><h1>靜心小二英文閱讀書櫃</h1><p>選一本書開始。每本書都有課文朗讀、教師手冊和考前練習。</p>
-  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}</div></div>`;
+  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button></div></div>`;
 }
 function showShelf() {
   stopAll(); S.view = 'shelf'; renderShelf();
-  $('#book').hidden = true; document.querySelector('.pager').hidden = true; $('#shelf').hidden = false; $('#starCount').hidden = true;
+  $('#book').hidden = true; $('#gv').hidden = true; document.querySelector('.pager').hidden = true; $('#shelf').hidden = false; $('#starCount').hidden = true;
   $('#brandTitle').textContent = '靜心小二英文閱讀'; $('#brandSub').textContent = '書櫃';
   $('#bShelf').setAttribute('aria-pressed', 'true'); document.documentElement.style.setProperty('--fs', S.fs); saveP();
 }
@@ -2920,7 +3789,7 @@ function openBook(id, i) {
   const bk = BOOKS.find(b => b.id === id); if (!bk) return showShelf();
   stopAll(); BOOK = bk; SPREADS = bk.spreads; QS = bk.qs; countable = bk.countable; S.bookId = id; S.view = 'book';
   S.i = i != null ? i : Math.min(Math.max(0, P.pos[id] || 0), SPREADS.length - 1); S.side = 'L'; S.lv = 1; S.lv = 1;
-  $('#shelf').hidden = true; $('#book').hidden = false; document.querySelector('.pager').hidden = false; $('#starCount').hidden = false;
+  $('#shelf').hidden = true; $('#gv').hidden = true; $('#book').hidden = false; document.querySelector('.pager').hidden = false; $('#starCount').hidden = false;
   $('#bShelf').setAttribute('aria-pressed', 'false'); render();
 }
 async function goTo(i, dir) {
@@ -3098,6 +3967,7 @@ document.addEventListener('click', async e => {
     case 'rtspeak': { const x = rtItem(sp, +t.dataset.n); playItems([{ text: x.q }], { mark: false, useMine: false }); break; }
     case 'shelf': showShelf(); break;
     case 'openbook': openBook(t.dataset.b); break;
+    case 'opengv': openGv(); break;
     case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
     case 'untile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed.splice(+t.dataset.p, 1); st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
     case 'tclear': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed = []; st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
@@ -3124,6 +3994,7 @@ document.addEventListener('click', async e => {
 document.addEventListener('keydown', e => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.sent')) { e.preventDefault(); e.target.click(); return; }
   if (e.target.matches && e.target.matches('input,textarea')) return;
+  if (S.view !== 'book') return;
   if (e.key === 'ArrowRight') go(1); else if (e.key === 'ArrowLeft') go(-1);
 });
 $('#bNext').onclick = () => go(1);
@@ -3312,11 +4183,361 @@ Object.assign(ART, {
     kid(340, 446, { s: .85, mood: 'happy', arms: 'reachL', shirt: '#27408b', style: 'curly', hair: wig, pants: '#e9e0c9', flip: true }) +
     `<text x="200" y="534" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="20" fill="${OUT}" font-weight="600">Grade 2 · Biography</text>`, '封面：為了自由的薑餅', '0 0 400 560'),
 });
+
+ART.coverGv = () => svgWrap(`<rect width="400" height="560" fill="#4b4fb8"/><circle cx="340" cy="70" r="110" fill="#5d62d1" opacity=".7"/><circle cx="40" cy="330" r="90" fill="#5d62d1" opacity=".5"/>
+  <text x="200" y="100" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="60" fill="#fff">Genre</text>
+  <text x="200" y="150" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="30" fill="#ffe27a">&amp;</text>
+  <text x="200" y="205" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="44" fill="#fff">Point of View</text>
+  <rect x="90" y="250" width="190" height="150" rx="14" fill="#fff6d6" stroke="${OUT}" stroke-width="4"/><path d="M185 250 V400" stroke="${OUT}" stroke-width="3"/>
+  <path d="M110 285 h60 M110 310 h60 M110 335 h50 M200 285 h60 M200 310 h60 M200 335 h40" stroke="#9a8f6a" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="270" cy="360" r="52" fill="#bfe3ff" fill-opacity=".75" stroke="${OUT}" stroke-width="8"/><path d="M308 398 L352 442" stroke="${OUT}" stroke-width="14" stroke-linecap="round"/>
+  <text x="270" y="378" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="600" font-size="48" fill="${OUT}">I?</text>
+  <text x="200" y="520" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="22" fill="#e6e7ff" font-weight="600">專項訓練 · 小偵探</text>`, '封面：文體與視角專項訓練', '0 0 400 560');
+/* ===== 第四、五本書插圖 ===== */
+const dogP = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${OUT}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="0" cy="0" rx="34" ry="20" fill="#b9854f"/><circle cx="34" cy="-14" r="16" fill="#b9854f"/><path d="M26 -26 l-4 -14 l12 8z" fill="#8a5a2c"/><circle cx="39" cy="-16" r="2.5" fill="${OUT}"/><circle cx="50" cy="-10" r="3.5" fill="${OUT}"/><path d="M-30 -8 q-16 -14 -10 -26" fill="none"/><path d="M-20 16 v16 M18 16 v16" fill="none" stroke-width="7"/></g>`;
+const dollP = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><path d="M-14 0 L-22 40 H22 L14 0Z" fill="#e8588a"/><circle cx="0" cy="-12" r="14" fill="#f2c29b"/><path d="M-14 -14 A14 14 0 0 1 14 -14 Q0 -26 -14 -14Z" fill="#2b2430"/><circle cx="-5" cy="-11" r="2" fill="${OUT}"/><circle cx="5" cy="-11" r="2" fill="${OUT}"/></g>`;
+const treeP = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${OUT}" stroke-width="3"><rect x="-8" y="-10" width="16" height="50" fill="#8a5a2c"/><circle cx="0" cy="-36" r="36" fill="#58b368"/></g>`;
+const houseP = (x, y, s = 1, c = '#f6c26b') => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="-40" y="-40" width="80" height="60" fill="${c}"/><path d="M-50 -40 L0 -80 L50 -40Z" fill="#c4553f"/><rect x="-10" y="-8" width="20" height="28" fill="#8a5a2c"/><rect x="-32" y="-28" width="16" height="16" fill="#bfe4ff"/><rect x="16" y="-28" width="16" height="16" fill="#bfe4ff"/></g>`;
+const busSvg = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="-90" y="-50" width="180" height="70" rx="12" fill="#f4b61c"/><rect x="-78" y="-40" width="34" height="26" fill="#bfe4ff"/><rect x="-36" y="-40" width="34" height="26" fill="#bfe4ff"/><rect x="6" y="-40" width="34" height="26" fill="#bfe4ff"/><rect x="48" y="-40" width="34" height="26" fill="#bfe4ff"/><circle cx="-52" cy="22" r="14" fill="#444"/><circle cx="52" cy="22" r="14" fill="#444"/></g>`;
+const txtP = (x, y, t, fs = 22, c = OUT, w = 600) => `<text x="${x}" y="${y}" text-anchor="middle" font-family="Fredoka,Andika,sans-serif" font-weight="${w}" font-size="${fs}" fill="${c}">${t}</text>`;
+const PEP = { style: 'pony', hair: '#2b2430', shirt: '#e8588a' };
+const BAB = { style: 'short', hair: '#7a4a24', shirt: '#7a62d1', skin: '#f6d2b3' };
+
+Object.assign(ART, {
+  pbprep: () => svgWrap(`<rect width="400" height="280" fill="#fff6e3"/>
+    <rect x="60" y="30" width="280" height="200" rx="16" fill="#fff" stroke="${OUT}" stroke-width="3"/>
+    ${txtP(200, 78, 'Realistic Fiction', 30, '#c4553f')}
+    ${txtP(200, 112, 'could happen in real life', 18)}` +
+    kid(130, 205, { s: .75, ...PEP, mood: 'happy' }) + kid(270, 205, { s: .75, ...BAB, mood: 'happy' }) + ground, '預備：寫實小說'),
+  pbbus: () => svgWrap(`<rect width="400" height="280" fill="#d9f0ff"/>` + sun + ground + busSvg(150, 210, .8) +
+    kid(310, 220, { s: .8, ...PEP, mood: 'happy', arms: 'up' }) + bub(250, 20, 130, 40, 'Hi, Babette!', 320, 95, 20) + kid(60, 220, { s: .7, ...BAB, mood: 'angry' }), 'Pepita 在公車旁'),
+  pbrecess: () => svgWrap(`<rect width="400" height="280" fill="#d9f0ff"/>` + sun + ground + treeP(60, 200, .8) +
+    kid(150, 225, { s: .85, ...PEP, mood: 'sad' }) + kid(280, 225, { s: .85, ...BAB, mood: 'shout', arms: 'out' }) + bub(215, 30, 160, 44, 'Go away!', 290, 120, 22), '下課時 Babette 對 Pepita 很兇'),
+  pbneighbors: () => svgWrap(`<rect width="400" height="280" fill="#e6f6ff"/>` + ground + houseP(80, 200, .9) + houseP(320, 200, .9, '#cfe9a8') +
+    kid(200, 225, { s: .85, ...PEP, mood: 'talk', arms: 'reachR' }) + bub(130, 22, 150, 40, 'Hello, neighbor!', 200, 105, 18), '鄰居們'),
+  pbfamily: () => svgWrap(`<rect width="400" height="280" fill="#fff0d9"/><rect x="0" y="230" width="400" height="50" fill="#e0b98a"/><rect x="110" y="140" width="180" height="60" rx="10" fill="#c4553f" stroke="${OUT}" stroke-width="3"/>` +
+    kid(60, 225, { s: .8, ...PEP, mood: 'sad' }) + kid(200, 135, { s: .6, shirt: '#3b82f6', mood: 'talk', hair: '#2b2430' }) + kid(340, 225, { s: .8, shirt: '#2fa86a', mood: 'calm', style: 'short', hair: '#2b2430' }) + dogP(330, 260, .45), '家人聽 Pepita 說'),
+  pbbed: () => svgWrap(`<rect width="400" height="280" fill="#2b3a6b"/><circle cx="330" cy="60" r="30" fill="#ffe27a"/><rect x="60" y="150" width="280" height="90" rx="14" fill="#8cb5ff" stroke="${OUT}" stroke-width="3"/><rect x="60" y="130" width="90" height="50" rx="18" fill="#fff" stroke="${OUT}" stroke-width="3"/>
+    <circle cx="105" cy="140" r="20" fill="#f2c29b" stroke="${OUT}" stroke-width="3"/>` + dollP(240, 160, .8) + txtP(200, 40, 'Zzz… thinking…', 22, '#fff'), '睡前想一想'),
+  pbplayground: () => svgWrap(`<rect width="400" height="280" fill="#d9f0ff"/>` + sun + ground + treeP(350, 200, .8) +
+    kid(120, 225, { s: .85, ...PEP, mood: 'calm', arms: 'out' }) + kid(260, 225, { s: .85, ...BAB, mood: 'angry' }) + bub(60, 20, 140, 40, 'Take a breath', 120, 110, 18), 'Pepita 深呼吸，冷靜下來'),
+  pbplay: () => svgWrap(`<rect width="400" height="280" fill="#d9f0ff"/>` + sun + ground +
+    kid(150, 225, { s: .85, ...PEP, mood: 'happy', arms: 'up' }) + kid(260, 225, { s: .85, ...BAB, mood: 'happy', arms: 'up' }) + `<g fill="#ff6b6b"><circle cx="205" cy="60" r="8"/><circle cx="170" cy="45" r="6"/><circle cx="240" cy="48" r="6"/></g>`, '兩人一起玩'),
+  cover4: () => svgWrap(`<rect width="400" height="560" fill="#d9487a"/><circle cx="340" cy="60" r="110" fill="#e46091" opacity=".7"/><circle cx="30" cy="300" r="90" fill="#e46091" opacity=".5"/>
+    ${txtP(200, 100, 'Pepita and', 50, '#fff')}${txtP(200, 160, 'the Bully', 56, '#ffe27a')}${txtP(200, 200, 'by Ofelia Dumas Lachtman', 20, '#ffe9d6', 400)}
+    <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>` +
+    kid(130, 440, { s: 1.3, ...PEP, mood: 'happy', arms: 'reachR' }) + kid(280, 440, { s: 1.3, ...BAB, mood: 'happy', arms: 'reachL', flip: true }) +
+    txtP(200, 534, 'Grade 2 · Realistic Fiction', 20, OUT), '封面：Pepita 和惡霸', '0 0 400 560'),
+
+  hrprep: () => svgWrap(`<rect width="400" height="280" fill="#fff6e3"/><rect x="50" y="24" width="300" height="232" rx="16" fill="#fff" stroke="${OUT}" stroke-width="3"/>
+    ${txtP(200, 64, 'Infographic', 30, '#2b6cd9')}
+    <rect x="76" y="86" width="90" height="70" rx="8" fill="#ffd966" stroke="${OUT}" stroke-width="2.5"/><circle cx="121" cy="121" r="20" fill="#e8588a"/>
+    <path d="M190 100 h130 M190 124 h110 M190 148 h120" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M76 190 h60 M76 212 h100" stroke="#2b6cd9" stroke-width="8" stroke-linecap="round"/><text x="300" y="224" font-size="40" font-family="Fredoka,sans-serif" fill="#e24c3f" text-anchor="middle">1·2·3</text>`, '預備：資訊圖表'),
+  hrsteps: () => svgWrap(`<rect width="400" height="280" fill="#e8f1ff"/>` +
+    [0,1,2,3,4,5].map(i => { const x = 60 + (i % 3) * 140, y = 62 + Math.floor(i / 3) * 105; return `<g><circle cx="${x}" cy="${y}" r="30" fill="#2b6cd9" stroke="${OUT}" stroke-width="3"/>${txtP(x, y + 11, i + 1, 32, '#fff')}<path d="M${x - 24} ${y + 42} h48" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/></g>`; }).join('') + txtP(200, 270, '6 Steps to Work It Out', 20), '六個步驟'),
+  hrcaptain: () => svgWrap(`<rect width="400" height="280" fill="#d9f0ff"/>` + ground +
+    `<path d="M168 150 L150 235 L250 235 L232 150Z" fill="#e24c3f" stroke="${OUT}" stroke-width="3"/>` + kid(200, 225, { s: .95, shirt: '#2b6cd9', mood: 'talk', arms: 'up', hair: '#2b2430' }) +
+    bub(250, 24, 130, 40, 'Hello, citizens!', 240, 100, 18) + kid(60, 235, { s: .6, ...PEP, mood: 'happy' }) + kid(345, 235, { s: .6, ...BAB, mood: 'happy' }), '解決問題隊長'),
+  hrnext: () => svgWrap(`<rect width="400" height="280" fill="#e8f1ff"/>` + ground +
+    kid(110, 225, { s: .85, ...PEP, mood: 'calm' }) + kid(290, 225, { s: .85, ...BAB, mood: 'calm', flip: true }) +
+    `<path d="M170 110 q30 -26 60 0" fill="none" stroke="${OUT}" stroke-width="4"/>` + bub(120, 20, 160, 44, 'I am listening.', 200, 100, 18) + `<path d="M185 150 q15 14 30 0 q-15 -22 -30 0z" fill="#e8588a" stroke="${OUT}" stroke-width="3"/>`, '傾聽、尊重感受'),
+  hrenemies: () => svgWrap(`<rect width="400" height="280" fill="#fff0f0"/><polygon points="140,40 260,40 320,100 320,180 260,240 140,240 80,180 80,100" fill="#e24c3f" stroke="${OUT}" stroke-width="5"/>
+    ${txtP(200, 140, 'STOP', 56, '#fff')}${txtP(200, 190, 'the enemies!', 22, '#fff')}${txtP(64, 40, 'POW!', 24, '#e8a400')}`, '阻止敵人'),
+  cover5: () => svgWrap(`<rect width="400" height="560" fill="#2b6cd9"/><circle cx="340" cy="60" r="110" fill="#4a85e8" opacity=".7"/><circle cx="30" cy="300" r="90" fill="#4a85e8" opacity=".5"/>
+    ${txtP(200, 100, 'Be a Hero!', 56, '#fff')}${txtP(200, 160, 'Work It Out!', 52, '#ffe27a')}${txtP(200, 200, 'by Ruben Cooley', 22, '#dbe8ff', 400)}
+    <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>
+    <path d="M165 330 L135 450 L265 450 L235 330Z" fill="#e24c3f" stroke="${OUT}" stroke-width="3"/>` +
+    kid(200, 440, { s: 1.5, shirt: '#ffd23a', mood: 'happy', arms: 'up', hair: '#2b2430' }) +
+    txtP(200, 534, 'Grade 2 · Infographic', 20, OUT), '封面：當英雄把問題解決', '0 0 400 560'),
+});
+/* ============ 文體與視角專項訓練 ============ */
+const GV = { tab: 'genre', hunt: null, quiz: null };
+const GV_COUNT = [{ pid: 'gv.A' }, { pid: 'gv.B' }, { pid: 'gv.P' }, { pid: 'gv.M' }];
+const GENRES = {
+  rf: { n: 'Realistic fiction', zh: '寫實小說', ic: '🏫', co: 'F', cl: [['Made up, but it could happen in real life', '編的故事，但真實生活裡可能發生'], ['Characters act and talk like real people', '角色像真人一樣說話、做事'], ['A problem that real people might have', '有真人會遇到的問題']], ex: 'Mina lost her red mitten at the park.', exzh: 'Mina 把紅色手套弄丟在公園裡。' },
+  fan: { n: 'Fantasy', zh: '幻想故事', ic: '🐉', co: 'F', cl: [['Made-up events that could not really happen', '編的，現實中不可能發生'], ['Talking animals or magic', '會說話的動物、魔法'], ['Silly or impossible places and events', '不可能的奇幻地方和事情']], ex: 'A little dragon drank tea with a talking cat.', exzh: '一隻小龍和會說話的貓一起喝茶。' },
+  fab: { n: 'Fable', zh: '寓言故事', ic: '🦊', co: 'F', cl: [['Animals are the characters', '動物當角色'], ['The animals act and talk like people', '動物像人一樣說話、做事'], ['It teaches a lesson', '故事最後有一個教訓（lesson）']], ex: 'The fox said, “Those grapes are sour anyway.”', exzh: '狐狸說：「那些葡萄反正是酸的。」' },
+  fairy: { n: 'Fairy tale', zh: '童話故事', ic: '🏰', co: 'F', cl: [['Often starts with “Once upon a time”', '常用 Once upon a time（從前從前）開頭'], ['Princes, princesses, witches, and magic', '有王子、公主、巫婆和魔法'], ['Ends with “happily ever after”', '結局常是 happily ever after（從此幸福快樂）']], ex: 'Once upon a time, a princess lived in a tall castle.', exzh: '從前從前，有一位公主住在高高的城堡裡。' },
+  folk: { n: 'Folk tale', zh: '民間故事', ic: '🏘️', co: 'F', cl: [['Told for many, many years', '一代一代口耳相傳了很多年'], ['“Long ago” in a village or town', '常是「很久以前」在某個村莊'], ['A clever person solves a problem', '常有聰明的人解決問題']], ex: 'Long ago, in a small village, a clever girl helped the whole town.', exzh: '很久以前，在一個小村莊裡，一個聰明的女孩幫助了全鎮的人。' },
+  dr: { n: 'Drama', zh: '戲劇／劇本', ic: '🎭', co: 'D', cl: [['It has Scene and Narrator', '有 Scene（場景）和 Narrator（旁白）'], ['A name and a colon, like Mia:', '角色名字後面有冒號，像 Mia:'], ['Actions are written in ( )', '動作寫在括號 ( ) 裡']], ex: 'Mia: (looks around) Why is everything in the wrong place?', exzh: 'Mia：（環顧四周）為什麼東西都放錯地方了？' },
+  po: { n: 'Poem', zh: '詩歌／童詩', ic: '🎵', co: 'P', cl: [['Short lines, one under another', '一行一行很短、上下排列'], ['Rhyming words, like “door” and “pour”', '有押韻的字，像 door 和 pour'], ['Groups of lines called stanzas', '分成一段一段（stanza）']], ex: 'Rain, rain, tap on my door, / Splish and splash, then pour and pour.', exzh: '雨啊雨，敲敲我的門，嘩啦嘩啦，倒下來。' },
+  inf: { n: 'Informational text', zh: '說明文', ic: '📚', co: 'N', cl: [['Facts about a topic', '介紹一個主題的事實'], ['Headings that stand out', '有醒目的標題（headings）'], ['Photographs, labels, and captions', '有照片、標籤和圖說']], ex: 'Frogs lay their eggs in water.', exzh: '青蛙把卵產在水裡。' },
+  ig: { n: 'Infographic', zh: '資訊圖表', ic: '📊', co: 'N', cl: [['Gives information quickly and in a visual way', '用視覺的方式，很快提供資訊'], ['Pictures, symbols, numbers, and short words work together', '圖片、符號、數字和簡短的字一起搭配'], ['Numbered steps and words that stand out', '有編號的步驟和醒目的字']], ex: '6 Steps to Work It Out: 1. Identify the problem.', exzh: '解決問題的六個步驟：1. 找出問題。' },
+  proc: { n: 'Procedural text', zh: '步驟說明文', ic: '🛠️', co: 'N', cl: [['It tells how to do or make something', '教你怎麼做或做出一樣東西'], ['Steps in order: First, Next, Then, Last', '步驟有順序：First、Next、Then、Last'], ['Pictures show the finished project', '用圖片顯示完成的樣子']], ex: 'First, fold the paper in half. Next, fold the corners.', exzh: '首先，把紙對折。接著，把角折起來。' },
+  nn: { n: 'Narrative nonfiction', zh: '敘事性非虛構（傳記／個人經歷）', ic: '👩‍✈️', co: 'N', cl: [['Real people and real events', '真人真事'], ['Told like a story', '用說故事的方式寫'], ['Biography = a person’s life; personal narrative = my own true story', '傳記＝某個人的一生；個人經歷＝我自己的真實經驗']], ex: 'Amelia Earhart was the first woman to fly alone across the Atlantic Ocean.', exzh: '愛蜜莉亞・艾爾哈特是第一位獨自飛越大西洋的女性。' },
+};
+const GFRAG = {
+  rf: ['it is made up but could happen in real life', 'the characters act and talk like real people', 'the characters have a problem that real people might have'],
+  fan: ['the events could not really happen', 'it has talking animals or magic', 'it has silly or impossible places and events'],
+  fab: ['the characters are animals', 'the animals act and talk like people', 'it teaches a lesson'],
+  fairy: ['it starts with “Once upon a time”', 'it has princes, princesses, witches, and magic', 'it ends with “happily ever after”'],
+  folk: ['it has been told for many years', 'it starts with “Long ago” in a village', 'a clever person solves a problem'],
+  dr: ['it has Scene and Narrator', 'there is a name and a colon before each line', 'the actions are written in ( )'],
+  po: ['it has short lines', 'it has rhyming words', 'it is written in stanzas'],
+  inf: ['it gives facts about a topic', 'it has headings that stand out', 'it has photographs, labels, and captions'],
+  ig: ['it gives information quickly and visually', 'pictures, symbols, numbers, and short words work together', 'it has numbered steps and words that stand out'],
+  proc: ['it tells how to make something', 'it has steps in order', 'pictures show the finished project'],
+  nn: ['it tells about real people and real events', 'it is told like a story', 'it is about a real person’s life'],
+};
+const GART = { rf: '', nn: '', inf: 'an ', ig: 'an ', fan: 'a ', fab: 'a ', fairy: 'a ', folk: 'a ', dr: 'a ', po: 'a ', proc: 'a ' };
+const GKEYS = Object.keys(GENRES);
+const COARSE = [{ id: 'F', n: 'Fiction', zh: '編的故事' }, { id: 'N', n: 'Nonfiction', zh: '真的、有事實' }, { id: 'P', n: 'Poem', zh: '詩歌' }, { id: 'D', n: 'Drama', zh: '戲劇／劇本' }];
+const POVS = {
+  first: { n: 'First person', zh: '第一人稱', col: '#2f7fd8', w: ['i', 'me', 'my', 'mine', 'myself', 'we', 'us', 'our', 'ours', "i'm", "i'd", "i've", "i'll", "we're", "we'd"], chips: 'I · me · my · we · our', who: '說故事的人，就是故事裡的「我」', ex: ['I wanted to win the race.', 'My sister and I play in the park.'], exzh: ['我想要贏得比賽。', '我和我的妹妹在公園玩。'], bk: '《Big Red Lollipop》' },
+  second: { n: 'Second person', zh: '第二人稱', col: '#d8862f', w: ['you', 'your', 'yours', "you're", "you'll", 'yourself'], chips: 'you · your', who: '作者直接對「你（讀者）」說話', ex: ['You can count to ten to calm down.', 'You see a tall pile of stones.'], exzh: ['你可以數到十讓自己冷靜下來。', '你看見一大堆高高的石頭。'], bk: '《Working with Others》' },
+  third: { n: 'Third person', zh: '第三人稱', col: '#2f9b5a', w: ['he', 'she', 'they', 'him', 'her', 'his', 'hers', 'them', 'their', 'theirs'], chips: 'he · she · they · 名字（Tom、Mia）', who: '說別人的故事，像旁觀者一樣', ex: ['Tom caught a frog. He laughed.', 'Mia and Ethan moved the chairs. They worked together.'], exzh: ['Tom 抓到一隻青蛙。他笑了。', 'Mia 和 Ethan 搬椅子。他們一起合作。'], bk: '《Gingerbread for Liberty!》、《Pip’s Quiet Song》' },
+};
+const PKEYS = ['first', 'second', 'third'];
+/* g=文體 pov=視角 names=人名（第三人稱線索） */
+const GITEMS = [
+  { id: 'mia', t: '教室大整理（劇本）', g: 'dr', pov: 'third', names: ['mia', 'ethan'], en: 'Scene 1 – A Messy Classroom\nNarrator: Mia and Ethan walked into the classroom. Everything was in the wrong place!\nMia: (looks around) Ms. Parker, why is everything in the wrong place?\nEthan: (scratches his head) But there is so much to do!', zh: '第一幕－凌亂的教室\n旁白：Mia 和 Ethan 走進教室。所有東西都放錯地方了！\nMia：（環顧四周）Parker 老師，為什麼所有東西都放錯地方了？\nEthan：（抓抓頭）可是有好多事情要做喔！', src: '學校作業' },
+  { id: 'tower', t: '疊高塔（劇本）', g: 'dr', pov: null, en: '(Sam stacks paper cups.)\nSam: Look, Ella! Our tower is super tall!\nElla: (blows gently) Oh no! It falls over.\nDad: (walks in with a wooden box) Let’s try a new material.', zh: '（Sam 把紙杯疊起來。）\nSam：看，Ella！我們的塔超高的！\nElla：（輕輕吹一口氣）哎呀！它倒了。\n爸爸：（拿著木盒走進來）我們試試新的材料吧。', src: '學校作業' },
+  { id: 'topsy', t: 'Topsy-Turvy（童詩）', g: 'po', pov: 'first', names: [], en: 'Clouds float at my feet.\nA bird bites my toes.\nThere is dirt in my hair\nand an ant up my nose.', zh: '雲朵飄在我的腳邊。\n一隻鳥啄我的腳趾。\n我的頭髮上有泥土，\n還有一隻螞蟻爬進我的鼻子。', src: '學校作業' },
+  { id: 'books', t: 'Traveling Books（旅行的書）', g: 'inf', pov: 'third', names: [], en: 'The woman and her horse started their trip before sunrise. Many years ago, librarians like her traveled the mountains to give people books. The books were carried in big bags on packhorses.', zh: '這位女士和她的馬在日出前就出發了。很多年前，像她這樣的圖書館員會翻山越嶺，把書送給人們。書裝在大袋子裡，由馱馬載著。', src: '學校作業', note: '這篇是真的（Nonfiction），在講很久以前圖書館員的事實。' },
+  { id: 'hero', t: 'Be a Hero!（資訊圖表）', g: 'ig', pov: 'first', names: [], en: '6 Steps to Work It Out\n1. Identify the problem.\n2. Think about the problem.\n3. Attack the problem, not the person.\nI need your help spreading the word about my tips!', zh: '解決問題的六個步驟\n1. 找出問題。\n2. 想一想問題。\n3. 對付問題，不要攻擊人。\n我需要你幫忙把我的小撇步傳出去！', src: '課文第五本', note: '圖表有編號的步驟；英雄用 I、my 說話，是第一人稱，並請讀者行動（persuade）。' },
+  { id: 'pepita', t: 'Pepita and the Bully（寫實小說）', g: 'rf', pov: 'third', names: ['pepita', 'babette'], en: 'Pepita felt her face grow hot. Babette had pushed her again at recess. Pepita took a deep breath and walked away to cool down.', zh: 'Pepita 覺得臉變得很熱。Babette 在下課時又推了她。Pepita 深呼吸，走開讓自己冷靜下來。', src: '課文第四本' },
+  { id: 'tom', t: 'A Day at the Pond（池塘的一天）', g: 'rf', pov: 'third', names: ['tom'], en: 'Tom had never been to the pond before. He bent down and saw a frog jump! “Got you!” he shouted. The frog was too fast, but Tom laughed and tried again.', zh: 'Tom 以前從沒去過池塘。他彎下腰，看見一隻青蛙跳起來！「抓到你了！」他大喊。青蛙太快了，但 Tom 笑著再試一次。', src: '學校作業' },
+  { id: 'inuk', t: 'Look! An Inuksuk（看！石堆）', g: 'inf', pov: 'second', names: [], en: 'You are walking in the land of snow. There is no road to follow. Far away, you see a tall pile of stones. It is an inuksuk. It tells you something, and it helps you find your way.', zh: '你正走在雪地上。沒有路可以跟著走。遠遠地，你看見一大堆高高的石頭。那是一座因努伊特石堆。它告訴你一些事，幫你找到路。', src: '學校作業' },
+  { id: 'amelia', t: 'Amelia Earhart（愛蜜莉亞）', g: 'inf', pov: 'third', names: ['amelia'], en: 'Amelia Earhart was a brave woman who loved flying airplanes. In 1932, she became the first woman to fly alone across the Atlantic Ocean. Her flight helped others believe they could follow their dreams.', zh: '愛蜜莉亞・艾爾哈特是一位熱愛飛行的勇敢女性。1932 年，她成為第一位獨自飛越大西洋的女性。她的飛行幫助別人相信自己也能追尋夢想。', src: '學校作業', note: '學校作業的標準答案是 informational text（講真實的事實）。如果選項裡有 narrative nonfiction（傳記），也要小心看題目的選項。' },
+  { id: 'hands', t: 'Talk with Your Hands（用手說話）', g: 'inf', pov: null, en: 'People say things with their hands every day. Some people use sign language to talk if they cannot hear. American Sign Language has over 2,000 hand signs.', zh: '人們每天都用手來表達意思。有些人聽不見，就用手語來交談。美國手語有超過 2000 個手勢。', src: '學校作業' },
+  { id: 'fatima', t: 'I Saw It First!（是我先看到的）', g: 'rf', pov: 'first', names: [], en: 'My name is Fatima, and I have a little sister named Lily. One sunny afternoon, we both wanted to play with the same doll. “I saw it first!” I said. We pulled and pulled, and then the doll lost an arm.', zh: '我的名字是 Fatima，我有一個妹妹叫 Lily。一個晴朗的下午，我們都想玩同一個洋娃娃。「是我先看到的！」我說。我們拉來拉去，結果洋娃娃掉了一隻手臂。', src: '學校作業' },
+  { id: 'pip', t: 'Pip’s Quiet Song（Pip 的安靜歌聲）', g: 'dr', pov: 'third', names: ['pip', 'luna'], en: 'Scene 1 – Deep in the Forest\nNarrator: Pip the bird liked flying through the tall trees with his friend Luna.\nLuna: (flaps her wings merrily) Listen to this loud, beautiful song!\nPip: (sighs) Everyone can hear Luna.', zh: '第一幕－森林深處\n旁白：小鳥 Pip 喜歡和朋友 Luna 一起飛過高高的樹林。\nLuna：（開心地拍拍翅膀）聽聽這首響亮又好聽的歌！\nPip：（嘆氣）每個人都聽得到 Luna。', src: '學校段考' },
+  { id: 'gb', t: 'Gingerbread for Liberty!（薑餅）', g: 'nn', pov: 'third', names: ['washington'], en: 'A kind baker in Philadelphia made the best gingerbread. When the Revolution began, he wanted to help General Washington. One night, he rowed across the bay and told the hungry soldiers about his bakeshop.', zh: '費城有一位善良的麵包師傅，做出最好吃的薑餅。獨立戰爭開始時，他想幫助華盛頓將軍。有一天晚上，他划船渡過海灣，向飢餓的士兵說起他的麵包店。', src: '課文', note: '這本書是傳記（biography）：寫一位真實麵包師傅的故事。' },
+  { id: 'wwo', t: 'Working with Others（與他人合作）', g: 'inf', pov: 'second', names: [], en: 'When you feel angry, take a deep breath. Calm down first. Then you can talk about your feelings and listen to others.', zh: '當你覺得生氣時，先深呼吸。先冷靜下來。然後你就可以說出自己的感受，也聽聽別人怎麼說。', src: '課文' },
+  { id: 'lol', t: 'Big Red Lollipop（大紅棒棒糖）', g: 'rf', pov: 'first', names: [], en: 'I was invited to Sally’s birthday party. Mother said I had to take my little sister Sana with me. I did not want to!', zh: '我受邀去參加 Sally 的生日派對。媽媽說我一定要帶我的妹妹 Sana 一起去。我才不想！', src: '課文' },
+  { id: 'fox', t: 'The Fox and the Grapes（狐狸與葡萄）', g: 'fab', pov: 'third', names: [], en: 'A hungry fox saw sweet grapes high on a vine. He jumped and jumped, but he could not reach them. “Those grapes are sour anyway,” he said, and he walked away.\nLesson: Do not say something is bad just because you cannot have it.', zh: '一隻飢餓的狐狸看到藤上高高掛著甜甜的葡萄。他跳了又跳，還是搆不到。「那些葡萄反正是酸的。」他說完就走開了。\n教訓：不要因為得不到，就說它不好。' },
+  { id: 'dragon', t: 'The Little Dragon（小龍）', g: 'fan', pov: 'third', names: [], en: 'The little dragon wore a tiny hat and drank tea with a talking cat. Then they rode a rainbow all the way to the moon.', zh: '小龍戴著一頂小帽子，和會說話的貓一起喝茶。然後他們騎著彩虹一路到月亮上。' },
+  { id: 'princess', t: 'The Kind Princess（善良的公主）', g: 'fairy', pov: 'third', names: [], en: 'Once upon a time, a kind princess lived in a tall castle. A wicked witch gave her a magic apple. A prince woke her up, and they lived happily ever after.', zh: '從前從前，有一位善良的公主住在高高的城堡裡。壞巫婆給了她一顆魔法蘋果。王子把她喚醒，從此他們過著幸福快樂的日子。' },
+  { id: 'folk', t: 'The Pot of Rice（一鍋米飯）', g: 'folk', pov: 'third', names: [], en: 'Long ago, in a small village, a clever girl found a way to feed the whole town with one pot of rice. People have told this story to their children for many years.', zh: '很久很久以前，在一個小村莊裡，一個聰明的女孩想到用一鍋米飯餵飽全鎮的人。人們已經把這個故事講給孩子聽了很多年。' },
+  { id: 'boat', t: 'How to Make a Paper Boat（摺紙船）', g: 'proc', pov: null, en: 'How to Make a Paper Boat\nFirst, fold a piece of paper in half.\nNext, fold the two top corners to the middle.\nThen, fold up the bottom edges.\nLast, open it and put it in the water!', zh: '怎麼摺一艘紙船\n首先，把一張紙對折。\n接著，把上面的兩個角折到中間。\n然後，把下面的邊往上折。\n最後，把它打開，放進水裡！' },
+  { id: 'frog', t: 'Frogs（青蛙）', g: 'inf', pov: 'third', names: [], en: 'Where Frogs Live\nFrogs live near water. They lay their eggs in ponds. Baby frogs are called tadpoles. They breathe with gills, and later they grow legs.', zh: '青蛙住在哪裡\n青蛙住在水邊。牠們把卵產在池塘裡。青蛙寶寶叫做蝌蚪。牠們用鰓呼吸，後來會長出腿。' },
+  { id: 'rain', t: 'Rain, Rain（雨）', g: 'po', pov: 'first', names: [], en: 'Rain, rain, tap on my door,\nSplish and splash, then pour and pour.\nPuddles dance upon the floor,\nNow I want to jump some more!', zh: '雨啊雨，敲敲我的門，\n嘩啦嘩啦，倒下來。\n水坑在地上跳舞，\n我也想再多跳一些！' },
+  { id: 'grandma', t: 'My Trip to Tainan（我的台南之旅）', g: 'nn', pov: 'first', names: [], en: 'Last summer, I visited my grandma in Tainan. We ate sweet shaved ice together. I rode a bike for the first time, and I did not fall down!', zh: '去年夏天，我去台南看我的奶奶。我們一起吃了甜甜的剉冰。我第一次騎腳踏車，而且沒有跌倒！', note: '這是作者「我」的真實經驗，所以是 personal narrative（個人經歷，屬於敘事性非虛構）。' },
+  { id: 'forest', t: 'In the Forest（在森林裡）', g: 'rf', pov: 'second', names: [], en: 'You are in the forest. You see a small bird on a branch. Its song makes you smile, and you walk home slowly.', zh: '你在森林裡。你看見樹枝上有一隻小鳥。牠的歌聲讓你微笑，你慢慢地走回家。' },
+  { id: 'mina', t: 'The Lost Mitten（掉了的手套）', g: 'rf', pov: 'third', names: ['mina'], en: 'Mina lost her red mitten at the park. She looked under the slide and behind the tree. At last, her dad found it in his pocket!', zh: 'Mina 把紅色手套弄丟在公園裡。她在溜滑梯下面和樹後面找。最後，是她爸爸在他的口袋裡找到的！' },
+  { id: 'park', t: 'Time to Go Home（回家了）', g: 'dr', pov: null, en: 'Scene 1 – The Park\nMom: (waving) Time to go home!\nBen: (sighs) Five more minutes, please!', zh: '第一幕－公園\n媽媽：（揮揮手）該回家囉！\nBen：（嘆氣）拜託，再五分鐘！' },
+  { id: 's1', t: '短句 1', g: null, pov: 'first', names: [], en: 'I wanted to win the race.', zh: '我想要贏得比賽。' },
+  { id: 's2', t: '短句 2', g: null, pov: 'first', names: [], en: 'We went to the zoo, and I saw a big lion.', zh: '我們去了動物園，我看到一隻大獅子。' },
+  { id: 's3', t: '短句 3', g: null, pov: 'first', names: [], en: 'My dog and I play in the park every day.', zh: '我和我的狗每天都在公園玩。' },
+  { id: 's4', t: '短句 4', g: null, pov: 'second', names: [], en: 'You can count to ten to calm down.', zh: '你可以數到十讓自己冷靜下來。' },
+  { id: 's5', t: '短句 5', g: null, pov: 'second', names: [], en: 'Are you ready? Open your book.', zh: '你準備好了嗎？打開你的書。' },
+  { id: 's6', t: '短句 6', g: null, pov: 'third', names: [], en: 'She picked a sweet, purple plum from the tree.', zh: '她從樹上摘了一顆甜甜的紫色李子。' },
+  { id: 's7', t: '短句 7', g: null, pov: 'third', names: ['ben', 'nina'], en: 'Ben and Nina shared their snack. They had fun.', zh: 'Ben 和 Nina 分享他們的點心。他們玩得很開心。' },
+  { id: 's8', t: '短句 8', g: null, pov: 'third', names: [], en: 'The teacher gave him a gold star.', zh: '老師給了他一顆金色星星。' },
+];
+const gvBan = g => g === 'inf' ? ['nn', 'ig'] : g === 'nn' ? ['inf'] : g === 'ig' ? ['inf', 'proc'] : [];
+const gvShuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
+const gvNw = w => w.toLowerCase().replace(/[’‘]/g, "'").replace(/^[^a-z']+|[^a-z']+$/g, '').replace(/'s$/, '');
+const gvOkSet = it => new Set((POVS[it.pov].w).concat(it.pov === 'third' ? (it.names || []) : []));
+const gvToks = it => it.en.split('\n').map(l => l.split(' ').filter(Boolean));
+const gvHl = (text, pov) => esc(text).split(' ').map(w => POVS[pov].w.includes(gvNw(w.replace(/&[a-z#0-9]+;/g, ''))) ? `<mark class="mk">${w}</mark>` : w).join(' ');
+function gvFound(it) { const s = gvOkSet(it), out = []; gvToks(it).flat().forEach(w => { const n = gvNw(w); if (s.has(n) && !out.includes(n)) out.push(n); }); return out; }
+const gvCap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const gvFoundShow = it => gvFound(it).slice(0, 3).map(w => ['i'].includes(w) ? 'I' : (it.names || []).includes(w) ? gvCap(w) : w);
+function gvTabs() {
+  const T = [['genre', '🏷️ 認識文體'], ['pov', '👀 認識視角'], ['hunt', '🕵️ 找線索'], ['quiz', '🎯 闖關練習']];
+  return `<div class="gvtabs">${T.map(([k, l]) => `<button data-g="tab" data-v="${k}" class="${GV.tab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+}
+const sayBtn = t => `<button class="btn sm" data-g="say" data-s="${esc(t.replace(/\n/g, ' '))}">🔊 聽</button>`;
+function gvGenre() {
+  const flow = `<div class="gvc"><h3>🧭 三步驟判斷文體</h3><ol class="gvol">
+  <li><b>先問：是真的還是編的？</b><br>有事實、標題、照片、步驟 → 真的（Nonfiction）。有角色在演一個故事 → 編的（Fiction）。</li>
+  <li><b>再看外表：</b><br>有 <b>Scene</b>、<b>名字:</b>、( ) 動作 → <b>Drama</b>。一行一行很短、有押韻 → <b>Poem</b>。</li>
+  <li><b>最後找線索：</b><br>編的故事看「有沒有魔法、動物、教訓」；真的文章看「是講事實、教步驟，還是講一個人的故事」。</li></ol>
+  <p class="gvnote">💡 小提醒：學校考試的文體選項有時是 fiction / nonfiction / poem / fantasy 這種「大分類」，有時是細分的文體，兩種都要會。</p></div>`;
+  const quick = `<div class="gvc"><h3>⚡ 一眼看出來</h3><div class="gvq">
+  ${[['有 Scene、Narrator、名字:', 'Drama 戲劇'], ['短短的行、有押韻', 'Poem 詩'], ['First, Next, Then, Last', 'Procedural 步驟'], ['事實＋標題＋照片', 'Informational 說明文'], ['會說話的動物＋教訓', 'Fable 寓言'], ['魔法、龍、不可能的事', 'Fantasy 幻想'], ['Once upon a time', 'Fairy tale 童話'], ['像真的一樣的生活故事', 'Realistic fiction 寫實小說'], ['真人的一生／我的真實經驗', 'Narrative nonfiction']].map(([a, b]) => `<div><span>${a}</span><b>→ ${b}</b></div>`).join('')}</div></div>`;
+  const cards = GKEYS.map(k => { const G = GENRES[k]; return `<div class="gvc gcard"><div class="gh"><span class="ge">${G.ic}</span><div class="gt"><b>${G.n}</b><span>${G.zh}</span></div></div>
+  <ul class="gvul">${G.cl.map(c => `<li>${esc(c[0])}<small>${c[1]}</small></li>`).join('')}</ul>
+  <div class="gex">${esc(G.ex)}<small>${G.exzh}</small>${sayBtn(G.ex)}</div></div>`; }).join('');
+  return flow + quick + `<div class="gvgrid">${cards}</div><div class="tctl" style="margin-top:14px"><button class="btn pri" data-g="tab" data-v="quiz">去闖關練習 →</button></div>`;
+}
+function gvPov() {
+  const cards = PKEYS.map(k => { const P3 = POVS[k]; return `<div class="gvc pcard" style="border-color:${P3.col}"><div class="pbar" style="background:${P3.col}"><b>${P3.zh}</b><span>${P3.n}</span></div>
+  <p class="pwho">${P3.who}</p><p class="pchip">線索字：<b>${P3.chips}</b></p>
+  ${P3.ex.map((e, i) => `<div class="pex">${gvHl(e, k)}<small>${P3.exzh[i]}</small>${sayBtn(e)}</div>`).join('')}
+  <p class="pbk">課本例子：${P3.bk}</p></div>`; }).join('');
+  const tips = `<div class="gvc"><h3>🔍 三步驟找視角</h3><ol class="gvol">
+  <li>先看<b>旁白／敘述</b>（不是引號裡的對話）。</li>
+  <li>找代名詞：有 <b>I / my / we</b> → 第一人稱；有 <b>you / your</b> → 第二人稱；有 <b>he / she / they / 人名</b> → 第三人稱。</li>
+  <li>寫「How do you know?」時，要<b>寫出你找到的字</b>：<br><i>I know it is third person because it says “her”.</i></li></ol>
+  <p class="gvnote">⚠️ 引號 “ ” 裡面的 I 是角色在說話，<b>不算</b>。故事如果是在講 Mia、Tom 這些人，旁白就是第三人稱。劇本（Drama）裡的 Narrator 也是第三人稱。</p></div>`;
+  return `<div class="gvgrid3">${cards}</div>` + tips + `<div class="tctl" style="margin-top:14px"><button class="btn pri" data-g="tab" data-v="hunt">去找線索 →</button></div>`;
+}
+/* ---------- 找線索 ---------- */
+function gvHuntList() {
+  return `<div class="gvc"><h3>🕵️ 選一篇短文，當小偵探</h3><p>一步一步：點出線索字 → 選視角 → 選文體 → 說出「我怎麼知道」。</p></div><div class="gvgrid">${GITEMS.map(it => `<button class="gvc gitem" data-g="hstart" data-id="${it.id}"><b>${esc(it.t)}</b><small>${it.src ? '📘 ' + it.src : '短文'}${P.best['gvh.' + it.id] ? ' · ✅ 完成' : ''}</small></button>`).join('')}</div>`;
+}
+function gvPassage(it, st) {
+  return `<div class="gvpass">${gvToks(it).map(line => `<div class="pl">${line.map(w => { const i = st.idx++; const on = st.tapped.includes(i), bad = st.bad.includes(i), hl = st.hintI === i; return `<span class="gw${on ? ' on' : ''}${bad ? ' bad' : ''}${hl ? ' hl' : ''}" data-g="htap" data-i="${i}">${esc(w)}</span> `; }).join('')}</div>`).join('')}</div>`;
+}
+function gvHunt() {
+  const h = GV.hunt; if (!h) return gvHuntList();
+  const it = GITEMS.find(x => x.id === h.id), st = { idx: 0, tapped: h.tapped, bad: h.bad, hintI: h.hintI };
+  const head = `<div class="tctl"><button class="btn sm" data-g="hback">← 回到選文章</button>${sayBtn(it.en)}<button class="btn sm" data-g="hzh">${h.zh ? '隱藏中文' : '看中文'}</button></div><div class="gvc"><b>${esc(it.t)}</b>`;
+  const zh = h.zh ? `<div class="gvzh">${esc(it.zh).replace(/\n/g, '<br>')}</div>` : '';
+  let body = '';
+  const msg = h.msg ? `<div class="gvmsg ${h.mok ? 'ok' : ''}">${h.msg}</div>` : '';
+  const steps = ['找線索字', '選視角', '選文體', '選線索'].filter((_, i) => !(it.pov === null && i < 2) && !(it.g === null && i > 1));
+  if (h.step === 1) {
+    body = `<p class="gvq1">第 1 步：這篇是第幾人稱？請<b>點出</b>能告訴你的字（像 I、you、she、人名…）。</p>${gvPassage(it, st)}
+    <div class="tctl"><button class="btn pri" data-g="hcheck">檢查</button><button class="btn" data-g="hhint">💡 提示</button><button class="btn" data-g="hreset">重選</button></div>${msg}`;
+  } else if (h.step === 2) {
+    body = `<p class="gvq1">第 2 步：這篇是哪一個視角？（你找到的字：<b>${h.words.map(w => '“' + esc(w) + '”').join('、')}</b>）</p>${gvPassage(it, { idx: 0, tapped: h.tapped, bad: [], hintI: -1 })}
+    <div class="gvopts">${PKEYS.map(k => `<button class="gvopt" data-g="hpov" data-v="${k}" style="border-color:${POVS[k].col}"><b>${POVS[k].zh}</b><small>${POVS[k].n}</small></button>`).join('')}</div>${msg}`;
+  } else if (h.step === 3) {
+    const opts = h.gopts;
+    body = `<p class="gvq1">第 3 步：這篇是什麼文體？</p>${gvPassage(it, { idx: 0, tapped: [], bad: [], hintI: -1 })}
+    <div class="gvopts">${opts.map(k => `<button class="gvopt" data-g="hgen" data-v="${k}"><b>${GENRES[k].n}</b><small>${GENRES[k].zh}</small></button>`).join('')}</div>${msg}`;
+  } else if (h.step === 4) {
+    body = `<p class="gvq1">第 4 步：哪一個是「${GENRES[it.g].n}」的線索？</p>
+    <div class="gvopts">${h.copts.map((c, i) => `<button class="gvopt" data-g="hclue" data-i="${i}"><b>${esc(c[0])}</b><small>${c[1]}</small></button>`).join('')}</div>${msg}`;
+  } else {
+    const S1 = it.pov ? `I know this text is told in the ${POVS[it.pov].n.toLowerCase().replace(' person', '-person')} point of view because it uses the word${h.words.length > 1 ? 's' : ''} ${h.words.map(w => '“' + w + '”').join(' and ')}.` : '';
+    const S2 = it.g ? `I know it is ${GART[it.g]}${GENRES[it.g].n.toLowerCase()} because ${GFRAG[it.g][Math.max(0, GENRES[it.g].cl.findIndex(c => c[0] === h.clue[0]))]}.` : '';
+    body = `<div class="gvwin"><h3>${h.helped ? '🌱 恭喜你學會了！' : '🌟 偵探任務完成！'}</h3>${it.pov ? `<p>視角：<b>${POVS[it.pov].zh}</b>（${POVS[it.pov].n}）</p>` : ''}${it.g ? `<p>文體：<b>${GENRES[it.g].n}</b>（${GENRES[it.g].zh}）</p>` : ''}
+    ${it.note ? `<p class="gvnote">${it.note}</p>` : ''}
+    <p><b>How do you know?（你怎麼知道？）</b> 考試時可以這樣寫：</p>${[S1, S2].filter(Boolean).map(s => `<div class="gvsent">${esc(s)}${sayBtn(s)}</div>`).join('')}
+    <p class="gvnote">✏️ 試試看：把上面的句子寫在紙上，注意開頭大寫、結尾句號。${h.helped ? '<br>這次用了提示，再做一次、不看提示，就能拿到偵探章！' : ''}</p>
+    <div class="tctl"><button class="btn" data-g="hagain">再做一次這篇</button><button class="btn pri" data-g="hnext">下一篇 →</button></div></div>`;
+  }
+  return `${head}${steps.length ? `<span class="gvstep">${steps.join(' → ')}</span>` : ''}${zh}${body}</div>`;
+}
+function gvHuntStart(id) {
+  const it = GITEMS.find(x => x.id === id);
+  GV.hunt = { id, step: it.pov ? 1 : 3, tapped: [], bad: [], hintI: -1, words: [], msg: '', helped: false, zh: false, gopts: [], copts: [], clue: null };
+  if (!it.pov) gvHuntGenre(it);
+}
+function gvHuntGenre(it) {
+  const h = GV.hunt; if (!it.g) { gvHuntFinish(); return; }
+  const same = GKEYS.filter(k => k !== it.g && !gvBan(it.g).includes(k) && GENRES[k].co === GENRES[it.g].co), oth = GKEYS.filter(k => k !== it.g && !gvBan(it.g).includes(k) && GENRES[k].co !== GENRES[it.g].co);
+  h.gopts = gvShuffle([it.g].concat(gvShuffle(same).slice(0, 2)).concat(gvShuffle(oth)).slice(0, 4));
+  h.step = 3;
+}
+function gvHuntFinish() { const h = GV.hunt, it = GITEMS.find(x => x.id === h.id); h.step = 5; if (!h.clue) h.clue = it.g ? GENRES[it.g].cl[0] : ['', '']; if (!h.words.length && it.pov) h.words = gvFoundShow(it).slice(0, 2); if (!h.helped) { P.best['gvh.' + it.id] = 1; } P.reps['gv.H'] = (P.reps['gv.H'] || 0) + (h.helped ? 0 : 1); saveP(); updStars(); if (h.helped) encourage(); else celebrate('🕵️ 偵探任務完成！', '你找到線索了，太厲害了！', 30); }
+/* ---------- 闖關 ---------- */
+const GROUNDS = [
+  { k: 'A', t: '真的？編的？', sub: '分辨 Fiction（編的）、Nonfiction（真的）、Poem（詩）、Drama（劇本）', ic: '🔎' },
+  { k: 'B', t: '文體闖關', sub: '從九種文體中選出正確的那一種', ic: '🏷️' },
+  { k: 'P', t: '視角闖關', sub: '第一、第二、第三人稱，找出代名詞線索', ic: '👀' },
+  { k: 'M', t: '綜合挑戰', sub: '文體和視角混在一起考，像段考一樣', ic: '🏆' },
+];
+function gvQuizList() {
+  return `<div class="gvc"><h3>🎯 每關 8 題，答對 7 題以上拿星星</h3><p>每次出的題目都不同，可以一直練習。提示（💡）用了也沒關係，但要<b>靠自己答對</b>才有星星喔！</p></div>
+  <div class="gvgrid">${GROUNDS.map(r => { const k = 'gv.' + r.k, n = P.best[k]; return `<button class="gvc gitem rnd" data-g="qstart" data-k="${r.k}"><span class="ri">${r.ic}</span><b>${r.t}</b><small>${r.sub}</small><span class="rs">${starsHtml(!!P.done[k])} ${n != null ? '最佳 ' + n + ' / 8' : '還沒挑戰'}${P.reps[k] ? ' · 🏅' + P.reps[k] : ''}</span></button>`; }).join('')}</div>`;
+}
+function gvMakeQs(rk) {
+  const withG = gvShuffle(GITEMS.filter(i => i.g)), withP = gvShuffle(GITEMS.filter(i => i.pov));
+  const qG = (it, kind) => {
+    if (kind === 'c') return { it, kind, opts: COARSE.map(c => ({ id: c.id, a: c.n, b: c.zh })), ans: GENRES[it.g].co };
+    const same = GKEYS.filter(k => k !== it.g && !gvBan(it.g).includes(k) && GENRES[k].co === GENRES[it.g].co), oth = GKEYS.filter(k => k !== it.g && !gvBan(it.g).includes(k) && GENRES[k].co !== GENRES[it.g].co);
+    const ids = gvShuffle([it.g].concat(gvShuffle(same).slice(0, 1)).concat(gvShuffle(oth)).slice(0, 4));
+    return { it, kind, opts: ids.map(k => ({ id: k, a: GENRES[k].n, b: GENRES[k].zh })), ans: it.g };
+  };
+  const qP = it => ({ it, kind: 'p', opts: PKEYS.map(k => ({ id: k, a: POVS[k].zh, b: POVS[k].n })), ans: it.pov });
+  let qs;
+  if (rk === 'A') qs = withG.slice(0, 8).map(i => qG(i, 'c'));
+  else if (rk === 'B') qs = withG.slice(0, 8).map(i => qG(i, 'f'));
+  else if (rk === 'P') qs = withP.slice(0, 8).map(qP);
+  else { const gi = withG.slice(0, 4), pi = withP.filter(i => !gi.includes(i)).slice(0, 4); qs = gvShuffle(gi.map(i => qG(i, 'f')).concat(pi.map(qP))); }
+  return qs.map(q => Object.assign(q, { pick: null, st: null, hint: false }));
+}
+function gvQuiz() {
+  const z = GV.quiz; if (!z) return gvQuizList();
+  if (z.done) return gvSummary();
+  const q = z.qs[z.i], it = q.it, R = GROUNDS.find(r => r.k === z.k);
+  const text = q.kind === 'p' && q.hint ? it.en.split('\n').map(l => `<div class="pl">${gvHl(l, it.pov)}</div>`).join('') : it.en.split('\n').map(l => `<div class="pl">${esc(l)}</div>`).join('');
+  const qtxt = q.kind === 'p' ? ['What point of view is this text?', '這篇是用第幾人稱寫的？'] : q.kind === 'c' ? ['Which kind of text is this?', '這篇是哪一種文章？'] : ['What is the genre of this text?', '這篇的文體是什麼？'];
+  let hint = '';
+  if (q.hint) hint = q.kind === 'p' ? `<div class="hintbox">💡 找找看有沒有 <b>I / my / we</b>、<b>you / your</b>、<b>he / she / they / 人名</b>。（黃色螢光筆就是線索字）</div>` : `<div class="hintbox">💡 看看有沒有這些線索：<ul class="gvul">${GENRES[it.g].cl.map(c => `<li>${esc(c[0])}<small>${c[1]}</small></li>`).join('')}</ul></div>`;
+  const fb = q.pick != null ? gvFeedback(q) : '';
+  return `<div class="tctl"><button class="btn sm" data-g="qback">← 離開</button><span class="gvprog">${R.ic} ${R.t} · 第 ${z.i + 1} / ${z.qs.length} 題</span></div>
+  <div class="gvbar"><i style="width:${z.i / z.qs.length * 100}%"></i></div>
+  <div class="gvc"><div class="gvpass">${text}</div>${z.zh ? `<div class="gvzh">${esc(it.zh).replace(/\n/g, '<br>')}</div>` : ''}<div class="tctl" style="margin-top:8px">${sayBtn(it.en)}<button class="btn sm" data-g="qzh">${z.zh ? '隱藏中文' : '看中文'}</button></div>
+  <p class="qtext" style="font-family:var(--f-read)">${qtxt[0]}</p><p class="qzh">${qtxt[1]}</p>${hint}
+  <div class="gvopts">${q.opts.map(o => { let c = ''; if (q.pick != null) c = o.id === q.ans ? ' good' : o.id === q.pick ? ' badc' : ' dim'; return `<button class="gvopt${c}" data-g="qpick" data-v="${o.id}" ${q.pick != null ? 'disabled' : ''}><b>${o.a}</b><small>${o.b}</small></button>`; }).join('')}</div>
+  ${q.pick == null ? `<div class="tctl"><button class="btn" data-g="qhint" ${q.hint ? 'disabled' : ''}>💡 線索提示</button></div>` : ''}${fb}</div>`;
+}
+function gvExplain(q) {
+  const it = q.it;
+  if (q.kind === 'p') { const f = gvFoundShow(it); return `文章裡有 ${f.map(w => '“' + w + '”').join('、')}，所以是<b>${POVS[it.pov].zh}（${POVS[it.pov].n}）</b>：${POVS[it.pov].who}。`; }
+  const G = GENRES[it.g];
+  if (q.kind === 'c') return `這篇是 <b>${G.n}（${G.zh}）</b>，屬於「${COARSE.find(c => c.id === G.co).zh}」。線索：${G.cl[0][1]}。${it.note ? '<br>' + it.note : ''}`;
+  return `答案是 <b>${G.n}（${G.zh}）</b>。線索：${G.cl.slice(0, 2).map(c => c[1]).join('；')}。${it.note ? '<br>' + it.note : ''}`;
+}
+function gvFeedback(q) {
+  const z = GV.quiz, ok = q.pick === q.ans, last = z.i === z.qs.length - 1;
+  const head = ok ? (q.hint ? '🌱 答對了！用了提示也沒關係，你學會囉！' : '🎉 答對了！太棒了！') : '💪 差一點點！看看解釋，下次就會了。';
+  return `<div class="gvfb ${ok ? 'ok' : 'no'}"><b>${head}</b><p>${gvExplain(q)}</p><div class="tctl"><button class="btn pri" data-g="qnext">${last ? '看成績 →' : '下一題 →'}</button></div></div>`;
+}
+function gvSummary() {
+  const z = GV.quiz, R = GROUNDS.find(r => r.k === z.k), ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, bad = z.qs.filter(q => q.st === 'bad').length;
+  return `<div class="gvc gvwin"><h3>${R.ic} ${R.t}：成績</h3><p class="gvbig">${ok} <small>/ ${z.qs.length}</small></p><p>✅ 自己答對 ${ok} 題　🌱 用提示答對 ${hp} 題　❌ 答錯 ${bad} 題</p>
+  <div class="gvlist">${z.qs.map((q, i) => `<div class="gvrow ${q.st}"><span>${q.st === 'ok' ? '✅' : q.st === 'help' ? '🌱' : '❌'}</span><div><b>${i + 1}. ${esc(q.it.t)}</b>${q.st === 'ok' ? '' : `<small>${gvExplain(q)}</small>`}</div></div>`).join('')}</div>
+  <div class="tctl"><button class="btn" data-g="qback">回到闖關列表</button><button class="btn pri" data-g="qagain">再挑戰一次</button></div></div>`;
+}
+function gvReward() {
+  const z = GV.quiz, key = 'gv.' + z.k, ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, n = z.qs.length, need = Math.ceil(n * .85);
+  P.best[key] = Math.max(P.best[key] || 0, ok);
+  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！太完美了！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '你已經很會分辨了！' : '越練越熟！', ok === n ? 70 : 40); }
+  else if (hp > 0 && ok + hp >= need) { saveP(); updStars(); encourage(); }
+  else { saveP(); celebrate(`💪 答對 ${ok} 題，進步中！`, '看看下面的解釋，再挑戰一次，一定會更好！', 14); }
+}
+/* ---------- 版面 ---------- */
+function gvRender(keep) {
+  const el = $('#gv'); if (!el) return; const top = el.scrollTop;
+  const body = { genre: gvGenre, pov: gvPov, hunt: gvHunt, quiz: gvQuiz }[GV.tab]();
+  el.innerHTML = `<div class="shelf-in gvin"><h1>文體與視角專項訓練</h1><p>搞懂「這是什麼文體？」和「是誰在說故事？」，閱讀測驗就不怕！</p>${gvTabs()}${body}</div>`;
+  el.scrollTop = keep ? top : 0; const f = el.querySelector('.gvfb'); if (f && keep) f.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+function openGv(tab) {
+  stopAll(); S.view = 'gv'; S.bookId = null; countable = GV_COUNT; if (tab) GV.tab = tab;
+  $('#shelf').hidden = true; $('#book').hidden = true; document.querySelector('.pager').hidden = true; $('#gv').hidden = false; $('#starCount').hidden = false;
+  $('#brandTitle').textContent = '文體與視角專項訓練'; $('#brandSub').textContent = 'Genre & Point of View'; $('#bShelf').setAttribute('aria-pressed', 'false');
+  document.documentElement.style.setProperty('--fs', S.fs); updStars(); gvRender(); saveP();
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('#gv [data-g]'); if (!t) return; const a = t.dataset.g, h = GV.hunt, z = GV.quiz;
+  switch (a) {
+    case 'tab': GV.tab = t.dataset.v; GV.hunt = null; GV.quiz = null; stopAll(); break;
+    case 'say': speakQuick(t.dataset.s); return;
+    case 'hstart': gvHuntStart(t.dataset.id); break;
+    case 'hback': GV.hunt = null; break;
+    case 'hzh': h.zh = !h.zh; break;
+    case 'htap': { const i = +t.dataset.i; h.msg = ''; h.hintI = -1; const k = h.tapped.indexOf(i); if (k >= 0) h.tapped.splice(k, 1); else { h.tapped.push(i); h.bad = h.bad.filter(x => x !== i); } break; }
+    case 'hreset': h.tapped = []; h.bad = []; h.msg = ''; h.hintI = -1; break;
+    case 'hhint': { const it = GITEMS.find(x => x.id === h.id), s = gvOkSet(it); let idx = 0, pick = -1; gvToks(it).forEach(l => l.forEach(w => { if (pick < 0 && s.has(gvNw(w)) && !h.tapped.includes(idx)) pick = idx; idx++; })); h.hintI = pick; h.helped = true; h.mok = false; h.msg = '💡 閃閃發亮的字就是一個線索，點它！（用了提示，這次就不算獨自完成喔）'; break; }
+    case 'hcheck': {
+      const it = GITEMS.find(x => x.id === h.id), s = gvOkSet(it); let idx = 0; const val = [], inv = [];
+      gvToks(it).forEach(l => l.forEach(w => { if (h.tapped.includes(idx)) (s.has(gvNw(w)) ? val : inv).push(idx); idx++; }));
+      h.mok = false;
+      if (!h.tapped.length) h.msg = '還沒有點任何字喔。找找看 I、you、she 或人名！';
+      else if (inv.length) { h.bad = inv; h.msg = '紅色的字不是視角的線索（對話引號裡的 I 也不算）。再想想看！'; h.tapped = val; }
+      else { h.words = []; idx = 0; gvToks(it).forEach(l => l.forEach(w => { if (h.tapped.includes(idx)) { const n = gvNw(w), nm = n === 'i' ? 'I' : (it.names || []).includes(n) ? gvCap(n) : n; if (!h.words.includes(nm)) h.words.push(nm); } idx++; })); h.words = h.words.slice(0, 2); h.step = 2; h.msg = ''; speakQuick(h.words.join(' ')); }
+      break; }
+    case 'hpov': { const it = GITEMS.find(x => x.id === h.id); h.mok = false; if (t.dataset.v === it.pov) { h.msg = ''; if (it.g) gvHuntGenre(it); else gvHuntFinish(); } else { h.msg = `再想想看～你找到的字是 “${h.words.join('”、“')}”。${POVS[t.dataset.v].zh}的線索字是 ${POVS[t.dataset.v].chips}。`; } break; }
+    case 'hgen': { const it = GITEMS.find(x => x.id === h.id); h.mok = false; if (t.dataset.v === it.g) { h.msg = ''; const real = GENRES[it.g].cl, dec = gvShuffle(GKEYS.filter(k => k !== it.g).map(k => GENRES[k].cl[(Math.random() * 3) | 0])).slice(0, 3); h.copts = gvShuffle([real[(Math.random() * 3) | 0]].concat(dec)); h.step = 4; } else { h.msg = `${GENRES[t.dataset.v].n} 的線索是：${GENRES[t.dataset.v].cl[0][1]}。再看看文章有沒有這些特徵！`; } break; }
+    case 'hclue': { const it = GITEMS.find(x => x.id === h.id), c = h.copts[+t.dataset.i]; h.mok = false; if (GENRES[it.g].cl.some(x => x[0] === c[0])) { h.clue = c; gvHuntFinish(); } else { h.msg = '這個線索是別的文體的喔，再選選看！'; } break; }
+    case 'hnext': { const i = GITEMS.findIndex(x => x.id === h.id); gvHuntStart(GITEMS[(i + 1) % GITEMS.length].id); break; }
+    case 'hagain': gvHuntStart(h.id); break;
+    case 'qstart': GV.quiz = { k: t.dataset.k, qs: gvMakeQs(t.dataset.k), i: 0, done: false, zh: false }; break;
+    case 'qagain': GV.quiz = { k: z.k, qs: gvMakeQs(z.k), i: 0, done: false, zh: false }; break;
+    case 'qback': GV.quiz = null; stopAll(); break;
+    case 'qzh': z.zh = !z.zh; break;
+    case 'qhint': z.qs[z.i].hint = true; break;
+    case 'qpick': { const q = z.qs[z.i]; if (q.pick != null) return; q.pick = t.dataset.v; q.st = q.pick === q.ans ? (q.hint ? 'help' : 'ok') : 'bad'; if (q.st === 'ok') toast('答對了 ✓', 900); break; }
+    case 'qnext': if (z.i < z.qs.length - 1) { z.i++; } else { z.done = true; gvRender(); gvReward(); return; } break;
+  }
+  gvRender(!['tab', 'hstart', 'hback', 'hnext', 'hagain', 'qstart', 'qagain', 'qback', 'qnext'].includes(a));
+});
 /* ============ 書櫃與開始 ============ */
 const BOOKS = [
   { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2, rt: RT2 },
   { id: 'wwo', kp: '', title: 'Working with Others', zh: '與他人合作', author: 'Robin Nelson', pages: 'pp.228–238', when: '本週課文', cover: 'cover', coverBg: '#0f857d', qmode: 'fill', startId: 'r1', spreads: SPREADS1, qs: QS1, rt: RT1 },
   { id: 'gb', kp: 'gb-', title: 'Gingerbread for Liberty!', zh: '為了自由的薑餅', author: 'Mara Rockliff', pages: 'pp.242–260', when: '本週課文', cover: 'cover3', coverBg: '#8a4b2a', qmode: 'fill', startId: 'g1', spreads: SPREADS3, qs: QS3, rt: RT3 },
+  { id: 'pb', kp: 'pb-', title: 'Pepita and the Bully', zh: 'Pepita 和惡霸', author: 'Ofelia Dumas Lachtman', pages: 'pp.264–285', when: '本週課文', cover: 'cover4', coverBg: '#d9487a', qmode: 'fill', startId: 'pb0', spreads: SPREADS4, qs: QS4, rt: RT4 },
+  { id: 'hr', kp: 'hr-', title: 'Be a Hero! Work It Out!', zh: '當英雄！把問題解決', author: 'Ruben Cooley', pages: 'pp.286–295', when: '本週課文', cover: 'cover5', coverBg: '#2b6cd9', qmode: 'fill', startId: 'hr0', spreads: SPREADS5, qs: QS5, rt: RT5 },
 ];
 (async function start() {
   loadP();
