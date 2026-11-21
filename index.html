@@ -3777,7 +3777,7 @@ function render(dir = 0) {
 function renderShelf() {
   const sh = $('#shelf');
   sh.innerHTML = `<div class="shelf-in"><h1>靜心小二英文閱讀書櫃</h1><p>選一本書開始。每本書都有課文朗讀、教師手冊和考前練習。</p>
-  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button></div></div>`;
+  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="openvc"><div class="art">${ART.coverVc()}</div><div class="bt"><b>單字專項訓練</b><span class="zh">Vocabulary</span><small>期末考 Module 3、4 · 單字、字形變化</small><span class="bp">${VC_COUNT.filter(s => P.done[s.pid]).length} / ${VC_COUNT.length} ⭐</span></div></button></div></div>`;
 }
 function showShelf() {
   stopAll(); S.view = 'shelf'; renderShelf();
@@ -3968,6 +3968,7 @@ document.addEventListener('click', async e => {
     case 'shelf': showShelf(); break;
     case 'openbook': openBook(t.dataset.b); break;
     case 'opengv': openGv(); break;
+    case 'openvc': openVc(); break;
     case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
     case 'untile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed.splice(+t.dataset.p, 1); st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
     case 'tclear': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed = []; st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
@@ -4251,6 +4252,11 @@ Object.assign(ART, {
     kid(200, 440, { s: 1.5, shirt: '#ffd23a', mood: 'happy', arms: 'up', hair: '#2b2430' }) +
     txtP(200, 534, 'Grade 2 · Infographic', 20, OUT), '封面：當英雄把問題解決', '0 0 400 560'),
 });
+ART.coverVc = () => svgWrap(`<rect width="400" height="560" fill="#1f8a70"/><circle cx="340" cy="70" r="110" fill="#2aa686" opacity=".7"/><circle cx="40" cy="330" r="90" fill="#2aa686" opacity=".5"/>
+  ${txtP(200, 100, 'Vocabulary', 56, '#fff')}${txtP(200, 150, 'Word Power!', 34, '#ffe27a')}
+  <g stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="70" y="210" width="110" height="70" rx="12" fill="#fff" transform="rotate(-6 125 245)"/><rect x="215" y="200" width="120" height="70" rx="12" fill="#ffd966" transform="rotate(5 275 235)"/><rect x="110" y="310" width="130" height="70" rx="12" fill="#ffb3c7" transform="rotate(3 175 345)"/><rect x="255" y="320" width="90" height="70" rx="12" fill="#bfe4ff" transform="rotate(-5 300 355)"/></g>
+  ${txtP(125, 255, 'bob', 28)}${txtP(275, 245, 'yank', 28)}${txtP(175, 355, 'scurry', 28)}${txtP(300, 365, 'frown', 24)}
+  <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>${txtP(200, 534, 'Module 3 · Module 4', 20)}`, '封面：單字專項訓練', '0 0 400 560');
 /* ============ 文體與視角專項訓練 ============ */
 const GV = { tab: 'genre', hunt: null, quiz: null };
 const GV_COUNT = [{ pid: 'gv.A' }, { pid: 'gv.B' }, { pid: 'gv.P' }, { pid: 'gv.M' }];
@@ -4531,6 +4537,312 @@ document.addEventListener('click', e => {
   }
   gvRender(!['tab', 'hstart', 'hback', 'hnext', 'hagain', 'qstart', 'qagain', 'qback', 'qnext'].includes(a));
 });
+/* ============ 單字專項訓練 ============ */
+const VCW = (w, f, pos, ipa, zh, a, ex, exzh, o = {}) => Object.assign({ w, f, pos, ipa, zh, a, ex, exzh }, o);
+const VWEEKS = [
+ { id: 'm3w1', mod: 3, t: 'Module 3 · Week 1', sub: '第 12 週（Big Red Lollipop）', words: [
+  VCW('belong','belongs','v.','bɪˈlɔŋ','屬於','belongs','This red coat ____ to Rubina.','這件紅外套屬於 Rubina。',{ v: ['belongs','belonged','belonged','belonging'] }),
+  VCW('bob','bob','v.','bɑb','上下晃動、浮沉','bob','The little boat will ____ up and down on the waves.','小船會在海浪上上下下地晃動。',{ v: ['bobs','bobbed','bobbed','bobbing'], pl: 'bobs' }),
+  VCW('bundle','bundle','n.','ˈbʌndl','一捆、一包','bundle','She carried a ____ of clothes to the car.','她把一大包衣服搬到車上。',{ pl: 'bundles' }),
+  VCW('company','company','n.','ˈkʌmpəni','陪伴；客人','company','We are expecting ____ for dinner tonight.','今晚我們有客人要來吃晚餐。',{ pl: 'companies' }),
+  VCW('greedy','greedy','adj.','ˈɡridi','貪心的','greedy','The ____ boy ate all the cookies and shared none.','那個貪心的男孩把餅乾全吃光，一塊也不分享。',{ cmp: ['greedier','greediest'] }),
+  VCW('invite','invited','v.','ɪnˈvaɪt','邀請','invited','Mia ____ her friends to her birthday party.','Mia 邀請朋友來參加她的生日派對。',{ v: ['invites','invited','invited','inviting'] }),
+  VCW('musical','musical','adj.','ˈmjuzɪkəl','音樂的','musical','He plays a ____ instrument called the violin.','他演奏一種叫小提琴的樂器。',{}),
+  VCW('plead','plead','v.','plid','懇求','plead','I had to ____ with my dad to let me go.','我得懇求爸爸讓我去。',{ v: ['pleads','pleaded','pleaded','pleading'] }),
+  VCW('scream','screams','v.','skrim','尖叫','screams','The baby ____ when she is hungry.','嬰兒餓的時候會尖叫。',{ v: ['screams','screamed','screamed','screaming'], pl: 'screams' }),
+  VCW('scurry','scurries','v.','ˈskɝi','小跑步、急急忙忙地跑','scurries','The little mouse ____ across the floor.','小老鼠急急忙忙跑過地板。',{ v: ['scurries','scurried','scurried','scurrying'], syn: ['scoot'] }),
+  VCW('shove','shove','v.','ʃʌv','用力推擠','shove','Please do not ____ other kids in line.','請不要在排隊時推擠別的小朋友。',{ v: ['shoves','shoved','shoved','shoving'] }),
+  VCW('snake','snaking','v.','sneɪk','蜿蜒前進（n. 蛇）','snaking','A long line of kids was ____ around the room.','一長排孩子蜿蜒地繞過教室。',{ v: ['snakes','snaked','snaked','snaking'], pl: 'snakes' }),
+  VCW('weave','weave','v.','wiv','編織；穿梭','weave','Grandma can ____ a basket from straw.','奶奶會用稻草編籃子。',{ v: ['weaves','wove','woven','weaving'], irr: true }),
+  VCW('scoot','scoots','v.','skut','快速移動、挪動','scoots','Ben ____ over to make room on the bench.','Ben 往旁邊挪一點，讓出長椅的位子。',{ v: ['scoots','scooted','scooted','scooting'], syn: ['scurry'] }),
+ ] },
+ { id: 'm3w2', mod: 3, t: 'Module 3 · Week 2', sub: '第 2 週單字表', words: [
+  VCW('argue','argue','v.','ˈɑrɡju','爭吵、爭論','argue','Please do not ____ with your sister about the toy.','請不要為了玩具跟你姐姐爭吵。',{ v: ['argues','argued','argued','arguing'], syn: ['blame'] }),
+  VCW('blame','blamed','v.','bleɪm','責怪','blamed','Tom ____ the dog for the broken cup.','Tom 把破掉的杯子怪到狗身上。',{ v: ['blames','blamed','blamed','blaming'], syn: ['argue'] }),
+  VCW('boom','booming','v.','bum','隆隆作響（booming：洪亮的）','booming','We heard a ____ voice from the stage.','我們聽到舞台上傳來洪亮的聲音。',{ v: ['booms','boomed','boomed','booming'] }),
+  VCW('exhausted','exhausted','adj.','ɪɡˈzɔstɪd','筋疲力盡的','exhausted','After the long race, Sam was ____.','長跑比賽後，Sam 筋疲力盡。',{ v: ['exhausts','exhausted','exhausted','exhausting'], base2: 'exhaust' }),
+  VCW('mope','moped','v.','moʊp','悶悶不樂','moped','She ____ in her room all afternoon.','她整個下午都悶悶不樂地待在房間裡。',{ v: ['mopes','moped','moped','moping'] }),
+  VCW('persuade','persuade','v.','pɚˈsweɪd','說服','persuade','I will try to ____ my mom to buy me a book.','我會試著說服媽媽買一本書給我。',{ v: ['persuades','persuaded','persuaded','persuading'] }),
+  VCW('practice','practice','v.','ˈpræktɪs','練習','practice','You need to ____ the piano every day.','你每天都要練習鋼琴。',{ v: ['practices','practiced','practiced','practicing'], pl: 'practices' }),
+  VCW('respectful','respectful','adj.','rɪˈspɛktfəl','有禮貌的、尊重的','respectful','Please be ____ to your teacher.','請對老師要有禮貌、尊重老師。',{}),
+  VCW('skill','skill','n.','skɪl','技能','skill','Riding a bike is a useful ____.','騎腳踏車是一項很有用的技能。',{ pl: 'skills' }),
+  VCW('strut','struts','v.','strʌt','昂首闊步地走','struts','The rooster ____ across the yard.','公雞昂首闊步走過院子。',{ v: ['struts','strutted','strutted','strutting'], syn: ['wander'] }),
+  VCW('threaten','threatening','v.','ˈθrɛtn','威脅（threatening：有威脅性的）','threatening','The dark clouds look ____, so take an umbrella.','烏雲看起來很嚇人（快下雨了），帶把傘吧。',{ v: ['threatens','threatened','threatened','threatening'] }),
+  VCW('wander','wandered','v.','ˈwɑndɚ','閒逛、漫步','wandered','The lost puppy ____ down the street.','走失的小狗沿著街道閒晃。',{ v: ['wanders','wandered','wandered','wandering'], syn: ['strut','whiz'] }),
+  VCW('whiz','whizzed','v.','wɪz','飛快掠過、呼嘯而過','whizzed','A fast car ____ past us.','一輛快車從我們身旁呼嘯而過。',{ v: ['whizzes','whizzed','whizzed','whizzing'], syn: ['wander'] }),
+  VCW('brew','brewing','v.','bru','沖泡、釀造（醞釀）','brewing','Tea is ____ in the pot.','茶正在壺裡泡著。',{ v: ['brews','brewed','brewed','brewing'] }),
+ ] },
+ { id: 'm3w3', mod: 3, t: 'Module 3 · Week 3', sub: '第 3 週單字表（Pepita and the Bully）', words: [
+  VCW('admit','admit','v.','ədˈmɪt','承認','admit','It is hard to ____ that you made a mistake.','要承認自己犯了錯很不容易。',{ v: ['admits','admitted','admitted','admitting'] }),
+  VCW('drag','dragged','v.','dræɡ','拖、拉','dragged','Dad ____ the heavy bag across the floor.','爸爸把重重的袋子拖過地板。',{ v: ['drags','dragged','dragged','dragging'], syn: ['yank'] }),
+  VCW('excuse','excuses','n.','ɪkˈskjus','藉口','excuses','Stop making ____ and do your homework.','別再找藉口，快寫作業。',{ pl: 'excuses' }),
+  VCW('frown','frown','v.','fraʊn','皺眉頭','frown','Why do you ____ at me? Are you angry?','你為什麼對我皺眉頭？你生氣了嗎？',{ v: ['frowns','frowned','frowned','frowning'], pl: 'frowns' }),
+  VCW('hesitant','hesitant','adj.','ˈhɛzətənt','猶豫的','hesitant','Pepita was ____ to speak to Babette.','Pepita 不太敢跟 Babette 說話。',{}),
+  VCW('humor','humor','n.','ˈhjumɚ','幽默','humor','My grandpa has a great sense of ____.','我爺爺很有幽默感。',{ unc: true }),
+  VCW('immediately','immediately','adv.','ɪˈmidiətli','立刻','immediately','When the bell rang, we lined up ____.','鈴聲一響，我們立刻排好隊。',{ syn: ['probably'] }),
+  VCW('mumble','mumbled','v.','ˈmʌmbl','含糊地說','mumbled','He ____ a few words, and I could not hear him.','他含糊地說了幾個字，我聽不清楚。',{ v: ['mumbles','mumbled','mumbled','mumbling'] }),
+  VCW('nearby','nearby','adj.','ˌnɪrˈbaɪ','附近的','nearby','Let’s play at the ____ park.','我們去附近的公園玩吧。',{}),
+  VCW('probably','probably','adv.','ˈprɑbəbli','大概、很可能','probably','It will ____ rain tomorrow.','明天大概會下雨。',{ syn: ['immediately'] }),
+  VCW('terrible','terrible','adj.','ˈtɛrəbl','糟糕的、可怕的','terrible','I had a ____ dream last night.','我昨晚做了一個可怕的夢。',{}),
+  VCW('wrinkle','wrinkled','v.','ˈrɪŋkl','起皺紋、使起皺','wrinkled','His shirt was ____ because it was in the bag.','他的襯衫皺巴巴的，因為一直塞在袋子裡。',{ v: ['wrinkles','wrinkled','wrinkled','wrinkling'], pl: 'wrinkles' }),
+  VCW('yank','yanked','v.','jæŋk','猛拉','yanked','She ____ the tablecloth, and all the cups fell down.','她猛一拉桌巾，所有杯子都掉下來了。',{ v: ['yanks','yanked','yanked','yanking'], syn: ['drag'] }),
+ ] },
+];
+VWEEKS.push({ id: 'm3all', mod: 3, t: 'Module 3 · 全部總複習', sub: '期末考前：三週單字混在一起', words: VWEEKS.flatMap(w => w.words) });
+const VMODES = [
+  { k: 'mean', t: '意思配對', sub: '看單字選中文、看中文選單字', ic: '🔗', n: 10 },
+  { k: 'cloze', t: '句子填空', sub: '選出最適合放進句子的單字', ic: '🧩', n: 10 },
+  { k: 'form', t: '字形變化', sub: '動詞三態、-s、-ing、名詞複數', ic: '🔧', n: 10 },
+  { k: 'spell', t: '聽音拼字', sub: '聽單字、看中文，把它拼出來', ic: '✍️', n: 10 },
+  { k: 'mix', t: '綜合挑戰', sub: '四種題型混合，像段考一樣', ic: '🏆', n: 10 },
+];
+const VC_COUNT = VWEEKS.flatMap(w => VMODES.map(m => ({ pid: `vc.${w.id}.${m.k}` })));
+const VC = { tab: 'learn', week: 'm3w1', quiz: null };
+const vcWeek = id => VWEEKS.find(w => w.id === id);
+const vcSh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
+const vcMiss = w => (P.best['vw.' + w] || 0) > 0;
+const vcBlank = s => esc(s).replace('____', '<span class="vblank">＿＿＿＿</span>');
+const vcFill = (s, a) => esc(s).replace('____', `<b class="vans">${esc(a)}</b>`);
+const VKIND = { s: ['第三人稱單數（He / She ＿＿）', '三單'], d: ['過去式（Yesterday, he ＿＿）', '過去式'], p: ['過去分詞（He has ＿＿）', '過去分詞'], g: ['現在分詞 -ing（He is ＿＿）', '-ing'], pl: ['複數（two ＿＿ / many ＿＿）', '複數'], cmp: ['比較級（更…）', '比較級'], sup: ['最高級（最…）', '最高級'] };
+function vcRule(kind, base, ans, irr) {
+  const lastc = base.slice(-1), cy = /[^aeiou]y$/.test(base);
+  if (irr && (kind === 'd' || kind === 'p')) return `<b>不規則變化</b>，要背起來：weave – wove – woven。`;
+  if (kind === 's' || kind === 'pl') {
+    if (ans === base + 's') return '一般情況：直接加 <b>-s</b>。';
+    if (cy && ans === base.slice(0, -1) + 'ies') return '字尾是「子音 + y」：<b>y 變 i，再加 -es</b>。';
+    if (ans === base + 'es') return '字尾是 s、x、z、ch、sh：加 <b>-es</b>。';
+    if (ans === base + lastc + 'es') return '短母音 + z：<b>重複字母 z，再加 -es</b>（whiz → whizzes）。';
+  }
+  if (kind === 'd' || kind === 'p') {
+    if (ans === base + 'ed') return '一般情況：直接加 <b>-ed</b>。';
+    if (ans === base + 'd') return '字尾已經是 e：只加 <b>-d</b>。';
+    if (cy && ans === base.slice(0, -1) + 'ied') return '字尾是「子音 + y」：<b>y 變 i，再加 -ed</b>。';
+    if (ans === base + lastc + 'ed') return '「短母音 + 一個子音」結尾：<b>重複最後一個字母，再加 -ed</b>。';
+  }
+  if (kind === 'g') {
+    if (ans === base + 'ing') return '一般情況：直接加 <b>-ing</b>（字尾是 y 也不變）。';
+    if (/e$/.test(base) && ans === base.slice(0, -1) + 'ing') return '字尾是不發音的 e：<b>去掉 e，再加 -ing</b>。';
+    if (ans === base + lastc + 'ing') return '「短母音 + 一個子音」結尾：<b>重複最後一個字母，再加 -ing</b>。';
+  }
+  if (kind === 'cmp' || kind === 'sup') return '字尾是「子音 + y」：<b>y 變 i，再加 -er / -est</b>。';
+  return '';
+}
+function vcDist(kind, base, ans, irr) {
+  const l = base.slice(-1), y2i = base.replace(/y$/, 'i'), de = base.replace(/e$/, '');
+  let c;
+  if (irr) c = kind === 'd' ? ['woven', 'weavd', 'woved'] : ['wove', 'weavn', 'woved'];
+  else if (kind === 's' || kind === 'pl') c = [base + 's', base + 'es', y2i + 'es', base + 'ies', base + l + 'es', base.replace(/y$/, '') + 'ys'];
+  else if (kind === 'd' || kind === 'p') c = [base + 'ed', base + 'd', y2i + 'ed', base + l + 'ed', de + 'ed', base + 'ied', base + 'en'];
+  else if (kind === 'g') c = [base + 'ing', de + 'ing', base + l + 'ing', y2i + 'ing', base + 'eing'];
+  else c = [base + 'er', base + 'ier', y2i + 'er', base + 'r', y2i + 'est', base + 'est', base + 'iest'];
+  c = [...new Set(c)].filter(x => x !== ans && x !== base);
+  const o = vcSh(c).slice(0, 3); let k = 0; while (o.length < 3) o.push(ans + 'x'.repeat(++k));
+  return vcSh([ans].concat(o));
+}
+function vcFormPool(words) {
+  const out = [];
+  words.forEach(W => {
+    const b = W.base2 || W.w;
+    if (W.v) { [['s', 0], ['d', 1], ['p', 2], ['g', 3]].forEach(([k, i]) => out.push({ W, kind: k, base: b, ans: W.v[i] })); }
+    if (W.pl) out.push({ W, kind: 'pl', base: W.w, ans: W.pl });
+    if (W.cmp) { out.push({ W, kind: 'cmp', base: W.w, ans: W.cmp[0] }); out.push({ W, kind: 'sup', base: W.w, ans: W.cmp[1] }); }
+    if (W.unc) out.push({ W, kind: 'unc', base: W.w, ans: W.w });
+  });
+  return out;
+}
+function vcQMean(W, pool, rev) {
+  const others = vcSh(pool.concat(VWEEKS[3].words).filter(x => x.w !== W.w && x.zh !== W.zh)).filter((x, i, a) => a.findIndex(y => y.w === x.w) === i);
+  const short = z => z.replace(/（.*?）/g, '').replace(/；.*$/, '').trim();
+  const hint = `<div class="vhint">💡 例句：${vcFill(W.ex, W.a)}<br><small>${esc(W.exzh)}</small></div>`;
+  if (!rev) {
+    const opts = vcSh([W].concat(others.slice(0, 3))).map(x => ({ id: x.w, a: short(x.zh), b: '' }));
+    return { W, type: 'mean', prompt: `<p class="qtext vbig">${esc(W.f)} ${W.f !== W.w ? `<small>（${esc(W.w)}）</small>` : ''}<span class="vpos">${W.pos}</span> <button class="btn sm" data-w="say" data-s="${esc(W.w)}">🔊</button></p><p class="qzh">這個單字是什麼意思？</p>`, opts, ans: W.w, explain: `<b>${esc(W.f)}</b> ＝ ${esc(W.zh)}。<br>例句：${vcFill(W.ex, W.a)}（${esc(W.exzh)}）`, hintHtml: hint };
+  }
+  const opts = vcSh([W].concat(others.slice(0, 3))).map(x => ({ id: x.w, a: x.f, b: '' }));
+  return { W, type: 'mean', prompt: `<p class="qtext vbig">${esc(short(W.zh))} <span class="vpos">${W.pos}</span></p><p class="qzh">哪一個英文單字是這個意思？</p>`, opts, ans: W.w, explain: `<b>${esc(W.f)}</b> ＝ ${esc(W.zh)}。<br>例句：${vcFill(W.ex, W.a)}（${esc(W.exzh)}）`, hintHtml: hint };
+}
+function vcQCloze(W, pool) {
+  const bad = new Set([W.w].concat(W.syn || []));
+  const others = vcSh(pool.concat(VWEEKS[0].words, VWEEKS[1].words, VWEEKS[2].words).filter(x => !bad.has(x.w) && !(x.syn || []).includes(W.w) && x.a !== W.a)).filter((x, i, a) => a.findIndex(y => y.a === x.a) === i);
+  const opts = vcSh([W].concat(others.slice(0, 3))).map(x => ({ id: x.a, a: x.a, b: '' }));
+  return { W, type: 'cloze', prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${vcBlank(W.ex)}</p><p class="qzh">選出最適合放進句子的單字。</p>`, opts, ans: W.a, explain: `答案是 <b>${esc(W.a)}</b>（${esc(W.zh)}）。<br>${vcFill(W.ex, W.a)}<br><small>${esc(W.exzh)}</small>`, hintHtml: `<div class="vhint">💡 句子的意思：${esc(W.exzh)}<br>要放進去的單字開頭是 <b>${esc(W.a[0])}</b>。</div>` };
+}
+function vcQForm(it) {
+  const { W, kind, base, ans } = it;
+  if (kind === 'unc') {
+    const opts = vcSh([{ id: 'humor', a: 'humor', b: '' }, { id: 'humors', a: 'humors', b: '' }, { id: 'humories', a: 'humories', b: '' }, { id: 'humores', a: 'humores', b: '' }]);
+    return { W, type: 'form', prompt: `<p class="qtext vbig">humor <span class="vpos">n.</span></p><p class="qzh">humor（幽默）是不可數名詞。下面哪一個寫法正確？</p>`, opts, ans: 'humor', explain: '<b>humor</b> 是不可數名詞，<b>沒有複數</b>，不能加 s。例：a sense of humor（幽默感）。', hintHtml: '<div class="vhint">💡 想想看：你能說「one humor, two humors」嗎？不可數名詞不能加 s。</div>' };
+  }
+  const opts = vcDist(kind, base, ans, W.irr).map(x => ({ id: x, a: x, b: '' }));
+  const rule = vcRule(kind, base, ans, W.irr);
+  return { W, type: 'form', prompt: `<p class="qtext vbig">${esc(base)} <span class="vpos">${W.pos === 'n.' ? 'n.' : W.pos}</span> <button class="btn sm" data-w="say" data-s="${esc(base)}">🔊</button></p><p class="qzh">${VKIND[kind][0]}：哪一個拼法正確？</p>`, opts, ans, explain: `<b>${esc(base)}</b> → <b>${esc(ans)}</b>（${VKIND[kind][1]}）<br>${rule}`, hintHtml: `<div class="vhint">💡 規則提示：${rule}</div>` };
+}
+function vcQSpell(W) {
+  return { W, type: 'spell', typed: true, prompt: `<p class="qtext vbig">${esc(W.zh.replace(/（.*?）/g, ''))} <span class="vpos">${W.pos}</span> <button class="btn sm" data-w="say" data-s="${esc(W.w)}">🔊 再聽一次</button></p><p class="qzh">聽聽看，把這個單字拼出來（小寫就可以）。</p>`, ans: W.w, explain: `正確拼法：<b>${esc(W.w)}</b>（${esc(W.zh)}）<br>音標 /${esc(W.ipa)}/`, hintHtml: `<div class="vhint">💡 第一個字母是 <b>${esc(W.w[0])}</b>，一共有 <b>${W.w.length}</b> 個字母：<b>${W.w[0]}${' _'.repeat(W.w.length - 1)}</b></div>` };
+}
+function vcMake(wk, mk) {
+  const wkd = vcWeek(wk), words = wkd.words, N = VMODES.find(m => m.k === mk).n;
+  const pick = (n, arr) => vcSh(arr).slice(0, n);
+  let qs = [];
+  const poolW = words;
+  const mean = n => pick(n, poolW).map((W, i) => vcQMean(W, poolW, i % 2 === 1));
+  const cloze = n => pick(n, poolW).map(W => vcQCloze(W, poolW));
+  const form = n => { const pool = vcFormPool(words), used = new Set(), out = []; vcSh(pool).forEach(it => { if (out.length < n && !used.has(it.W.w)) { used.add(it.W.w); out.push(it); } }); vcSh(pool).forEach(it => { if (out.length < n && !out.includes(it)) out.push(it); }); return out.map(vcQForm); };
+  const spell = n => pick(n, poolW.filter(W => W.w.length >= 3)).map(vcQSpell);
+  if (mk === 'mean') qs = mean(N); else if (mk === 'cloze') qs = cloze(N); else if (mk === 'form') qs = form(N); else if (mk === 'spell') qs = spell(N);
+  else qs = vcSh(mean(3).concat(cloze(3), form(2), spell(2)));
+  return qs.map(q => Object.assign(q, { pick: null, st: null, hint: false, typed: !!q.typed }));
+}
+/* ---------- 畫面 ---------- */
+function vcTabs() {
+  const T = [['learn', '📖 單字卡'], ['quiz', '🎯 闖關練習'], ['rules', '🔧 變化規則']];
+  return `<div class="gvtabs">${T.map(([k, l]) => `<button data-w="tab" data-v="${k}" class="${VC.tab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+}
+const vcWeekChips = () => `<div class="gvtabs vwk">${VWEEKS.map(w => `<button data-w="week" data-v="${w.id}" class="${VC.week === w.id ? 'on' : ''}">${w.id === 'm3all' ? '全部總複習' : 'M3 ' + w.t.split('· ')[1]}</button>`).join('')}</div>`;
+function vcFormsHtml(W) {
+  const r = [];
+  if (W.v) r.push(`<tr><td>原形</td><td>${W.base2 || W.w}</td></tr><tr><td>三單</td><td>${W.v[0]}</td></tr><tr><td>過去式</td><td>${W.v[1]}</td></tr><tr><td>過去分詞</td><td>${W.v[2]}</td></tr><tr><td>-ing</td><td>${W.v[3]}</td></tr>`);
+  if (W.pl) r.push(`<tr><td>複數</td><td>${W.pl}</td></tr>`);
+  if (W.unc) r.push(`<tr><td>複數</td><td>沒有複數（不可數）</td></tr>`);
+  if (W.cmp) r.push(`<tr><td>比較級</td><td>${W.cmp[0]}</td></tr><tr><td>最高級</td><td>${W.cmp[1]}</td></tr>`);
+  return r.length ? `<table class="vtab">${r.join('')}</table>` : '<p class="vnone">這個字不需要變化。</p>';
+}
+function vcLearn() {
+  const wk = vcWeek(VC.week);
+  const cards = wk.words.map(W => `<div class="gvc vcard${vcMiss(W.w) ? ' miss' : ''}"><div class="vh"><b class="vw">${esc(W.f)}</b>${W.f !== W.w ? `<small class="vbase">（${esc(W.w)}）</small>` : ''}<span class="vpos">${W.pos}</span><button class="btn sm" data-w="say" data-s="${esc(W.w)}">🔊</button>${vcMiss(W.w) ? '<span class="vmiss" title="你答錯過，多練習！">⚠️ 要多練習</span>' : ''}</div>
+  <div class="vipa">/${esc(W.ipa)}/</div><div class="vzh">${esc(W.zh)}</div>
+  <div class="vex">${vcFill(W.ex, W.a)} <button class="btn sm" data-w="say" data-s="${esc(W.ex.replace('____', W.a))}">🔊</button><small>${esc(W.exzh)}</small></div>${vcFormsHtml(W)}</div>`).join('');
+  return vcWeekChips() + `<div class="gvc"><h3>${esc(wk.t)}</h3><p>${esc(wk.sub)}。共 ${wk.words.length} 個單字。先點 🔊 聽，再看例句和變化。<br>⚠️ 表示你在闖關時答錯過這個字。</p></div><div class="gvgrid">${cards}</div><div class="tctl" style="margin-top:14px"><button class="btn pri" data-w="tab" data-v="quiz">去闖關練習 →</button></div>`;
+}
+function vcRules() {
+  const rows = (t, l) => `<div class="gvc"><h3>${t}</h3><table class="vtab vr">${l.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table></div>`;
+  return rows('① 動詞第三人稱單數（He / She / It ＋ 動詞）', [['一般：加 -s', 'belong → belongs', 'invite → invites'], ['s, x, z, ch, sh：加 -es', 'whiz → whizzes（z 要重複）', 'push → pushes'], ['子音 + y：y 變 i 加 -es', 'scurry → scurries', 'study → studies']]) +
+    rows('② 過去式、過去分詞（規則動詞）', [['一般：加 -ed', 'belong → belonged', 'wander → wandered'], ['字尾是 e：只加 -d', 'invite → invited', 'blame → blamed'], ['子音 + y：y 變 i 加 -ed', 'scurry → scurried', 'study → studied'], ['短母音 + 一個子音：重複字母再加 -ed', 'drag → dragged', 'strut → strutted'], ['不規則：直接背', 'weave → wove → woven', 'have → had → had']]) +
+    rows('③ 動詞 + -ing', [['一般：加 -ing', 'belong → belonging', 'wander → wandering'], ['字尾是 e：去 e 加 -ing', 'invite → inviting', 'mope → moping'], ['短母音 + 一個子音：重複字母', 'drag → dragging', 'whiz → whizzing'], ['y 結尾：y 不變', 'scurry → scurrying', 'study → studying']]) +
+    rows('④ 名詞變複數', [['一般：加 -s', 'skill → skills', 'bundle → bundles'], ['子音 + y：y 變 i 加 -es', 'company → companies', 'baby → babies'], ['s, x, ch, sh 結尾：加 -es', 'excuse → excuses（已有 e，只加 s）', 'box → boxes'], ['不可數名詞：沒有複數', 'humor（幽默）', 'water（水）']]) +
+    rows('⑤ 形容詞比較級', [['子音 + y：y 變 i 加 -er / -est', 'greedy → greedier → greediest', 'happy → happier → happiest']]);
+}
+function vcQuizList() {
+  const wk = vcWeek(VC.week);
+  return vcWeekChips() + `<div class="gvc"><h3>🎯 每關 10 題，答對 8 題以上拿星星</h3><p>${esc(wk.t)}（${wk.words.length} 個字）。提示 💡 用了也沒關係，但要<b>靠自己答對</b>才有星星喔！每次出的題目都不同。</p></div>
+  <div class="gvgrid">${VMODES.map(m => { const k = `vc.${wk.id}.${m.k}`, b = P.best[k]; return `<button class="gvc gitem rnd" data-w="qstart" data-k="${m.k}"><span class="ri">${m.ic}</span><b>${m.t}</b><small>${m.sub}</small><span class="rs">${starsHtml(!!P.done[k])}${b != null ? `<span>最佳 ${b} / ${m.n}</span>` : ''}${P.reps[k] ? `<span>🏅 ${P.reps[k]}</span>` : ''}</span></button>`; }).join('')}</div>`;
+}
+function vcKb() {
+  const k = l => [...l].map(c => `<button class="kk" data-w="vk" data-k="${c}">${c}</button>`).join('');
+  return `<div class="kb vkb"><div class="kr">${k('qwertyuiop')}</div><div class="kr">${k('asdfghjkl')}</div><div class="kr">${k('zxcvbnm')}<button class="kk wide" data-w="vk" data-k="BACK" aria-label="倒退">⌫</button><button class="kk go" data-w="vk" data-k="GO">檢查</button></div></div>`;
+}
+function vcKey(k) {
+  const q = VC.quiz && VC.quiz.qs[VC.quiz.i], inp = $('#vin'); if (!q || !inp || q.pick != null) return;
+  if (k === 'BACK') inp.value = inp.value.slice(0, -1); else if (k === 'GO') { const b = $('#gv [data-w="check"]'); b && b.click(); return; } else inp.value += k;
+}
+document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('#gv [data-w="vk"]'); if (!t || S.view !== 'vc') return; e.preventDefault(); window.__vkTs = Date.now(); vcKey(t.dataset.k); });
+function vcQuiz() {
+  const z = VC.quiz; if (!z) return vcQuizList();
+  if (z.done) return vcSummary();
+  const q = z.qs[z.i], M = VMODES.find(m => m.k === z.k), wk = vcWeek(z.wk);
+  const fb = q.pick != null ? vcFeedback(q) : '';
+  let body;
+  if (q.typed) {
+    body = q.pick == null ? `<div class="vtype"><input id="vin" class="vinput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="在這裡拼字" value="" inputmode="none"><button class="btn pri" data-w="check">檢查</button></div>${vcKb()}`
+      : `<div class="vtype"><input class="vinput ${q.st === 'bad' ? 'bad' : 'good'}" value="${esc(q.pick)}" disabled></div>`;
+  } else {
+    body = `<div class="gvopts">${q.opts.map(o => { let c = ''; if (q.pick != null) c = o.id === q.ans ? ' good' : o.id === q.pick ? ' badc' : ' dim'; return `<button class="gvopt${c}" data-w="pick" data-v="${esc(o.id)}" ${q.pick != null ? 'disabled' : ''}><b>${esc(o.a)}</b></button>`; }).join('')}</div>`;
+  }
+  return `<div class="tctl"><button class="btn sm" data-w="qback">← 離開</button><span class="gvprog">${M.ic} ${M.t} · ${wk.id === 'm3all' ? '全部' : wk.t.split('· ')[1]} · 第 ${z.i + 1} / ${z.qs.length} 題</span></div>
+  <div class="gvbar"><i style="width:${z.i / z.qs.length * 100}%"></i></div>
+  <div class="gvc">${q.prompt}${q.hint ? q.hintHtml : ''}${body}${q.pick == null ? `<div class="tctl"><button class="btn" data-w="hint" ${q.hint ? 'disabled' : ''}>💡 提示</button></div>` : ''}${fb}</div>`;
+}
+function vcFeedback(q) {
+  const z = VC.quiz, ok = q.st !== 'bad', last = z.i === z.qs.length - 1;
+  const head = q.st === 'ok' ? '🎉 答對了！太棒了！' : q.st === 'help' ? '🌱 答對了！用了提示也沒關係，下次試著靠自己！' : '💪 差一點點！看看解釋，下次就會了。';
+  return `<div class="gvfb ${ok ? 'ok' : 'no'}"><b>${head}</b><p>${q.explain}</p><div class="tctl"><button class="btn pri" data-w="qnext">${last ? '看成績 →' : '下一題 →'}</button></div></div>`;
+}
+function vcSummary() {
+  const z = VC.quiz, M = VMODES.find(m => m.k === z.k), ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, bad = z.qs.filter(q => q.st === 'bad').length;
+  return `<div class="gvc gvwin"><h3>${M.ic} ${M.t}：成績</h3><p class="gvbig">${ok} <small>/ ${z.qs.length}</small></p><p>✅ 自己答對 ${ok} 題　🌱 用提示答對 ${hp} 題　❌ 答錯 ${bad} 題</p>
+  <div class="gvlist">${z.qs.map((q, i) => `<div class="gvrow ${q.st}"><span>${q.st === 'ok' ? '✅' : q.st === 'help' ? '🌱' : '❌'}</span><div><b>${i + 1}. ${esc(q.W.f)}（${esc(q.W.zh.replace(/（.*?）/g, ''))}）</b>${q.st === 'ok' ? '' : `<small>${q.explain}</small>`}</div></div>`).join('')}</div>
+  <div class="tctl"><button class="btn" data-w="qback">回到闖關列表</button><button class="btn pri" data-w="qagain">再挑戰一次</button></div></div>`;
+}
+function vcReward() {
+  const z = VC.quiz, key = `vc.${z.wk}.${z.k}`, ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, n = z.qs.length, need = n - 2;
+  P.best[key] = Math.max(P.best[key] || 0, ok);
+  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！單字高手！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '星星記錄在右上角' : `這一關已經練了 ${P.reps[key]} 次，越練越熟！`, ok === n ? 50 : 36); }
+  else if (hp > 0 && ok + hp >= need) { saveP(); updStars(); encourage(); }
+  else { saveP(); celebrate(`💪 答對 ${ok} 題，進步中！`, '看看下面的解釋，再挑戰一次，一定會更好！', 14); }
+}
+function vcRender(keep) {
+  const el = $('#gv'); if (!el || S.view !== 'vc') return; const top = el.scrollTop;
+  const body = { learn: vcLearn, quiz: vcQuiz, rules: vcRules }[VC.tab]();
+  el.innerHTML = `<div class="shelf-in gvin"><h1>單字專項訓練</h1><p>學校期末考 Module 3、Module 4 的閱讀單字。先看單字卡，再闖關！ <button class="btn sm" data-w="zy">注音：${VC_ZY ? '開' : '關'}</button></p>${vcTabs()}${body}</div>`;
+  el.scrollTop = keep ? top : 0; const f = el.querySelector('.gvfb'); if (f && keep) f.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  el.classList.toggle('zyon', VC_ZY); if (VC_ZY) zyNode(el);
+  const inp = $('#vin'); if (inp && !keep) setTimeout(() => inp.focus(), 50);
+}
+function openVc() {
+  stopAll(); S.view = 'vc'; S.bookId = null; countable = VC_COUNT;
+  $('#shelf').hidden = true; $('#book').hidden = true; document.querySelector('.pager').hidden = true; $('#gv').hidden = false; $('#starCount').hidden = false;
+  $('#brandTitle').textContent = '單字專項訓練'; $('#brandSub').textContent = 'Vocabulary'; $('#bShelf').setAttribute('aria-pressed', 'false');
+  document.documentElement.style.setProperty('--fs', S.fs); updStars(); vcRender(); saveP();
+}
+function vcAnswer(q, val) {
+  q.pick = val; const ok = q.typed ? val.trim().toLowerCase() === q.ans : val === q.ans;
+  q.st = ok ? (q.hint ? 'help' : 'ok') : 'bad';
+  const k = 'vw.' + q.W.w; if (q.st === 'bad') P.best[k] = (P.best[k] || 0) + 1; else if (q.st === 'ok' && P.best[k]) P.best[k] = Math.max(0, P.best[k] - 1);
+  if (q.st === 'ok') toast('答對了 ✓', 900);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('#gv [data-w]'); if (!t || S.view !== 'vc') return; const a = t.dataset.w, z = VC.quiz;
+  switch (a) {
+    case 'tab': VC.tab = t.dataset.v; VC.quiz = null; stopAll(); break;
+    case 'week': VC.week = t.dataset.v; VC.quiz = null; break;
+    case 'say': speakQuick(t.dataset.s); return;
+    case 'vk': if (Date.now() - (window.__vkTs || 0) > 500) vcKey(t.dataset.k); return;
+    case 'zy': VC_ZY = !VC_ZY; try { localStorage.setItem('vc-zy', VC_ZY ? '1' : '0'); } catch (e) { } break;
+    case 'qstart': VC.quiz = { k: t.dataset.k, wk: VC.week, qs: vcMake(VC.week, t.dataset.k), i: 0, done: false }; break;
+    case 'qagain': VC.quiz = { k: z.k, wk: z.wk, qs: vcMake(z.wk, z.k), i: 0, done: false }; break;
+    case 'qback': VC.quiz = null; stopAll(); break;
+    case 'hint': { z.qs[z.i].hint = true; break; }
+    case 'pick': { const q = z.qs[z.i]; if (q.pick != null) return; vcAnswer(q, t.dataset.v); break; }
+    case 'check': { const q = z.qs[z.i], v = ($('#vin') || {}).value || ''; if (q.pick != null) return; if (!v.trim()) { toast('先拼拼看喔～', 1200); return; } vcAnswer(q, v.trim()); break; }
+    case 'qnext': if (z.i < z.qs.length - 1) { z.i++; z.qs[z.i].type === 'spell' && setTimeout(() => speakQuick(z.qs[z.i].ans), 300); } else { z.done = true; vcRender(); vcReward(); return; } break;
+  }
+  const keep = !['tab', 'week', 'qstart', 'qagain', 'qback', 'qnext'].includes(a);
+  vcRender(keep);
+  if (a === 'qstart' || a === 'qagain') { const q = VC.quiz.qs[0]; if (q.type === 'spell') setTimeout(() => speakQuick(q.ans), 300); }
+  if (a === 'qnext' && VC.quiz && !VC.quiz.done) { const q = VC.quiz.qs[VC.quiz.i]; if (q.typed) { const inp = $('#vin'); inp && inp.focus(); } }
+});
+document.addEventListener('keydown', e => { if (S.view === 'vc' && e.key === 'Enter' && e.target && e.target.id === 'vin') { e.preventDefault(); const b = $('#gv [data-w="check"]'); b && b.click(); } });
+(function () {
+  const st = document.createElement('style');
+  st.textContent = `.vcard .vh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.vcard .vw{font-size:1.6rem;font-family:var(--f-read)}.vbase{color:var(--muted,#6b7a90)}.vpos{background:#e6eefc;color:#2b4a8a;border-radius:8px;padding:1px 8px;font-size:.85rem;font-weight:700}.vipa{color:#6b7a90;margin:2px 0}.vzh{font-weight:700;margin:2px 0 8px}.vex{font-family:var(--f-read);margin:6px 0}.vex small{display:block;font-family:var(--f-ui);color:#5b6b82}.vtab{border-collapse:collapse;margin-top:8px;font-family:var(--f-ui);font-size:.95rem}.vtab td{border:1px solid var(--line);padding:4px 10px}.vtab td:first-child{background:#f3f6fb;font-weight:700;white-space:nowrap}.vr td{vertical-align:top}.vnone{color:#8a96a8;margin:8px 0 0}.vcard.miss{border-color:#f0a24b;background:#fff8ee}.vmiss{color:#c0620a;font-weight:700;font-size:.85rem}.vblank{display:inline-block;min-width:90px;border-bottom:3px solid #2b6cd9;text-align:center;color:#2b6cd9}.vans{color:#1b8a4b}.vbig{font-size:1.6rem}.vbig small{font-size:1rem;color:#6b7a90}.vsent{font-size:1.5rem;line-height:1.6}.vhint{background:#fff6d6;border:2px solid #f2d36b;border-radius:12px;padding:8px 12px;margin:8px 0;font-family:var(--f-ui)}.vtype{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}.vinput{font-size:1.5rem;padding:10px 14px;border:3px solid var(--line);border-radius:14px;min-width:220px;flex:1;font-family:var(--f-read)}.vinput.good{border-color:#2fa86a;background:#e9f9f0}.vinput.bad{border-color:#e24c3f;background:#fdeceb}.vwk button{padding:8px 14px;min-height:42px}`;
+  document.head.appendChild(st);
+})();
+
+
+/* ============ 注音（ㄅㄆㄇ）============ */
+const ZYD = `一ㄧ注ㄓㄨˋ三ㄙㄢ上ㄕㄤˋ下ㄒㄧㄚˋ不ㄅㄨˋ中ㄓㄨㄥ也ㄧㄝˇ乾ㄍㄢ了˙ㄌㄜ享ㄒㄧㄤˇ亮ㄌㄧㄤˋ人ㄖㄣˊ什ㄕㄣˊ今ㄐㄧㄣ他ㄊㄚ以ㄧˇ件ㄐㄧㄢˋ伴ㄅㄢˋ但ㄉㄢˋ位ㄨㄟˋ作ㄗㄨㄛˋ你ㄋㄧˇ佳ㄐㄧㄚ使ㄕˇ來ㄌㄞˊ例ㄌㄧˋ係ㄒㄧˋ個˙ㄍㄜ們˙ㄇㄣ候ㄏㄡˋ做ㄗㄨㄛˋ傘ㄙㄢˇ傳ㄔㄨㄢˊ像ㄒㄧㄤˋ先ㄒㄧㄢ光ㄍㄨㄤ兒ㄦˊ全ㄑㄩㄢˊ公ㄍㄨㄥ共ㄍㄨㄥˋ具ㄐㄩˋ再ㄗㄞˋ出ㄔㄨ分ㄈㄣ列ㄌㄧㄝˋ別ㄅㄧㄝˊ到ㄉㄠˋ刻ㄎㄜˋ則ㄗㄜˊ前ㄑㄧㄢˊ力ㄌㄧˋ加ㄐㄧㄚ動ㄉㄨㄥˋ包ㄅㄠ化ㄏㄨㄚˋ午ㄨˇ卡ㄎㄚˇ原ㄩㄢˊ去ㄑㄩˋ參ㄘㄢ友ㄧㄡˇ口ㄎㄡˇ句ㄐㄩˋ只ㄓˇ叫ㄐㄧㄠˋ可ㄎㄜˇ台ㄊㄞˊ右ㄧㄡˋ吃ㄔ合ㄏㄜˊ同ㄊㄨㄥˊ名ㄇㄧㄥˊ吧˙ㄅㄚ含ㄏㄢˊ吵ㄔㄠˇ呼ㄏㄨ和ㄏㄢˋ哪ㄋㄚˇ喔ㄛ單ㄉㄢ嗎˙ㄇㄚ嘯ㄒㄧㄠˋ器ㄑㄧˋ嚇ㄒㄧㄚˋ四ㄙˋ回ㄏㄨㄟˊ因ㄧㄣ園ㄩㄢˊ在ㄗㄞˋ地ㄉㄧˋ型ㄒㄧㄥˊ塊ㄎㄨㄞˋ塞ㄙㄜˋ填ㄊㄧㄢˊ壺ㄏㄨˊ外ㄨㄞˋ多ㄉㄨㄛ夢ㄇㄥˋ大ㄉㄚˋ天ㄊㄧㄢ太ㄊㄞˋ失ㄕ奏ㄗㄡˋ套ㄊㄠˋ奶ㄋㄞˇ她ㄊㄚ好ㄏㄠˇ姐ㄐㄧㄝˇ威ㄨㄟ媽ㄇㄚ嬰ㄧㄥ子ㄗˇ字ㄗˋ孩ㄏㄞˊ學ㄒㄩㄝˊ它ㄊㄚ定ㄉㄧㄥˋ客ㄎㄜˋ室ㄕˋ容ㄖㄨㄥˊ寫ㄒㄧㄝˇ專ㄓㄨㄢ尊ㄗㄨㄣ對ㄉㄨㄟˋ小ㄒㄧㄠˇ尖ㄐㄧㄢ就ㄐㄧㄡˋ尾ㄨㄟˇ屬ㄕㄨˇ差ㄔㄚ己ㄐㄧˇ已ㄧˇ巴ㄅㄚ巾ㄐㄧㄣ師ㄕ帶ㄉㄞˋ幽ㄧㄡ幾ㄐㄧˇ式ㄕˋ形ㄒㄧㄥˊ往ㄨㄤˇ待ㄉㄞˋ很ㄏㄣˇ後ㄏㄡˋ得ㄉㄜˊ從ㄘㄨㄥˊ心ㄒㄧㄣ忙ㄇㄤˊ快ㄎㄨㄞˋ怕ㄆㄚˋ思ㄙ急ㄐㄧˊ性ㄒㄧㄥˋ怪ㄍㄨㄞˋ悶ㄇㄣˋ情ㄑㄧㄥˊ想ㄒㄧㄤˇ意ㄧˋ感ㄍㄢˇ態ㄊㄞˋ懇ㄎㄣˇ成ㄔㄥˊ我ㄨㄛˇ戰ㄓㄢˋ房ㄈㄤˊ所ㄙㄨㄛˇ手ㄕㄡˇ才ㄘㄞˊ找ㄓㄠˇ承ㄔㄥˊ技ㄐㄧˋ把ㄅㄚˇ拉ㄌㄚ拖ㄊㄨㄛ拼ㄆㄧㄣ拿ㄋㄚˊ挑ㄊㄧㄠ挪ㄋㄨㄛˊ捆ㄎㄨㄣˇ掉ㄉㄧㄠˋ排ㄆㄞˊ掠ㄌㄩㄝˋ接ㄐㄧㄝ推ㄊㄨㄟ提ㄊㄧˊ搬ㄅㄢ擠ㄐㄧˇ放ㄈㄤˋ教ㄐㄧㄠˋ敢ㄍㄢˇ整ㄓㄥˇ數ㄕㄨˋ文ㄨㄣˊ於ㄩˊ旁ㄆㄤˊ日ㄖˋ昂ㄤˊ明ㄇㄧㄥˊ易ㄧˋ星ㄒㄧㄥ昨ㄗㄨㄛˊ是ㄕˋ時ㄕˊ晃ㄏㄨㄤˋ晚ㄨㄢˇ更ㄍㄥˋ書ㄕㄨ最ㄗㄨㄟˋ會ㄏㄨㄟˋ有ㄧㄡˇ朋ㄆㄥˊ服ㄈㄨˊ期ㄑㄧˊ末ㄇㄛˋ本ㄅㄣˇ杯ㄅㄟ板ㄅㄢˇ查ㄔㄚˊ校ㄒㄧㄠˋ案ㄢˋ桌ㄓㄨㄛ梭ㄙㄨㄛ棒ㄅㄤˋ椅ㄧˇ楚ㄔㄨˇ業ㄧㄝˋ概ㄍㄞˋ樂ㄌㄜˋ標ㄅㄧㄠ樣ㄧㄤˋ檢ㄐㄧㄢˇ次ㄘˋ正ㄓㄥˋ步ㄅㄨˋ段ㄉㄨㄢˋ母ㄇㄨˇ每ㄇㄟˇ比ㄅㄧˇ氣ㄑㄧˋ水ㄕㄨㄟˇ求ㄑㄧㄡˊ沉ㄔㄣˊ沒ㄇㄟˊ沖ㄔㄨㄥ沿ㄧㄢˊ況ㄎㄨㄤˋ法ㄈㄚˇ泡ㄆㄠˋ洪ㄏㄨㄥˊ派ㄆㄞˋ浪ㄌㄤˋ浮ㄈㄨˊ海ㄏㄞˇ混ㄏㄨㄣˋ清ㄑㄧㄥ演ㄧㄢˇ漫ㄇㄢˋ為ㄨㄟˋ烏ㄨ熟ㄕㄨˊ爭ㄓㄥ爸ㄅㄚˋ爺ㄧㄝˊ犯ㄈㄢˋ狗ㄍㄡˇ猛ㄇㄥˇ猶ㄧㄡˊ玩ㄨㄢˊ現ㄒㄧㄢˋ琴ㄑㄧㄣˊ生ㄕㄥ用ㄩㄥˋ男ㄋㄢˊ畫ㄏㄨㄚˋ疲ㄆㄧˊ發ㄈㄚ的˙ㄉㄜ皺ㄓㄡˋ盡ㄐㄧㄣˋ目ㄇㄨˋ直ㄓˊ眉ㄇㄟˊ看ㄎㄢˋ短ㄉㄨㄢˇ破ㄆㄛˋ確ㄑㄩㄝˋ示ㄕˋ禮ㄌㄧˇ移ㄧˊ種ㄓㄨㄥˇ稱ㄔㄥ稻ㄉㄠˋ空ㄎㄨㄥ穿ㄔㄨㄢ立ㄌㄧˋ章ㄓㄤ第ㄉㄧˋ筋ㄐㄧㄣ答ㄉㄚˊ籃ㄌㄢˊ糊ㄏㄨˊ糕ㄍㄠ糟ㄗㄠ紅ㄏㄨㄥˊ紋ㄨㄣˊ級ㄐㄧˊ結ㄐㄧㄝˊ給ㄍㄟˇ經ㄐㄧㄥ綜ㄗㄨㄥ編ㄅㄧㄢ練ㄌㄧㄢˋ總ㄗㄨㄥˇ績ㄐㄧˋ織ㄓ繞ㄖㄠˋ習ㄒㄧˊ老ㄌㄠˇ考ㄎㄠˇ而ㄦˊ聲ㄕㄥ聽ㄊㄧㄥ背ㄅㄟˋ能ㄋㄥˊ脅ㄒㄧㄝˊ腳ㄐㄧㄠˇ自ㄗˋ舞ㄨˇ般ㄅㄢ船ㄔㄨㄢˊ英ㄧㄥ茶ㄔㄚˊ草ㄘㄠˇ著˙ㄓㄜ藉ㄐㄧㄝˋ蛇ㄕㄜˊ蜒ㄧㄢˊ蜿ㄨㄢ街ㄐㄧㄝ衣ㄧ表ㄅㄧㄠˇ衫ㄕㄢ袋ㄉㄞˋ裡ㄌㄧˇ複ㄈㄨˋ襯ㄔㄣˋ要ㄧㄠˋ規ㄍㄨㄟ角ㄐㄧㄠˇ解ㄐㄧㄝˇ訓ㄒㄩㄣˋ記ㄐㄧˋ詞ㄘˊ試ㄕˋ話ㄏㄨㄚˋ認ㄖㄣˋ說ㄕㄨㄛ請ㄑㄧㄥˇ論ㄌㄨㄣˋ讀ㄉㄨˊ變ㄅㄧㄢˋ讓ㄖㄤˋ豫ㄩˋ貌ㄇㄠˋ貪ㄊㄢ責ㄗㄜˊ買ㄇㄞˇ賽ㄙㄞˋ走ㄗㄡˇ起ㄑㄧˇ越ㄩㄝˋ跑ㄆㄠˇ跟ㄍㄣ踏ㄊㄚˋ身ㄕㄣ車ㄔㄜ較ㄐㄧㄠˋ輛ㄌㄧㄤˋ近ㄐㄧㄣˋ這ㄓㄜˋ逛ㄍㄨㄤˋ速ㄙㄨˋ造ㄗㄠˋ週ㄓㄡ進ㄐㄧㄣˋ過ㄍㄨㄛˋ道ㄉㄠˋ適ㄕˋ選ㄒㄩㄢˇ邀ㄧㄠ邊ㄅㄧㄢ那ㄋㄚˋ部ㄅㄨˋ都ㄉㄡ配ㄆㄟˋ醞ㄩㄣˋ釀ㄋㄧㄤˋ釋ㄕˋ重ㄓㄨㄥˋ鈴ㄌㄧㄥˊ鋼ㄍㄤ錄ㄌㄨˋ錯ㄘㄨㄛˋ長ㄔㄤˊ開ㄎㄞ閒ㄒㄧㄢˊ間ㄐㄧㄢ閱ㄩㄝˋ闊ㄎㄨㄛˋ闖ㄔㄨㄤˇ關ㄍㄨㄢ附ㄈㄨˋ院ㄩㄢˋ陪ㄆㄟˊ隆ㄌㄨㄥˊ隊ㄉㄨㄟˋ雞ㄐㄧ離ㄌㄧˊ雨ㄩˇ雲ㄩㄣˊ需ㄒㄩ靠ㄎㄠˋ面ㄇㄧㄢˋ音ㄧㄣ響ㄒㄧㄤˇ項ㄒㄧㄤˋ頭ㄊㄡˊ顆ㄎㄜ題ㄊㄧˊ飛ㄈㄟ餅ㄅㄧㄥˇ餐ㄘㄢ餓ㄜˋ首ㄕㄡˇ騎ㄑㄧˊ高ㄍㄠ麼˙ㄇㄜ默ㄇㄛˋ點ㄉㄧㄢˇ鼠ㄕㄨˇ`;
+const ZY = {}; (function () { const re = /([一-鿿])([ㄅ-ㄯˊˇˋ˙]+)/g; let m; while ((m = re.exec(ZYD))) ZY[m[1]] = m[2]; })();
+/* 破音字／輕聲詞：[正規表示式, 該詞每個字的注音] */
+const ZYP = [
+  [/什麼/g, ['ㄕㄣˊ', '˙ㄇㄜ']], [/了解/g, ['ㄌㄧㄠˇ', 'ㄐㄧㄝˇ']], [/目的/g, ['ㄇㄨˋ', 'ㄉㄧˋ']], [/藉口/g, ['ㄐㄧㄝˋ', 'ㄎㄡˇ']],
+  [/(?<=[孩袋桌房句樣兒椅])子/g, ['˙ㄗ']], [/重複/g, ['ㄔㄨㄥˊ', 'ㄈㄨˋ']], [/音樂|樂器/g, null, { 樂: 'ㄩㄝˋ' }], [/挑戰/g, ['ㄊㄧㄠˇ', 'ㄓㄢˋ']],
+  [/不可數|可數|數名詞/g, null, { 數: 'ㄕㄨˇ' }], [/記得/g, ['ㄐㄧˋ', '˙ㄉㄜ']], [/得懇/g, ['ㄉㄟˇ', 'ㄎㄣˇ']], [/塞在/g, ['ㄙㄞ', 'ㄗㄞˋ']], [/猶豫/g, ['ㄧㄡˊ', 'ㄩˋ']],
+  [/做得/g, ['ㄗㄨㄛˋ', '˙ㄉㄜ']], [/看著|接著|對著|拿著|聽著|說著/g, null, { 著: '˙ㄓㄜ' }], [/長排/g, ['ㄔㄤˊ', 'ㄆㄞˊ']],
+];
+const zyTone = r => /[ˊ]/.test(r) ? 2 : /ˇ/.test(r) ? 3 : /ˋ/.test(r) ? 4 : /˙/.test(r) ? 0 : 1;
+function zyRun(s) {
+  const ch = [...s], rd = ch.map(c => ZY[c] || '');
+  ZYP.forEach(([re, arr, map]) => { let m; re.lastIndex = 0; while ((m = re.exec(s))) { const st = [...s.slice(0, m.index)].length, len = [...m[0]].length; for (let k = 0; k < len; k++) { if (arr) { if (arr.length === len) rd[st + k] = arr[k]; else if (arr.length === 1 && len === 1) rd[st] = arr[0]; } else if (map && map[ch[st + k]]) rd[st + k] = map[ch[st + k]]; } } });
+  ch.forEach((c, i) => { if ((c === '不' || c === '一') && ch[i + 1] && rd[i + 1] && ch[i - 1] !== '第') { const t = zyTone(rd[i + 1]); if (c === '不' && t === 4) rd[i] = 'ㄅㄨˊ'; if (c === '一') rd[i] = (t === 4 || t === 0) ? 'ㄧˊ' : 'ㄧˋ'; } });
+  return ch.map((c, i) => { if (!rd[i]) return c; const t = (rd[i].match(/[ˊˇˋ˙]/) || [''])[0], l = rd[i].replace(/[ˊˇˋ˙]/g, ''); return `<span class="zc">${c}<span class="zy"><span class="zl">${l}</span><span class="zt${t === '˙' ? ' n' : ''}">${t}</span></span></span>`; }).join('');
+}
+function zyNode(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => /[一-鿿]/.test(n.nodeValue) && !n.parentElement.closest('.zc,script,style,textarea,input,option') ? 1 : 2 });
+  const L = []; while (w.nextNode()) L.push(w.currentNode);
+  L.forEach(n => { const html = n.nodeValue.split(/([一-鿿]+)/).map((p, i) => i % 2 ? zyRun(p) : esc(p)).join(''); const sp = document.createElement('span'); sp.className = 'zyw'; sp.innerHTML = html; n.replaceWith(sp); });
+}
+let VC_ZY = true; try { VC_ZY = localStorage.getItem('vc-zy') !== '0'; } catch (e) { }
+(function () { const st = document.createElement('style'); st.textContent = `.zc{position:relative;display:inline-block;margin-right:.95em;line-height:1.5}.zy{position:absolute;left:100%;top:50%;transform:translateY(-50%);height:1.6em;display:flex;align-items:center;margin-left:.04em;color:#2b4a8a;font-weight:500;font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif}.zl{writing-mode:vertical-rl;text-orientation:upright;font-size:.56em;line-height:1.02;letter-spacing:0;white-space:nowrap}.zt{position:absolute;left:100%;top:50%;transform:translateY(-50%);font-size:.62em;line-height:1;margin-left:.12em}.zt.n{left:.05em;top:-.35em;transform:none;margin-left:0;font-size:.6em}.zyon .gvopt,.zyon .vhint,.zyon .gvfb p,.zyon .vzh,.zyon .vex small,.zyon .qzh,.zyon .gvc p,.zyon h1{line-height:1.9}`; document.head.appendChild(st); })();
 /* ============ 書櫃與開始 ============ */
 const BOOKS = [
   { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2, rt: RT2 },
