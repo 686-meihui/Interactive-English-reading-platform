@@ -3201,7 +3201,7 @@ const QSTATE = {};
 function loadP() {
   try {
     const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
-    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {}; P.reps = j.reps || {}; P.fb = j.fb || {}; P.best = j.best || {};
+    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {}; P.reps = j.reps || {}; P.fb = j.fb || {}; P.best = j.best || {}; P.tw = j.tw || 0; P.days = j.days || {}; P.log = j.log || []; P.gu = j.gu || 0; P.gend = j.gend || 0;
     if (!j.pos && typeof j.i === 'number') P.pos.wwo = j.i;
     if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId; if (typeof j.kb === 'boolean') S.kb = j.kb;
   } catch (e) { }
@@ -3209,7 +3209,7 @@ function loadP() {
 function saveP() {
   try {
     if (BOOK && S.view === 'book') P.pos[BOOK.id] = S.i;
-    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, reps: P.reps, fb: P.fb, best: P.best, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, mode: S.mode, voiceURI: S.voiceURI }));
+    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, reps: P.reps, fb: P.fb, best: P.best, tw: P.tw, days: P.days, log: P.log, gu: P.gu, gend: P.gend, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, mode: S.mode, voiceURI: S.voiceURI }));
   } catch (e) { }
 }
 
@@ -3492,9 +3492,11 @@ function updStars() {
 }
 let fxTm;
 function celebrate(title, sub, n = 26) {
+  if (window.__wex) { sub = (sub || '') + window.__wex; window.__wex = ''; }
   const f = $('#fx'); if (!f) return; const E = ['⭐', '🌟', '✨', '🎉', '🎈', '🍭'];
   f.innerHTML = `<div class="fxcard"><div class="fxt">${title}</div>${sub ? `<div class="fxs">${sub}</div>` : ''}</div>` + Array.from({ length: n }, () => `<span class="cf" style="left:${Math.random() * 96}vw;animation-delay:${(Math.random() * .6).toFixed(2)}s;font-size:${20 + Math.random() * 16 | 0}px">${E[Math.random() * E.length | 0]}</span>`).join('');
-  f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); clearTimeout(fxTm); fxTm = setTimeout(() => f.classList.remove('show'), 2600);
+  try { if (typeof VC_ZY !== 'undefined' && VC_ZY) f.querySelectorAll('.fxt,.fxs').forEach(n => zyNode(n)); } catch (e) { }
+  f.classList.remove('show'); void f.offsetWidth; f.classList.add('show'); clearTimeout(fxTm); fxTm = setTimeout(() => f.classList.remove('show'), 4200);
 }
 const PRAISE = ['太棒了！', '好厲害！', '答對了！', '你真聰明！', '讚讚讚！'];
 const isHelped = (q, lv) => !!((QSTATE[q.pid].help || {})[lv]);
@@ -3508,12 +3510,13 @@ function encourage() {
 function award(id, helped) {
   if (helped) { encourage(); return; }
   const first = !P.done[id]; if (first) P.done[id] = 1; const n = P.reps[id] = (P.reps[id] || 0) + 1; saveP(); updStars();
+  if (/(^|-)q\d+(\.[23])?$/.test(id)) logWin(awardLabel(id), n);
   const pr = PRAISE[Math.random() * PRAISE.length | 0];
   if (first) celebrate('🌟 ' + pr + ' 得到一顆星星！', '星星記錄在右上角', 40);
   else celebrate('🎉 ' + pr + ' 練習章 +1 🏅', `這題已經練了 ${n} 次，越練越熟！（星星每題只有一顆，練習章會一直累積）`, 24);
 }
 function rtReward(sp, o) {
-  const id = sp.pid, prev = P.best[id] || 0, first = o >= 8 && !P.done[id]; P.best[id] = Math.max(prev, o); P.reps[id] = (P.reps[id] || 0) + 1; if (o >= 8) P.done[id] = 1; saveP(); updStars();
+  const id = sp.pid, prev = P.best[id] || 0, first = o >= 8 && !P.done[id]; P.best[id] = Math.max(prev, o); P.reps[id] = (P.reps[id] || 0) + 1; if (o >= 8) { P.done[id] = 1; logWin(BOOK.title + ' 閱讀測驗（' + o + ' / 10）', P.reps[id]); } saveP(); updStars();
   const best = `最佳成績：${P.best[id]} / 10` + (o > prev && prev ? '（破紀錄！）' : '');
   if (o === 10) celebrate('🏆 滿分！10 / 10', first ? '得到一顆星星！' : '太完美了！' + best, 70);
   else if (o >= 8) celebrate(`⭐ 答對 ${o} 題！${first ? '得到一顆星星' : ''}`, best + '，再挑戰一次拿滿分！', 40);
@@ -3777,7 +3780,7 @@ function render(dir = 0) {
 function renderShelf() {
   const sh = $('#shelf');
   sh.innerHTML = `<div class="shelf-in"><h1>靜心小二英文閱讀書櫃</h1><p>選一本書開始。每本書都有課文朗讀、教師手冊和考前練習。</p>
-  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="openvc"><div class="art">${ART.coverVc()}</div><div class="bt"><b>單字專項訓練</b><span class="zh">Vocabulary</span><small>期末考 Module 3、4 · 單字、字形變化</small><span class="bp">${VC_COUNT.filter(s => P.done[s.pid]).length} / ${VC_COUNT.length} ⭐</span></div></button></div></div>`;
+  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="openrw"><div class="art">${ART.coverRw()}</div><div class="bt"><b>我的獎盃與遊戲</b><span class="zh">Trophies &amp; Games</span><small>練習日曆 · 換遊戲券玩益智遊戲</small><span class="bp">🏆 ${P.tw || 0} · 🎮 ${rwTickets()} 張</span></div></button><button class="bk gvbk" data-act="openvc"><div class="art">${ART.coverVc()}</div><div class="bt"><b>單字專項訓練</b><span class="zh">Vocabulary</span><small>期末考 Module 3、4 · 單字、字形變化</small><span class="bp">${VC_COUNT.filter(s => P.done[s.pid]).length} / ${VC_COUNT.length} ⭐</span></div></button></div></div>`;
 }
 function showShelf() {
   stopAll(); S.view = 'shelf'; renderShelf();
@@ -3969,6 +3972,7 @@ document.addEventListener('click', async e => {
     case 'openbook': openBook(t.dataset.b); break;
     case 'opengv': openGv(); break;
     case 'openvc': openVc(); break;
+    case 'openrw': openRw(); break;
     case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
     case 'untile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed.splice(+t.dataset.p, 1); st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
     case 'tclear': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed = []; st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
@@ -4257,6 +4261,12 @@ ART.coverVc = () => svgWrap(`<rect width="400" height="560" fill="#1f8a70"/><cir
   <g stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="70" y="210" width="110" height="70" rx="12" fill="#fff" transform="rotate(-6 125 245)"/><rect x="215" y="200" width="120" height="70" rx="12" fill="#ffd966" transform="rotate(5 275 235)"/><rect x="110" y="310" width="130" height="70" rx="12" fill="#ffb3c7" transform="rotate(3 175 345)"/><rect x="255" y="320" width="90" height="70" rx="12" fill="#bfe4ff" transform="rotate(-5 300 355)"/></g>
   ${txtP(125, 255, 'bob', 28)}${txtP(275, 245, 'yank', 28)}${txtP(175, 355, 'scurry', 28)}${txtP(300, 365, 'frown', 24)}
   <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>${txtP(200, 534, 'Module 3 · Module 4', 20)}`, '封面：單字專項訓練', '0 0 400 560');
+
+ART.coverRw = () => svgWrap(`<rect width="400" height="560" fill="#d98a14"/><circle cx="340" cy="70" r="110" fill="#eba33a" opacity=".7"/><circle cx="40" cy="330" r="90" fill="#eba33a" opacity=".5"/>
+  ${txtP(200, 100, 'My Trophies', 52, '#fff')}${txtP(200, 150, '& Games', 40, '#fff6c9')}
+  <g stroke="${OUT}" stroke-width="4" stroke-linejoin="round"><path d="M130 220 h140 v60 q0 70 -70 80 q-70 -10 -70 -80z" fill="#ffd23a"/><path d="M130 235 h-34 q-6 50 40 60 M270 235 h34 q6 50 -40 60" fill="none"/><rect x="180" y="360" width="40" height="34" fill="#f2b900"/><rect x="150" y="394" width="100" height="26" rx="6" fill="#8a5a2c"/></g>
+  <polygon points="200,245 209,268 234,270 215,286 221,310 200,297 179,310 185,286 166,270 191,268" fill="#fff" stroke="${OUT}" stroke-width="3"/>
+  <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>${txtP(200, 534, 'Tetris · One-stroke puzzle', 20)}`, '封面：我的獎盃與遊戲', '0 0 400 560');
 /* ============ 文體與視角專項訓練 ============ */
 const GV = { tab: 'genre', hunt: null, quiz: null };
 const GV_COUNT = [{ pid: 'gv.A' }, { pid: 'gv.B' }, { pid: 'gv.P' }, { pid: 'gv.M' }];
@@ -4421,7 +4431,7 @@ function gvHuntGenre(it) {
   h.gopts = gvShuffle([it.g].concat(gvShuffle(same).slice(0, 2)).concat(gvShuffle(oth)).slice(0, 4));
   h.step = 3;
 }
-function gvHuntFinish() { const h = GV.hunt, it = GITEMS.find(x => x.id === h.id); h.step = 5; if (!h.clue) h.clue = it.g ? GENRES[it.g].cl[0] : ['', '']; if (!h.words.length && it.pov) h.words = gvFoundShow(it).slice(0, 2); if (!h.helped) { P.best['gvh.' + it.id] = 1; } P.reps['gv.H'] = (P.reps['gv.H'] || 0) + (h.helped ? 0 : 1); saveP(); updStars(); if (h.helped) encourage(); else celebrate('🕵️ 偵探任務完成！', '你找到線索了，太厲害了！', 30); }
+function gvHuntFinish() { const h = GV.hunt, it = GITEMS.find(x => x.id === h.id); h.step = 5; if (!h.clue) h.clue = it.g ? GENRES[it.g].cl[0] : ['', '']; if (!h.words.length && it.pov) h.words = gvFoundShow(it).slice(0, 2); if (!h.helped) { P.best['gvh.' + it.id] = 1; } P.reps['gv.H'] = (P.reps['gv.H'] || 0) + (h.helped ? 0 : 1); if (!h.helped) logWin('文體偵探：' + it.t, P.reps['gv.H']); saveP(); updStars(); if (h.helped) encourage(); else celebrate('🕵️ 偵探任務完成！', '你找到線索了，太厲害了！', 30); }
 /* ---------- 闖關 ---------- */
 const GROUNDS = [
   { k: 'A', t: '真的？編的？', sub: '分辨 Fiction（編的）、Nonfiction（真的）、Poem（詩）、Drama（劇本）', ic: '🔎' },
@@ -4486,7 +4496,7 @@ function gvSummary() {
 function gvReward() {
   const z = GV.quiz, key = 'gv.' + z.k, ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, n = z.qs.length, need = Math.ceil(n * .85);
   P.best[key] = Math.max(P.best[key] || 0, ok);
-  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！太完美了！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '你已經很會分辨了！' : '越練越熟！', ok === n ? 70 : 40); }
+  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; logWin('文體與視角：' + z.k + ' 關', P.reps[key]); saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！太完美了！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '你已經很會分辨了！' : '越練越熟！', ok === n ? 70 : 40); }
   else if (hp > 0 && ok + hp >= need) { saveP(); updStars(); encourage(); }
   else { saveP(); celebrate(`💪 答對 ${ok} 題，進步中！`, '看看下面的解釋，再挑戰一次，一定會更好！', 14); }
 }
@@ -4766,7 +4776,7 @@ function vcSummary() {
 function vcReward() {
   const z = VC.quiz, key = `vc.${z.wk}.${z.k}`, ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, n = z.qs.length, need = n - 2;
   P.best[key] = Math.max(P.best[key] || 0, ok);
-  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！單字高手！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '星星記錄在右上角' : `這一關已經練了 ${P.reps[key]} 次，越練越熟！`, ok === n ? 50 : 36); }
+  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; logWin('單字：' + vcWeek(z.wk).t.replace('Module 3 · ', 'M3 ') + ' ' + VMODES.find(m => m.k === z.k).t, P.reps[key]); saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！單字高手！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '星星記錄在右上角' : `這一關已經練了 ${P.reps[key]} 次，越練越熟！`, ok === n ? 50 : 36); }
   else if (hp > 0 && ok + hp >= need) { saveP(); updStars(); encourage(); }
   else { saveP(); celebrate(`💪 答對 ${ok} 題，進步中！`, '看看下面的解釋，再挑戰一次，一定會更好！', 14); }
 }
@@ -4820,14 +4830,14 @@ document.addEventListener('keydown', e => { if (S.view === 'vc' && e.key === 'En
 
 
 /* ============ 注音（ㄅㄆㄇ）============ */
-const ZYD = `一ㄧ注ㄓㄨˋ三ㄙㄢ上ㄕㄤˋ下ㄒㄧㄚˋ不ㄅㄨˋ中ㄓㄨㄥ也ㄧㄝˇ乾ㄍㄢ了˙ㄌㄜ享ㄒㄧㄤˇ亮ㄌㄧㄤˋ人ㄖㄣˊ什ㄕㄣˊ今ㄐㄧㄣ他ㄊㄚ以ㄧˇ件ㄐㄧㄢˋ伴ㄅㄢˋ但ㄉㄢˋ位ㄨㄟˋ作ㄗㄨㄛˋ你ㄋㄧˇ佳ㄐㄧㄚ使ㄕˇ來ㄌㄞˊ例ㄌㄧˋ係ㄒㄧˋ個˙ㄍㄜ們˙ㄇㄣ候ㄏㄡˋ做ㄗㄨㄛˋ傘ㄙㄢˇ傳ㄔㄨㄢˊ像ㄒㄧㄤˋ先ㄒㄧㄢ光ㄍㄨㄤ兒ㄦˊ全ㄑㄩㄢˊ公ㄍㄨㄥ共ㄍㄨㄥˋ具ㄐㄩˋ再ㄗㄞˋ出ㄔㄨ分ㄈㄣ列ㄌㄧㄝˋ別ㄅㄧㄝˊ到ㄉㄠˋ刻ㄎㄜˋ則ㄗㄜˊ前ㄑㄧㄢˊ力ㄌㄧˋ加ㄐㄧㄚ動ㄉㄨㄥˋ包ㄅㄠ化ㄏㄨㄚˋ午ㄨˇ卡ㄎㄚˇ原ㄩㄢˊ去ㄑㄩˋ參ㄘㄢ友ㄧㄡˇ口ㄎㄡˇ句ㄐㄩˋ只ㄓˇ叫ㄐㄧㄠˋ可ㄎㄜˇ台ㄊㄞˊ右ㄧㄡˋ吃ㄔ合ㄏㄜˊ同ㄊㄨㄥˊ名ㄇㄧㄥˊ吧˙ㄅㄚ含ㄏㄢˊ吵ㄔㄠˇ呼ㄏㄨ和ㄏㄢˋ哪ㄋㄚˇ喔ㄛ單ㄉㄢ嗎˙ㄇㄚ嘯ㄒㄧㄠˋ器ㄑㄧˋ嚇ㄒㄧㄚˋ四ㄙˋ回ㄏㄨㄟˊ因ㄧㄣ園ㄩㄢˊ在ㄗㄞˋ地ㄉㄧˋ型ㄒㄧㄥˊ塊ㄎㄨㄞˋ塞ㄙㄜˋ填ㄊㄧㄢˊ壺ㄏㄨˊ外ㄨㄞˋ多ㄉㄨㄛ夢ㄇㄥˋ大ㄉㄚˋ天ㄊㄧㄢ太ㄊㄞˋ失ㄕ奏ㄗㄡˋ套ㄊㄠˋ奶ㄋㄞˇ她ㄊㄚ好ㄏㄠˇ姐ㄐㄧㄝˇ威ㄨㄟ媽ㄇㄚ嬰ㄧㄥ子ㄗˇ字ㄗˋ孩ㄏㄞˊ學ㄒㄩㄝˊ它ㄊㄚ定ㄉㄧㄥˋ客ㄎㄜˋ室ㄕˋ容ㄖㄨㄥˊ寫ㄒㄧㄝˇ專ㄓㄨㄢ尊ㄗㄨㄣ對ㄉㄨㄟˋ小ㄒㄧㄠˇ尖ㄐㄧㄢ就ㄐㄧㄡˋ尾ㄨㄟˇ屬ㄕㄨˇ差ㄔㄚ己ㄐㄧˇ已ㄧˇ巴ㄅㄚ巾ㄐㄧㄣ師ㄕ帶ㄉㄞˋ幽ㄧㄡ幾ㄐㄧˇ式ㄕˋ形ㄒㄧㄥˊ往ㄨㄤˇ待ㄉㄞˋ很ㄏㄣˇ後ㄏㄡˋ得ㄉㄜˊ從ㄘㄨㄥˊ心ㄒㄧㄣ忙ㄇㄤˊ快ㄎㄨㄞˋ怕ㄆㄚˋ思ㄙ急ㄐㄧˊ性ㄒㄧㄥˋ怪ㄍㄨㄞˋ悶ㄇㄣˋ情ㄑㄧㄥˊ想ㄒㄧㄤˇ意ㄧˋ感ㄍㄢˇ態ㄊㄞˋ懇ㄎㄣˇ成ㄔㄥˊ我ㄨㄛˇ戰ㄓㄢˋ房ㄈㄤˊ所ㄙㄨㄛˇ手ㄕㄡˇ才ㄘㄞˊ找ㄓㄠˇ承ㄔㄥˊ技ㄐㄧˋ把ㄅㄚˇ拉ㄌㄚ拖ㄊㄨㄛ拼ㄆㄧㄣ拿ㄋㄚˊ挑ㄊㄧㄠ挪ㄋㄨㄛˊ捆ㄎㄨㄣˇ掉ㄉㄧㄠˋ排ㄆㄞˊ掠ㄌㄩㄝˋ接ㄐㄧㄝ推ㄊㄨㄟ提ㄊㄧˊ搬ㄅㄢ擠ㄐㄧˇ放ㄈㄤˋ教ㄐㄧㄠˋ敢ㄍㄢˇ整ㄓㄥˇ數ㄕㄨˋ文ㄨㄣˊ於ㄩˊ旁ㄆㄤˊ日ㄖˋ昂ㄤˊ明ㄇㄧㄥˊ易ㄧˋ星ㄒㄧㄥ昨ㄗㄨㄛˊ是ㄕˋ時ㄕˊ晃ㄏㄨㄤˋ晚ㄨㄢˇ更ㄍㄥˋ書ㄕㄨ最ㄗㄨㄟˋ會ㄏㄨㄟˋ有ㄧㄡˇ朋ㄆㄥˊ服ㄈㄨˊ期ㄑㄧˊ末ㄇㄛˋ本ㄅㄣˇ杯ㄅㄟ板ㄅㄢˇ查ㄔㄚˊ校ㄒㄧㄠˋ案ㄢˋ桌ㄓㄨㄛ梭ㄙㄨㄛ棒ㄅㄤˋ椅ㄧˇ楚ㄔㄨˇ業ㄧㄝˋ概ㄍㄞˋ樂ㄌㄜˋ標ㄅㄧㄠ樣ㄧㄤˋ檢ㄐㄧㄢˇ次ㄘˋ正ㄓㄥˋ步ㄅㄨˋ段ㄉㄨㄢˋ母ㄇㄨˇ每ㄇㄟˇ比ㄅㄧˇ氣ㄑㄧˋ水ㄕㄨㄟˇ求ㄑㄧㄡˊ沉ㄔㄣˊ沒ㄇㄟˊ沖ㄔㄨㄥ沿ㄧㄢˊ況ㄎㄨㄤˋ法ㄈㄚˇ泡ㄆㄠˋ洪ㄏㄨㄥˊ派ㄆㄞˋ浪ㄌㄤˋ浮ㄈㄨˊ海ㄏㄞˇ混ㄏㄨㄣˋ清ㄑㄧㄥ演ㄧㄢˇ漫ㄇㄢˋ為ㄨㄟˋ烏ㄨ熟ㄕㄨˊ爭ㄓㄥ爸ㄅㄚˋ爺ㄧㄝˊ犯ㄈㄢˋ狗ㄍㄡˇ猛ㄇㄥˇ猶ㄧㄡˊ玩ㄨㄢˊ現ㄒㄧㄢˋ琴ㄑㄧㄣˊ生ㄕㄥ用ㄩㄥˋ男ㄋㄢˊ畫ㄏㄨㄚˋ疲ㄆㄧˊ發ㄈㄚ的˙ㄉㄜ皺ㄓㄡˋ盡ㄐㄧㄣˋ目ㄇㄨˋ直ㄓˊ眉ㄇㄟˊ看ㄎㄢˋ短ㄉㄨㄢˇ破ㄆㄛˋ確ㄑㄩㄝˋ示ㄕˋ禮ㄌㄧˇ移ㄧˊ種ㄓㄨㄥˇ稱ㄔㄥ稻ㄉㄠˋ空ㄎㄨㄥ穿ㄔㄨㄢ立ㄌㄧˋ章ㄓㄤ第ㄉㄧˋ筋ㄐㄧㄣ答ㄉㄚˊ籃ㄌㄢˊ糊ㄏㄨˊ糕ㄍㄠ糟ㄗㄠ紅ㄏㄨㄥˊ紋ㄨㄣˊ級ㄐㄧˊ結ㄐㄧㄝˊ給ㄍㄟˇ經ㄐㄧㄥ綜ㄗㄨㄥ編ㄅㄧㄢ練ㄌㄧㄢˋ總ㄗㄨㄥˇ績ㄐㄧˋ織ㄓ繞ㄖㄠˋ習ㄒㄧˊ老ㄌㄠˇ考ㄎㄠˇ而ㄦˊ聲ㄕㄥ聽ㄊㄧㄥ背ㄅㄟˋ能ㄋㄥˊ脅ㄒㄧㄝˊ腳ㄐㄧㄠˇ自ㄗˋ舞ㄨˇ般ㄅㄢ船ㄔㄨㄢˊ英ㄧㄥ茶ㄔㄚˊ草ㄘㄠˇ著˙ㄓㄜ藉ㄐㄧㄝˋ蛇ㄕㄜˊ蜒ㄧㄢˊ蜿ㄨㄢ街ㄐㄧㄝ衣ㄧ表ㄅㄧㄠˇ衫ㄕㄢ袋ㄉㄞˋ裡ㄌㄧˇ複ㄈㄨˋ襯ㄔㄣˋ要ㄧㄠˋ規ㄍㄨㄟ角ㄐㄧㄠˇ解ㄐㄧㄝˇ訓ㄒㄩㄣˋ記ㄐㄧˋ詞ㄘˊ試ㄕˋ話ㄏㄨㄚˋ認ㄖㄣˋ說ㄕㄨㄛ請ㄑㄧㄥˇ論ㄌㄨㄣˋ讀ㄉㄨˊ變ㄅㄧㄢˋ讓ㄖㄤˋ豫ㄩˋ貌ㄇㄠˋ貪ㄊㄢ責ㄗㄜˊ買ㄇㄞˇ賽ㄙㄞˋ走ㄗㄡˇ起ㄑㄧˇ越ㄩㄝˋ跑ㄆㄠˇ跟ㄍㄣ踏ㄊㄚˋ身ㄕㄣ車ㄔㄜ較ㄐㄧㄠˋ輛ㄌㄧㄤˋ近ㄐㄧㄣˋ這ㄓㄜˋ逛ㄍㄨㄤˋ速ㄙㄨˋ造ㄗㄠˋ週ㄓㄡ進ㄐㄧㄣˋ過ㄍㄨㄛˋ道ㄉㄠˋ適ㄕˋ選ㄒㄩㄢˇ邀ㄧㄠ邊ㄅㄧㄢ那ㄋㄚˋ部ㄅㄨˋ都ㄉㄡ配ㄆㄟˋ醞ㄩㄣˋ釀ㄋㄧㄤˋ釋ㄕˋ重ㄓㄨㄥˋ鈴ㄌㄧㄥˊ鋼ㄍㄤ錄ㄌㄨˋ錯ㄘㄨㄛˋ長ㄔㄤˊ開ㄎㄞ閒ㄒㄧㄢˊ間ㄐㄧㄢ閱ㄩㄝˋ闊ㄎㄨㄛˋ闖ㄔㄨㄤˇ關ㄍㄨㄢ附ㄈㄨˋ院ㄩㄢˋ陪ㄆㄟˊ隆ㄌㄨㄥˊ隊ㄉㄨㄟˋ雞ㄐㄧ離ㄌㄧˊ雨ㄩˇ雲ㄩㄣˊ需ㄒㄩ靠ㄎㄠˋ面ㄇㄧㄢˋ音ㄧㄣ響ㄒㄧㄤˇ項ㄒㄧㄤˋ頭ㄊㄡˊ顆ㄎㄜ題ㄊㄧˊ飛ㄈㄟ餅ㄅㄧㄥˇ餐ㄘㄢ餓ㄜˋ首ㄕㄡˇ騎ㄑㄧˊ高ㄍㄠ麼˙ㄇㄜ默ㄇㄛˋ點ㄉㄧㄢˇ鼠ㄕㄨˇ`;
+const ZYD = `一ㄧ注ㄓㄨˋ三ㄙㄢ上ㄕㄤˋ下ㄒㄧㄚˋ不ㄅㄨˋ中ㄓㄨㄥ也ㄧㄝˇ乾ㄍㄢ了˙ㄌㄜ享ㄒㄧㄤˇ亮ㄌㄧㄤˋ人ㄖㄣˊ什ㄕㄣˊ今ㄐㄧㄣ他ㄊㄚ以ㄧˇ件ㄐㄧㄢˋ伴ㄅㄢˋ但ㄉㄢˋ位ㄨㄟˋ作ㄗㄨㄛˋ你ㄋㄧˇ佳ㄐㄧㄚ使ㄕˇ來ㄌㄞˊ例ㄌㄧˋ係ㄒㄧˋ個˙ㄍㄜ們˙ㄇㄣ候ㄏㄡˋ做ㄗㄨㄛˋ傘ㄙㄢˇ傳ㄔㄨㄢˊ像ㄒㄧㄤˋ先ㄒㄧㄢ光ㄍㄨㄤ兒ㄦˊ全ㄑㄩㄢˊ公ㄍㄨㄥ共ㄍㄨㄥˋ具ㄐㄩˋ再ㄗㄞˋ出ㄔㄨ分ㄈㄣ列ㄌㄧㄝˋ別ㄅㄧㄝˊ到ㄉㄠˋ刻ㄎㄜˋ則ㄗㄜˊ前ㄑㄧㄢˊ力ㄌㄧˋ加ㄐㄧㄚ動ㄉㄨㄥˋ包ㄅㄠ化ㄏㄨㄚˋ午ㄨˇ卡ㄎㄚˇ原ㄩㄢˊ去ㄑㄩˋ參ㄘㄢ友ㄧㄡˇ口ㄎㄡˇ句ㄐㄩˋ只ㄓˇ叫ㄐㄧㄠˋ可ㄎㄜˇ台ㄊㄞˊ右ㄧㄡˋ吃ㄔ合ㄏㄜˊ同ㄊㄨㄥˊ名ㄇㄧㄥˊ吧˙ㄅㄚ含ㄏㄢˊ吵ㄔㄠˇ呼ㄏㄨ和ㄏㄢˋ哪ㄋㄚˇ喔ㄛ單ㄉㄢ嗎˙ㄇㄚ嘯ㄒㄧㄠˋ器ㄑㄧˋ嚇ㄒㄧㄚˋ四ㄙˋ回ㄏㄨㄟˊ因ㄧㄣ園ㄩㄢˊ在ㄗㄞˋ地ㄉㄧˋ型ㄒㄧㄥˊ塊ㄎㄨㄞˋ塞ㄙㄜˋ填ㄊㄧㄢˊ壺ㄏㄨˊ外ㄨㄞˋ多ㄉㄨㄛ夢ㄇㄥˋ大ㄉㄚˋ天ㄊㄧㄢ太ㄊㄞˋ失ㄕ奏ㄗㄡˋ套ㄊㄠˋ奶ㄋㄞˇ她ㄊㄚ好ㄏㄠˇ姐ㄐㄧㄝˇ威ㄨㄟ媽ㄇㄚ嬰ㄧㄥ子ㄗˇ字ㄗˋ孩ㄏㄞˊ學ㄒㄩㄝˊ它ㄊㄚ定ㄉㄧㄥˋ客ㄎㄜˋ室ㄕˋ容ㄖㄨㄥˊ寫ㄒㄧㄝˇ專ㄓㄨㄢ尊ㄗㄨㄣ對ㄉㄨㄟˋ小ㄒㄧㄠˇ尖ㄐㄧㄢ就ㄐㄧㄡˋ尾ㄨㄟˇ屬ㄕㄨˇ差ㄔㄚ己ㄐㄧˇ已ㄧˇ巴ㄅㄚ巾ㄐㄧㄣ師ㄕ帶ㄉㄞˋ幽ㄧㄡ幾ㄐㄧˇ式ㄕˋ形ㄒㄧㄥˊ往ㄨㄤˇ待ㄉㄞˋ很ㄏㄣˇ後ㄏㄡˋ得ㄉㄜˊ從ㄘㄨㄥˊ心ㄒㄧㄣ忙ㄇㄤˊ快ㄎㄨㄞˋ怕ㄆㄚˋ思ㄙ急ㄐㄧˊ性ㄒㄧㄥˋ怪ㄍㄨㄞˋ悶ㄇㄣˋ情ㄑㄧㄥˊ想ㄒㄧㄤˇ意ㄧˋ感ㄍㄢˇ態ㄊㄞˋ懇ㄎㄣˇ成ㄔㄥˊ我ㄨㄛˇ戰ㄓㄢˋ房ㄈㄤˊ所ㄙㄨㄛˇ手ㄕㄡˇ才ㄘㄞˊ找ㄓㄠˇ承ㄔㄥˊ技ㄐㄧˋ把ㄅㄚˇ拉ㄌㄚ拖ㄊㄨㄛ拼ㄆㄧㄣ拿ㄋㄚˊ挑ㄊㄧㄠ挪ㄋㄨㄛˊ捆ㄎㄨㄣˇ掉ㄉㄧㄠˋ排ㄆㄞˊ掠ㄌㄩㄝˋ接ㄐㄧㄝ推ㄊㄨㄟ提ㄊㄧˊ搬ㄅㄢ擠ㄐㄧˇ放ㄈㄤˋ教ㄐㄧㄠˋ敢ㄍㄢˇ整ㄓㄥˇ數ㄕㄨˋ文ㄨㄣˊ於ㄩˊ旁ㄆㄤˊ日ㄖˋ昂ㄤˊ明ㄇㄧㄥˊ易ㄧˋ星ㄒㄧㄥ昨ㄗㄨㄛˊ是ㄕˋ時ㄕˊ晃ㄏㄨㄤˋ晚ㄨㄢˇ更ㄍㄥˋ書ㄕㄨ最ㄗㄨㄟˋ會ㄏㄨㄟˋ有ㄧㄡˇ朋ㄆㄥˊ服ㄈㄨˊ期ㄑㄧˊ末ㄇㄛˋ本ㄅㄣˇ杯ㄅㄟ板ㄅㄢˇ查ㄔㄚˊ校ㄒㄧㄠˋ案ㄢˋ桌ㄓㄨㄛ梭ㄙㄨㄛ棒ㄅㄤˋ椅ㄧˇ楚ㄔㄨˇ業ㄧㄝˋ概ㄍㄞˋ樂ㄌㄜˋ標ㄅㄧㄠ樣ㄧㄤˋ檢ㄐㄧㄢˇ次ㄘˋ正ㄓㄥˋ步ㄅㄨˋ段ㄉㄨㄢˋ母ㄇㄨˇ每ㄇㄟˇ比ㄅㄧˇ氣ㄑㄧˋ水ㄕㄨㄟˇ求ㄑㄧㄡˊ沉ㄔㄣˊ沒ㄇㄟˊ沖ㄔㄨㄥ沿ㄧㄢˊ況ㄎㄨㄤˋ法ㄈㄚˇ泡ㄆㄠˋ洪ㄏㄨㄥˊ派ㄆㄞˋ浪ㄌㄤˋ浮ㄈㄨˊ海ㄏㄞˇ混ㄏㄨㄣˋ清ㄑㄧㄥ演ㄧㄢˇ漫ㄇㄢˋ為ㄨㄟˋ烏ㄨ熟ㄕㄨˊ爭ㄓㄥ爸ㄅㄚˋ爺ㄧㄝˊ犯ㄈㄢˋ狗ㄍㄡˇ猛ㄇㄥˇ猶ㄧㄡˊ玩ㄨㄢˊ現ㄒㄧㄢˋ琴ㄑㄧㄣˊ生ㄕㄥ用ㄩㄥˋ男ㄋㄢˊ畫ㄏㄨㄚˋ疲ㄆㄧˊ發ㄈㄚ的˙ㄉㄜ皺ㄓㄡˋ盡ㄐㄧㄣˋ目ㄇㄨˋ直ㄓˊ眉ㄇㄟˊ看ㄎㄢˋ短ㄉㄨㄢˇ破ㄆㄛˋ確ㄑㄩㄝˋ示ㄕˋ禮ㄌㄧˇ移ㄧˊ種ㄓㄨㄥˇ稱ㄔㄥ稻ㄉㄠˋ空ㄎㄨㄥ穿ㄔㄨㄢ立ㄌㄧˋ章ㄓㄤ第ㄉㄧˋ筋ㄐㄧㄣ答ㄉㄚˊ籃ㄌㄢˊ糊ㄏㄨˊ糕ㄍㄠ糟ㄗㄠ紅ㄏㄨㄥˊ紋ㄨㄣˊ級ㄐㄧˊ結ㄐㄧㄝˊ給ㄍㄟˇ經ㄐㄧㄥ綜ㄗㄨㄥ編ㄅㄧㄢ練ㄌㄧㄢˋ總ㄗㄨㄥˇ績ㄐㄧˋ織ㄓ繞ㄖㄠˋ習ㄒㄧˊ老ㄌㄠˇ考ㄎㄠˇ而ㄦˊ聲ㄕㄥ聽ㄊㄧㄥ背ㄅㄟˋ能ㄋㄥˊ脅ㄒㄧㄝˊ腳ㄐㄧㄠˇ自ㄗˋ舞ㄨˇ般ㄅㄢ船ㄔㄨㄢˊ英ㄧㄥ茶ㄔㄚˊ草ㄘㄠˇ著˙ㄓㄜ藉ㄐㄧㄝˋ蛇ㄕㄜˊ蜒ㄧㄢˊ蜿ㄨㄢ街ㄐㄧㄝ衣ㄧ表ㄅㄧㄠˇ衫ㄕㄢ袋ㄉㄞˋ裡ㄌㄧˇ複ㄈㄨˋ襯ㄔㄣˋ要ㄧㄠˋ規ㄍㄨㄟ角ㄐㄧㄠˇ解ㄐㄧㄝˇ訓ㄒㄩㄣˋ記ㄐㄧˋ詞ㄘˊ試ㄕˋ話ㄏㄨㄚˋ認ㄖㄣˋ說ㄕㄨㄛ請ㄑㄧㄥˇ論ㄌㄨㄣˋ讀ㄉㄨˊ變ㄅㄧㄢˋ讓ㄖㄤˋ豫ㄩˋ貌ㄇㄠˋ貪ㄊㄢ責ㄗㄜˊ買ㄇㄞˇ賽ㄙㄞˋ走ㄗㄡˇ起ㄑㄧˇ越ㄩㄝˋ跑ㄆㄠˇ跟ㄍㄣ踏ㄊㄚˋ身ㄕㄣ車ㄔㄜ較ㄐㄧㄠˋ輛ㄌㄧㄤˋ近ㄐㄧㄣˋ這ㄓㄜˋ逛ㄍㄨㄤˋ速ㄙㄨˋ造ㄗㄠˋ週ㄓㄡ進ㄐㄧㄣˋ過ㄍㄨㄛˋ道ㄉㄠˋ適ㄕˋ選ㄒㄩㄢˇ邀ㄧㄠ邊ㄅㄧㄢ那ㄋㄚˋ部ㄅㄨˋ都ㄉㄡ配ㄆㄟˋ醞ㄩㄣˋ釀ㄋㄧㄤˋ釋ㄕˋ重ㄓㄨㄥˋ鈴ㄌㄧㄥˊ鋼ㄍㄤ錄ㄌㄨˋ錯ㄘㄨㄛˋ長ㄔㄤˊ開ㄎㄞ閒ㄒㄧㄢˊ間ㄐㄧㄢ閱ㄩㄝˋ闊ㄎㄨㄛˋ闖ㄔㄨㄤˇ關ㄍㄨㄢ附ㄈㄨˋ院ㄩㄢˋ陪ㄆㄟˊ隆ㄌㄨㄥˊ隊ㄉㄨㄟˋ雞ㄐㄧ離ㄌㄧˊ雨ㄩˇ雲ㄩㄣˊ需ㄒㄩ靠ㄎㄠˋ面ㄇㄧㄢˋ音ㄧㄣ響ㄒㄧㄤˇ項ㄒㄧㄤˋ頭ㄊㄡˊ顆ㄎㄜ題ㄊㄧˊ飛ㄈㄟ餅ㄅㄧㄥˇ餐ㄘㄢ餓ㄜˋ首ㄕㄡˇ騎ㄑㄧˊ高ㄍㄠ麼˙ㄇㄜ默ㄇㄛˋ點ㄉㄧㄢˇ鼠ㄕㄨˇ之ㄓ二ㄦˋ五ㄨˇ俄ㄜˊ信ㄒㄧㄣˋ兩ㄌㄧㄤˇ六ㄌㄧㄡˋ券ㄑㄩㄢˋ剩ㄕㄥˋ功ㄍㄨㄥ厲ㄌㄧˋ圓ㄩㄢˊ始ㄕˇ完ㄨㄢˊ害ㄏㄞˋ封ㄈㄥ常ㄔㄤˊ張ㄓㄤ或ㄏㄨㄛˋ戲ㄒㄧˋ指ㄓˇ按ㄢˋ換ㄏㄨㄢˋ斯ㄙ方ㄈㄤ旋ㄒㄩㄢˊ智ㄓˋ曆ㄌㄧˋ束ㄕㄨˋ條ㄊㄧㄠˊ櫃ㄍㄨㄟˋ消ㄒㄧㄠ測ㄘㄜˋ獎ㄐㄧㄤˇ白ㄅㄞˊ盃ㄅㄟ益ㄧˋ盤ㄆㄢˊ筆ㄅㄧˇ紀ㄐㄧˋ綠ㄌㄩˋ線ㄒㄧㄢˋ繼ㄐㄧˋ續ㄒㄩˋ羅ㄌㄨㄛˊ與ㄩˇ色ㄙㄜˋ行ㄒㄧㄥˊ衛ㄨㄟˋ賺ㄗㄨㄢˋ超ㄔㄠ轉ㄓㄨㄢˇ退ㄊㄨㄟˋ通ㄊㄨㄥ連ㄌㄧㄢˊ遊ㄧㄡˊ達ㄉㄚˊ還ㄏㄞˊ鍵ㄐㄧㄢˋ鐘ㄓㄨㄥ除ㄔㄨˊ驗ㄧㄢˋ`;
 const ZY = {}; (function () { const re = /([一-鿿])([ㄅ-ㄯˊˇˋ˙]+)/g; let m; while ((m = re.exec(ZYD))) ZY[m[1]] = m[2]; })();
 /* 破音字／輕聲詞：[正規表示式, 該詞每個字的注音] */
 const ZYP = [
   [/什麼/g, ['ㄕㄣˊ', '˙ㄇㄜ']], [/了解/g, ['ㄌㄧㄠˇ', 'ㄐㄧㄝˇ']], [/目的/g, ['ㄇㄨˋ', 'ㄉㄧˋ']], [/藉口/g, ['ㄐㄧㄝˋ', 'ㄎㄡˇ']],
   [/(?<=[孩袋桌房句樣兒椅])子/g, ['˙ㄗ']], [/重複/g, ['ㄔㄨㄥˊ', 'ㄈㄨˋ']], [/音樂|樂器/g, null, { 樂: 'ㄩㄝˋ' }], [/挑戰/g, ['ㄊㄧㄠˇ', 'ㄓㄢˋ']],
   [/不可數|可數|數名詞/g, null, { 數: 'ㄕㄨˇ' }], [/記得/g, ['ㄐㄧˋ', '˙ㄉㄜ']], [/得懇/g, ['ㄉㄟˇ', 'ㄎㄣˇ']], [/塞在/g, ['ㄙㄞ', 'ㄗㄞˋ']], [/猶豫/g, ['ㄧㄡˊ', 'ㄩˋ']],
-  [/做得/g, ['ㄗㄨㄛˋ', '˙ㄉㄜ']], [/看著|接著|對著|拿著|聽著|說著/g, null, { 著: '˙ㄓㄜ' }], [/長排/g, ['ㄔㄤˊ', 'ㄆㄞˊ']],
+  [/做得/g, ['ㄗㄨㄛˋ', '˙ㄉㄜ']], [/看著|接著|對著|拿著|聽著|說著/g, null, { 著: '˙ㄓㄜ' }], [/長排/g, ['ㄔㄤˊ', 'ㄆㄞˊ']], [/整行|一行|幾行/g, null, { 行: 'ㄏㄤˊ' }], [/重玩|重來/g, null, { 重: 'ㄔㄨㄥˊ' }],
 ];
 const zyTone = r => /[ˊ]/.test(r) ? 2 : /ˇ/.test(r) ? 3 : /ˋ/.test(r) ? 4 : /˙/.test(r) ? 0 : 1;
 function zyRun(s) {
@@ -4843,6 +4853,162 @@ function zyNode(root) {
 }
 let VC_ZY = true; try { VC_ZY = localStorage.getItem('vc-zy') !== '0'; } catch (e) { }
 (function () { const st = document.createElement('style'); st.textContent = `.zc{position:relative;display:inline-block;margin-right:.95em;line-height:1.5}.zy{position:absolute;left:100%;top:50%;transform:translateY(-50%);height:1.6em;display:flex;align-items:center;margin-left:.04em;color:#2b4a8a;font-weight:500;font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif}.zl{writing-mode:vertical-rl;text-orientation:upright;font-size:.56em;line-height:1.02;letter-spacing:0;white-space:nowrap}.zt{position:absolute;left:100%;top:50%;transform:translateY(-50%);font-size:.62em;line-height:1;margin-left:.12em}.zt.n{left:.05em;top:-.35em;transform:none;margin-left:0;font-size:.6em}.zyon .gvopt,.zyon .vhint,.zyon .gvfb p,.zyon .vzh,.zyon .vex small,.zyon .qzh,.zyon .gvc p,.zyon h1{line-height:1.9}`; document.head.appendChild(st); })();
+/* ============ 獎盃、練習紀錄、遊戲時間 ============ */
+const RW = { game: null, lv: 0 };
+const GAME_MIN = 10, TK_EVERY = 10;
+const dkey = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+function rwInit() { P.tw = P.tw || 0; P.days = P.days || {}; P.log = P.log || []; P.gu = P.gu || 0; P.gend = P.gend || 0; }
+function rwStreak() { rwInit(); let n = 0, t = Date.now(); if (!P.days[dkey(t)]) t -= 864e5; while (P.days[dkey(t)]) { n++; t -= 864e5; } return n; }
+const rwTickets = () => Math.floor((P.tw || 0) / TK_EVERY) - (P.gu || 0);
+const rwActive = () => (P.gend || 0) > Date.now();
+function awardLabel(id) { const m = id.match(/q(\d+)(?:\.(\d))?$/); return m ? `${BOOK ? BOOK.title : ''} 口試第 ${m[1]} 題・第 ${m[2] || 1} 關` : id; }
+function logWin(label, n) {
+  rwInit(); const now = Date.now(), dk = dkey(now);
+  P.tw++; P.days[dk] = (P.days[dk] || 0) + 1; P.log.unshift([now, label, n || 1]); if (P.log.length > 80) P.log.length = 80; saveP();
+  const st = rwStreak(), tk = P.tw % TK_EVERY === 0;
+  let h = `<br>🏆 這一關你已經第 <b>${n || 1}</b> 次達標！　今天第 <b>${P.days[dk]}</b> 次`;
+  h += `<br>🏆 獎盃總數：<b>${P.tw}</b>` + (st > 1 ? `　🔥 連續練習 <b>${st}</b> 天` : '');
+  if (tk) h += `<br>🎮 <b>你得到 1 張遊戲券！</b>到書櫃的「我的獎盃」玩 10 分鐘益智遊戲`;
+  else h += `<br>再 ${TK_EVERY - P.tw % TK_EVERY} 個獎盃，就能換遊戲券`;
+  window.__wex = h; return tk;
+}
+/* ---------- 獎盃中心 ---------- */
+function rwCal() {
+  const today = new Date(); today.setHours(12, 0, 0, 0); const dow = (today.getDay() + 6) % 7; const start = new Date(today.getTime() - (dow + 28) * 864e5);
+  const cells = []; for (let i = 0; i < 35; i++) { const d = new Date(start.getTime() + i * 864e5), k = dkey(d), c = P.days[k] || 0, fut = d > today; cells.push(`<div class="rcell${c ? ' has' : ''}${k === dkey(today) ? ' today' : ''}${fut ? ' fut' : ''}" title="${k}"><small>${d.getMonth() + 1}/${d.getDate()}</small>${c ? `<b>🏆${c}</b>` : ''}</div>`); }
+  return `<div class="rcal"><div class="rwd">一</div><div class="rwd">二</div><div class="rwd">三</div><div class="rwd">四</div><div class="rwd">五</div><div class="rwd">六</div><div class="rwd">日</div>${cells.join('')}</div>`;
+}
+function rwHome() {
+  rwInit(); const tw = P.tw, tk = rwTickets(), act = rwActive(), st = rwStreak(), days = Object.keys(P.days).length, nxt = TK_EVERY - tw % TK_EVERY;
+  const left = Math.max(0, Math.ceil((P.gend - Date.now()) / 1000));
+  const play = act ? `<button class="btn pri big" data-r="menu">🎮 繼續玩（還有 <span class="rtimer">${fmtT(left)}</span>）</button>`
+    : tk > 0 ? `<button class="btn pri big" data-r="start">🎮 用 1 張遊戲券，玩 ${GAME_MIN} 分鐘</button>` : `<button class="btn big" disabled>🎮 還沒有遊戲券（再 ${nxt} 個獎盃）</button>`;
+  const log = P.log.slice(0, 20).map(l => { const d = new Date(l[0]); return `<div class="rlog"><span>${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}</span><b>${esc(l[1])}</b><span>第 ${l[2]} 次達標</span></div>`; }).join('') || '<p class="vnone">還沒有紀錄。去闖關，拿到第一個獎盃吧！</p>';
+  return `<div class="rstats"><div class="rs1"><b>🏆 ${tw}</b><span>獎盃</span></div><div class="rs1"><b>🎮 ${tk}</b><span>遊戲券</span></div><div class="rs1"><b>🔥 ${st}</b><span>連續練習天數</span></div><div class="rs1"><b>📅 ${days}</b><span>練習過的天數</span></div></div>
+  <div class="gvc"><h3>🎁 獎盃換遊戲</h3><p>每次闖關、測驗<b>靠自己答對、成功達標</b>，就得到 1 個獎盃 🏆。每 <b>${TK_EVERY}</b> 個獎盃換 <b>1 張遊戲券</b>，可以玩 <b>${GAME_MIN} 分鐘</b>俄羅斯方塊或一筆畫！<br>下一張遊戲券：<b>${tw % TK_EVERY} / ${TK_EVERY}</b></p><div class="gvbar"><i style="width:${tw % TK_EVERY * 100 / TK_EVERY}%"></i></div><div class="tctl" style="margin-top:12px">${play}</div></div>
+  <div class="gvc"><h3>📅 練習日曆（最近五週）</h3>${rwCal()}</div>
+  <div class="gvc"><h3>📝 最近的達標紀錄</h3>${log}</div>`;
+}
+const fmtT = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+function rwGameMenu() {
+  const left = Math.max(0, Math.ceil((P.gend - Date.now()) / 1000));
+  return `<div class="gvc"><h3>🎮 遊戲時間！剩下 <span class="rtimer">${fmtT(left)}</span></h3><p>選一個遊戲。時間到了就會自動結束，再回去練習賺獎盃吧！</p>
+  <div class="gvgrid"><button class="gvc gitem rnd" data-r="tetris"><span class="ri">🧱</span><b>俄羅斯方塊</b><small>把方塊排成一整行就消除</small></button><button class="gvc gitem rnd" data-r="stroke"><span class="ri">✏️</span><b>一筆畫</b><small>一筆畫完所有線，不能重複</small></button></div>
+  <div class="tctl"><button class="btn" data-r="home">← 回到我的獎盃</button></div></div>`;
+}
+function rwRender() {
+  const el = $('#gv'); if (!el || S.view !== 'rw') return; stopTet();
+  let body;
+  if (RW.game && !rwActive()) RW.game = null;
+  if (RW.game === 'menu') body = rwGameMenu(); else if (RW.game === 'tetris') body = tetHtml(); else if (RW.game === 'stroke') body = stkHtml(); else body = rwHome();
+  el.innerHTML = `<div class="shelf-in gvin"><h1>我的獎盃與遊戲</h1><p>${RW.game ? '玩得開心！' : '你每次練習成功都會得到獎盃，記得常常練習喔！'}</p>${body}</div>`;
+  el.scrollTop = 0; el.classList.toggle('zyon', VC_ZY);
+  if (VC_ZY) el.querySelectorAll('h1,h3,p,.rs1 span,.rlog b,.rwd,button.btn,.gitem small,.gitem b').forEach(n => { if (!n.closest('.rtimer')) zyNode(n); });
+  if (RW.game === 'tetris') tetInit(); if (RW.game === 'stroke') stkInit();
+}
+function openRw() {
+  stopAll(); S.view = 'rw'; S.bookId = null; RW.game = rwActive() ? 'menu' : null; countable = [];
+  $('#shelf').hidden = true; $('#book').hidden = true; document.querySelector('.pager').hidden = true; $('#gv').hidden = false; $('#starCount').hidden = true;
+  $('#brandTitle').textContent = '我的獎盃與遊戲'; $('#brandSub').textContent = 'Trophies & Games'; $('#bShelf').setAttribute('aria-pressed', 'false');
+  document.documentElement.style.setProperty('--fs', S.fs); rwRender(); saveP();
+}
+setInterval(() => {
+  if (S.view !== 'rw') return;
+  const left = Math.max(0, Math.ceil((P.gend - Date.now()) / 1000));
+  document.querySelectorAll('.rtimer').forEach(n => n.textContent = fmtT(left));
+  if (RW.game && !rwActive()) { RW.game = null; toast('⏰ 遊戲時間到了！去練習賺更多獎盃吧！', 3500); rwRender(); }
+}, 1000);
+document.addEventListener('click', e => {
+  const t = e.target.closest('#gv [data-r]'); if (!t || S.view !== 'rw') return; const a = t.dataset.r;
+  if (a === 'start') { if (rwTickets() < 1) return; P.gu++; P.gend = Date.now() + GAME_MIN * 60000; saveP(); RW.game = 'menu'; }
+  else if (a === 'menu') RW.game = 'menu'; else if (a === 'home') RW.game = rwActive() ? 'menu' : null;
+  else if (a === 'tetris') RW.game = 'tetris'; else if (a === 'stroke') RW.game = 'stroke';
+  else if (a === 'back') RW.game = 'menu';
+  else return;
+  if (a === 'home' && S.view === 'rw' && !rwActive()) RW.game = null;
+  rwRender();
+});
+/* ---------- 俄羅斯方塊 ---------- */
+const TETS = { I: [[1, 1, 1, 1]], O: [[1, 1], [1, 1]], T: [[0, 1, 0], [1, 1, 1]], S: [[0, 1, 1], [1, 1, 0]], Z: [[1, 1, 0], [0, 1, 1]], J: [[1, 0, 0], [1, 1, 1]], L: [[0, 0, 1], [1, 1, 1]] };
+const TETC = { I: '#37c8e6', O: '#ffd23a', T: '#a66cf0', S: '#4cc46b', Z: '#ef5b5b', J: '#4a7cf0', L: '#f59b3a' };
+let TET = null, tetTm = null;
+function stopTet() { clearInterval(tetTm); tetTm = null; }
+function tetHtml() {
+  return `<div class="gvc tetw"><div class="tctl"><button class="btn sm" data-r="back">← 換遊戲</button><span class="gvprog">🧱 剩下 <span class="rtimer">${fmtT(Math.max(0, Math.ceil((P.gend - Date.now()) / 1000)))}</span>　分數 <b id="tscore">0</b>　消除 <b id="tlines">0</b> 行</span></div>
+  <div class="tetrow"><canvas id="tcv" width="240" height="480"></canvas><div class="tside"><div>下一個</div><canvas id="tnx" width="96" height="96"></canvas><div id="tmsg"></div></div></div>
+  <div class="tpad"><button class="kk" data-t="L">◀</button><button class="kk" data-t="R">▶</button><button class="kk" data-t="ROT">⟳ 轉</button><button class="kk" data-t="D">▼</button><button class="kk go" data-t="DROP">⏬ 直接掉</button><button class="kk wide" data-t="NEW">重玩</button></div>
+  <p class="vnone">鍵盤：← → 移動、↑ 旋轉、↓ 加速、空白鍵直接掉下去</p></div>`;
+}
+const tetRnd = () => { const k = Object.keys(TETS)[Math.random() * 7 | 0]; return { k, m: TETS[k].map(r => r.slice()) }; };
+function tetInit() { TET = { b: Array.from({ length: 20 }, () => Array(10).fill(0)), p: null, n: tetRnd(), score: 0, lines: 0, over: false }; tetSpawn(); tetDraw(); tetTm = setInterval(tetTick, 700); }
+function tetFit(m, x, y) { for (let r = 0; r < m.length; r++) for (let c = 0; c < m[r].length; c++) if (m[r][c]) { const X = x + c, Y = y + r; if (X < 0 || X > 9 || Y > 19 || (Y >= 0 && TET.b[Y][X])) return false; } return true; }
+function tetSpawn() { TET.p = { k: TET.n.k, m: TET.n.m, x: 3, y: 0 }; TET.n = tetRnd(); if (!tetFit(TET.p.m, TET.p.x, TET.p.y)) { TET.over = true; stopTet(); const g = $('#tmsg'); if (g) g.innerHTML = '遊戲結束！<br>按「重玩」再來一次'; } }
+function tetLock() { const p = TET.p; p.m.forEach((row, r) => row.forEach((v, c) => { if (v && p.y + r >= 0) TET.b[p.y + r][p.x + c] = p.k; })); let n = 0; for (let r = 19; r >= 0; r--) if (TET.b[r].every(v => v)) { TET.b.splice(r, 1); TET.b.unshift(Array(10).fill(0)); n++; r++; } if (n) { TET.lines += n; TET.score += [0, 100, 300, 500, 800][n]; toast(['', '消除 1 行！', '太棒了！2 行！', '好厲害！3 行！', '🎉 4 行！超級棒！'][n], 900); } TET.score += 10; tetSpawn(); }
+function tetTick() { if (S.view !== 'rw' || RW.game !== 'tetris') { stopTet(); return; } if (TET.over) return; tetMove(0, 1, true); }
+function tetMove(dx, dy, tick) { const p = TET.p; if (tetFit(p.m, p.x + dx, p.y + dy)) { p.x += dx; p.y += dy; } else if (dy > 0) tetLock(); tetDraw(); }
+function tetRot() { const p = TET.p, m = p.m[0].map((_, i) => p.m.map(r => r[i]).reverse()); for (const k of [0, -1, 1, -2, 2]) if (tetFit(m, p.x + k, p.y)) { p.m = m; p.x += k; break; } tetDraw(); }
+function tetDrop() { while (tetFit(TET.p.m, TET.p.x, TET.p.y + 1)) TET.p.y++; tetLock(); tetDraw(); }
+function tetDraw() {
+  const cv = $('#tcv'); if (!cv) return; const g = cv.getContext('2d'), C = 24; g.fillStyle = '#1f2840'; g.fillRect(0, 0, 240, 480);
+  g.strokeStyle = 'rgba(255,255,255,.06)'; for (let i = 1; i < 10; i++) { g.beginPath(); g.moveTo(i * C, 0); g.lineTo(i * C, 480); g.stroke(); } for (let i = 1; i < 20; i++) { g.beginPath(); g.moveTo(0, i * C); g.lineTo(240, i * C); g.stroke(); }
+  const cell = (x, y, k, ctx = g, s = C) => { ctx.fillStyle = TETC[k]; ctx.fillRect(x * s + 1, y * s + 1, s - 2, s - 2); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(x * s + 3, y * s + 3, s - 6, 4); };
+  TET.b.forEach((row, y) => row.forEach((k, x) => k && cell(x, y, k)));
+  const p = TET.p; if (p && !TET.over) { let gy = p.y; while (tetFit(p.m, p.x, gy + 1)) gy++; g.globalAlpha = .25; p.m.forEach((row, r) => row.forEach((v, c) => v && cell(p.x + c, gy + r, p.k))); g.globalAlpha = 1; p.m.forEach((row, r) => row.forEach((v, c) => v && cell(p.x + c, p.y + r, p.k))); }
+  const nx = $('#tnx'); if (nx) { const h = nx.getContext('2d'); h.clearRect(0, 0, 96, 96); h.fillStyle = '#1f2840'; h.fillRect(0, 0, 96, 96); const m = TET.n.m, S2 = 20, ox = (96 - m[0].length * S2) / 2 / S2, oy = (96 - m.length * S2) / 2 / S2; m.forEach((row, r) => row.forEach((v, c) => v && cell(ox + c, oy + r, TET.n.k, h, S2))); }
+  $('#tscore').textContent = TET.score; $('#tlines').textContent = TET.lines;
+}
+function tetKey(k) { if (!TET) return; if (k === 'NEW') { stopTet(); tetInit(); const m = $('#tmsg'); if (m) m.textContent = ''; return; } if (TET.over) return; if (k === 'L') tetMove(-1, 0); else if (k === 'R') tetMove(1, 0); else if (k === 'D') tetMove(0, 1); else if (k === 'ROT') tetRot(); else if (k === 'DROP') tetDrop(); }
+document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('#gv [data-t]'); if (!t || S.view !== 'rw' || RW.game !== 'tetris') return; e.preventDefault(); tetKey(t.dataset.t); });
+document.addEventListener('keydown', e => { if (S.view !== 'rw' || RW.game !== 'tetris') return; const m = { ArrowLeft: 'L', ArrowRight: 'R', ArrowDown: 'D', ArrowUp: 'ROT', ' ': 'DROP' }[e.key]; if (m) { e.preventDefault(); tetKey(m); } });
+/* ---------- 一筆畫 ---------- */
+const hexG = () => { const N = [], E = []; for (let k = 0; k < 6; k++) { const a = (90 + 60 * k) * Math.PI / 180; N.push([.5 + .46 * Math.cos(a), .5 - .46 * Math.sin(a)]); } for (let m = 0; m < 6; m++) { const a = (60 + 60 * m) * Math.PI / 180; N.push([.5 + .265 * Math.cos(a), .5 - .265 * Math.sin(a)]); } for (let k = 0; k < 6; k++) { E.push([k, 6 + k], [k, 6 + (k + 1) % 6], [6 + k, 6 + (k + 1) % 6]); } return { n: '大衛之星', N, E }; };
+const penG = () => { const N = []; for (let k = 0; k < 5; k++) { const a = (90 + 72 * k) * Math.PI / 180; N.push([.5 + .45 * Math.cos(a), .52 - .45 * Math.sin(a)]); } return N; };
+const STK = [
+  { n: '三角形', N: [[.5, .12], [.12, .82], [.88, .82]], E: [[0, 1], [1, 2], [2, 0]] },
+  { n: '小房子', N: [[.2, .45], [.8, .45], [.8, .88], [.2, .88], [.5, .12]], E: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [1, 4]] },
+  { n: '兩個正方形', N: [[.1, .25], [.5, .25], [.9, .25], [.1, .75], [.5, .75], [.9, .75]], E: [[0, 1], [1, 2], [3, 4], [4, 5], [0, 3], [1, 4], [2, 5]] },
+  { n: '星星', N: penG(), E: [[0, 2], [2, 4], [4, 1], [1, 3], [3, 0]] },
+  { n: '信封', N: [[.12, .4], [.88, .4], [.88, .85], [.12, .85], [.5, .12]], E: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 2], [1, 3], [0, 4], [1, 4]] },
+  { n: '五角星＋五邊形', N: penG(), E: [[0, 2], [2, 4], [4, 1], [1, 3], [3, 0], [0, 1], [1, 2], [2, 3], [3, 4], [4, 0]] },
+  { n: '三角形裡的三角形', N: [[.5, .1], [.1, .85], [.9, .85], [.3, .475], [.7, .475], [.5, .85]], E: [[0, 3], [3, 1], [1, 5], [5, 2], [2, 4], [4, 0], [3, 4], [3, 5], [4, 5]] },
+  hexG(),
+];
+let SK = null;
+const ek = (a, b) => a < b ? a + '-' + b : b + '-' + a;
+function stkHtml() {
+  return `<div class="gvc"><div class="tctl"><button class="btn sm" data-r="back">← 換遊戲</button><span class="gvprog">✏️ 剩下 <span class="rtimer">${fmtT(Math.max(0, Math.ceil((P.gend - Date.now()) / 1000)))}</span>　第 ${RW.lv + 1} / ${STK.length} 關：${STK[RW.lv].n}</span></div>
+  <p>用手指一筆畫完所有的線：<b>每條線只能走一次</b>，手不能離開。可以點一個圓點開始，再一個一個點下去（或用手指拖）。</p>
+  <div class="stkw"><svg id="stk" viewBox="0 0 400 400"></svg></div><div id="smsg" class="stkmsg"></div>
+  <div class="tpad"><button class="kk" data-s="UNDO">↶ 上一步</button><button class="kk" data-s="RESET">重來</button><button class="kk" data-s="HINT">💡 從哪裡開始</button><button class="kk" data-s="PREV">◀ 上一關</button><button class="kk go" data-s="NEXT">下一關 ▶</button></div></div>`;
+}
+function stkInit() { const L = STK[RW.lv]; SK = { L, used: new Set(), path: [], hint: -1, won: false, down: false }; stkDraw(); const sv = $('#stk'); sv.addEventListener('pointerdown', e => { e.preventDefault(); SK.down = true; stkPt(e); }); sv.addEventListener('pointermove', e => { if (SK.down) stkPt(e); }); window.addEventListener('pointerup', () => { if (SK) SK.down = false; }); sv.style.touchAction = 'none'; }
+function stkPt(e) { const sv = $('#stk'); if (!sv || SK.won) return; const pt = sv.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const q = pt.matrixTransform(sv.getScreenCTM().inverse()); const i = SK.L.N.findIndex(n => Math.hypot(n[0] * 360 + 20 - q.x, n[1] * 360 + 20 - q.y) < 30); if (i >= 0) stkGo(i); }
+function stkGo(i) {
+  const s = SK, p = s.path; s.hint = -1; if (!p.length) { p.push(i); stkDraw(); return; } const cur = p[p.length - 1]; if (i === cur) return;
+  const k = ek(cur, i);
+  if (p.length > 1 && i === p[p.length - 2] && s.used.has(k)) { s.used.delete(k); p.pop(); stkMsg('退回上一步'); }
+  else if (s.L.E.some(e => ek(e[0], e[1]) === k)) { if (s.used.has(k)) { stkMsg('這條線已經走過了喔'); return stkDraw(); } s.used.add(k); p.push(i); }
+  else { stkMsg('這兩個點中間沒有線'); return stkDraw(); }
+  if (s.used.size === s.L.E.length) { s.won = true; stkMsg('🎉 過關了！太厲害了！按「下一關」'); } else stkMsg('');
+  stkDraw();
+}
+function stkMsg(t) { const m = $('#smsg'); if (m) m.textContent = t; }
+function stkDraw() {
+  const sv = $('#stk'); if (!sv) return; const s = SK, P2 = n => [n[0] * 360 + 20, n[1] * 360 + 20];
+  const cur = s.path.length ? s.path[s.path.length - 1] : -1;
+  sv.innerHTML = s.L.E.map(e => { const a = P2(s.L.N[e[0]]), b = P2(s.L.N[e[1]]), u = s.used.has(ek(e[0], e[1])); return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${u ? '#e8588a' : '#b9c4d6'}" stroke-width="${u ? 10 : 7}" stroke-linecap="round"/>`; }).join('') +
+    s.L.N.map((n, i) => { const [x, y] = P2(n); return `<circle cx="${x}" cy="${y}" r="${i === cur ? 18 : 14}" fill="${i === cur ? '#ffd23a' : i === s.hint ? '#8be0a8' : '#fff'}" stroke="#2b3550" stroke-width="4"/>`; }).join('');
+}
+function stkKey(k) {
+  const s = SK; if (!s) return;
+  if (k === 'RESET') { s.used.clear(); s.path = []; s.won = false; s.hint = -1; stkMsg(''); }
+  else if (k === 'UNDO') { if (s.path.length > 1) { s.used.delete(ek(s.path[s.path.length - 1], s.path[s.path.length - 2])); s.path.pop(); s.won = false; } else s.path = []; }
+  else if (k === 'HINT') { const deg = s.L.N.map(() => 0); s.L.E.forEach(e => { deg[e[0]]++; deg[e[1]]++; }); const odd = deg.map((d, i) => d % 2 ? i : -1).filter(i => i >= 0); s.hint = odd.length ? odd[0] : 0; stkMsg(odd.length ? '💡 從有綠色的點開始，線會走得通喔！' : '💡 這一關從哪個點開始都可以，最後會回到起點！'); }
+  else if (k === 'NEXT') { RW.lv = (RW.lv + 1) % STK.length; return rwRender(); } else if (k === 'PREV') { RW.lv = (RW.lv + STK.length - 1) % STK.length; return rwRender(); }
+  stkDraw();
+}
+document.addEventListener('click', e => { const t = e.target.closest('#gv [data-s]'); if (t && S.view === 'rw' && RW.game === 'stroke') stkKey(t.dataset.s); });
+(function () { const st = document.createElement('style'); st.textContent = `.rstats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}.rs1{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center;font-family:var(--f-ui)}.rs1 b{display:block;font-size:1.6rem}.rs1 span{font-size:.9rem;color:#5b6b82}.btn.big{font-size:1.15rem;padding:14px 22px}.rcal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-family:var(--f-ui)}.rwd{text-align:center;font-weight:700;color:#5b6b82}.rcell{min-height:58px;border:2px solid var(--line);border-radius:10px;padding:3px 5px;background:#fff;display:flex;flex-direction:column;justify-content:space-between}.rcell small{color:#8a96a8}.rcell.has{background:#fff4c9;border-color:#f2c94c}.rcell.today{outline:3px solid #2b6cd9}.rcell.fut{opacity:.35}.rlog{display:flex;gap:12px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-family:var(--f-ui);flex-wrap:wrap}.rlog span:first-child{color:#8a96a8;min-width:92px}.rlog span:last-child{margin-left:auto;color:#c0620a;font-weight:700}.tetrow{display:flex;gap:16px;align-items:flex-start;justify-content:center;flex-wrap:wrap}#tcv{border:4px solid #2b3550;border-radius:10px;max-width:100%;touch-action:none}.tside{font-family:var(--f-ui);text-align:center}#tnx{border:3px solid #2b3550;border-radius:8px;margin-top:6px}#tmsg{margin-top:12px;font-weight:700;color:#c0393a}.tpad{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;justify-content:center}.tpad .kk{flex:0 1 110px;min-height:54px;font-size:1.05rem;touch-action:manipulation}.stkw{max-width:420px;margin:0 auto}#stk{width:100%;background:#f7faff;border:3px solid #2b3550;border-radius:14px;touch-action:none}.stkmsg{text-align:center;min-height:1.6em;font-weight:700;color:#c0393a;font-family:var(--f-ui);margin-top:6px}@media(max-width:640px){.rstats{grid-template-columns:repeat(2,1fr)}}`; document.head.appendChild(st); })();
 /* ============ 書櫃與開始 ============ */
 const BOOKS = [
   { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2, rt: RT2 },
