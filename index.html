@@ -398,6 +398,14 @@ mark.mk{background:#fff176;color:inherit;border-radius:4px;padding:0 2px;font-we
   .book.turn-next .page.right,.book.turn-prev .page.left{animation:none}
   .btn.recording{animation:none}
 }
+.sec.lockbox{text-align:center;background:#fff8e1;border:2px dashed #e3c24b;padding:22px 16px}
+.lockbox .lk{font-size:3rem;line-height:1}.lockbox .lkp{color:#6b5a1e;font-weight:700}
+.parbar{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#e6f4ea;border:1px solid #2e9e4a;border-radius:12px;padding:6px 12px;margin:6px 0;font-weight:700}
+#pwov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center}
+.pwbox{background:#fff;border-radius:18px;padding:18px 22px;width:min(300px,88vw);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.pwdots{display:flex;gap:12px;justify-content:center;margin:10px 0}.pwdots i{width:16px;height:16px;border-radius:50%;border:2px solid #0f766e}.pwdots i.on{background:#0f766e}
+.pwmsg{min-height:1.4em;color:#c0392b;font-weight:700}
+.pwpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}.pwpad button{font-size:1.4rem;padding:12px 0;border-radius:12px;border:2px solid #0f766e;background:#f2fbf9;font-weight:800}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -3193,7 +3201,7 @@ const ART = {
 };
 
 /* ============ 狀態 ============ */
-const S = { voiceURI: null, bookId: null, view: 'shelf', lv: 1, kb: (typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches) || (navigator.maxTouchPoints || 0) > 0, kbRow: 0, shift: false, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null };
+const S = { voiceURI: null, bookId: null, view: 'shelf', lv: 1, kb: (typeof matchMedia === 'function' && matchMedia('(pointer:coarse)').matches) || (navigator.maxTouchPoints || 0) > 0, kbRow: 0, shift: false, i: 0, side: 'L', auto: true, slow: false, fs: 1, mode: 'tts', sel: null, playing: false, recKey: null, reveal: {}, uploadKey: null, parent: false, lastI: -1, lastBook: null };
 const P = { done: {}, pos: {}, rt: {} };
 const PKEY = 'wwo-ebook-v1';
 let BOOK = null, SPREADS = [], QS = [], countable = [];
@@ -3739,10 +3747,40 @@ function resetQ(sp) {
   else { st.t[lv] = { vals: [], res: [], hm: [], done: false, shown: false, zh: st.t[lv].zh }; if (st.help) st.help[lv] = false; S.kbRow = 0; S.shift = false; }
   reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp);
 }
+const PARENT_PW = '2468';
+const parBar = () => `<div class="parbar"><span>👨‍👩 家長模式（換頁會自動鎖回）</span><button class="btn sm" data-act="plock">🔒 回到孩子模式</button></div>`;
+function lockedR(q) {
+  return `<div class="rh"><h2>考試手冊</h2><span>第 ${q.no} 題 · ${esc(q.cat)}</span></div>
+  <div class="sec lockbox"><div class="lk">🔒</div><h3>孩子作答中</h3><p>答案和解說先蓋起來，自己想一想、說一說！答對拿到星星後，答案會自動打開。</p><p class="lkp">卡住了？左邊的「看提示」可以幫你。</p><button class="btn" data-act="punlock">👨‍👩 家長解鎖</button></div>
+  <div class="sec exam"><h3>去哪裡找答案</h3><div class="jumps">${q.jump.map(id => { const s = SPREADS.find(x => x.id === id); return s ? `<button class="btn" data-act="goto" data-id="${id}">${esc(s.label)}</button>` : ''; }).join('')}</div></div>`;
+}
+function reR() {
+  const sp = SP(), R = $('#pgR'), b = R.scrollTop;
+  if (sp.kind === 'rt') R.innerHTML = rightRt(sp); else if (sp.q) R.innerHTML = rightQ(sp); R.scrollTop = b;
+}
+function pwAsk() {
+  if ($('#pwov')) return;
+  const o = document.createElement('div'); o.id = 'pwov'; let v = '';
+  const draw = (msg) => { o.innerHTML = `<div class="pwbox"><h3>👨‍👩 家長解鎖</h3><p>請輸入 4 位數密碼</p><div class="pwdots">${[0, 1, 2, 3].map(i => `<i class="${i < v.length ? 'on' : ''}"></i>`).join('')}</div><div class="pwmsg">${msg || ''}</div><div class="pwpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '取消', 0, '⌫'].map(k => `<button data-k="${k}">${k}</button>`).join('')}</div></div>`; };
+  draw();
+  o.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) { if (e.target === o) o.remove(); return; }
+    const k = b.dataset.k;
+    if (k === '取消') { o.remove(); return; }
+    if (k === '⌫') v = v.slice(0, -1); else if (v.length < 4) v += k;
+    if (v.length === 4) {
+      if (v === PARENT_PW) { S.parent = true; o.remove(); reR(); toast('家長模式已開啟，換頁會自動鎖回', 2200); return; }
+      v = ''; draw('密碼不對，再試一次'); return;
+    }
+    draw();
+  });
+  document.body.appendChild(o);
+}
 function rightQ(sp) {
   const q = sp.q, ok = S.reveal[q.pid] || qAny(q);
+  if (!S.parent && !qAny(q)) return lockedR(q);
   const lines = q.ans.split('\n'), zl = q.azh.split('\n'), hide = S.lv === 3 && !ok;
-  let h = `<div class="rh"><h2>考試手冊</h2><span>第 ${q.no} 題 · ${esc(q.cat)}</span></div>`;
+  let h = `<div class="rh"><h2>考試手冊</h2><span>第 ${q.no} 題 · ${esc(q.cat)}</span></div>${S.parent ? parBar() : ''}`;
   h += `<div class="sec"><h3>標準答案 <small>先自己試試看再偷看</small></h3>`;
   if (!ok) h += `<button class="btn reveal" data-act="reveal">顯示答案</button>`;
   else h += lines.map((l, i) => `<button class="tr" data-act="qline" data-l="${i}"><span class="en">${nl(l)}</span><span class="zh">${nl(zl[i] || (lines.length === 1 ? q.azh : ''))}</span></button>`).join('');
@@ -3758,6 +3796,7 @@ function rightQ(sp) {
 
 /* ============ 繪製整個畫面 ============ */
 function render(dir = 0) {
+  if (S.lastI !== S.i || S.lastBook !== S.bookId) { S.parent = false; S.lastI = S.i; S.lastBook = S.bookId; }
   const sp = SP(), L = $('#pgL'), R = $('#pgR'), book = $('#book');
   L.className = 'page left'; L.style.background = ''; L.scrollTop = 0; R.scrollTop = 0;
   S.sel = null;
@@ -3905,7 +3944,7 @@ function leftRt(sp) {
 }
 function rightRt(sp) {
   const R = rtState(sp), rt = sp.rt, s = rtScore(sp);
-  let h = `<div class="rh"><h2>閱讀測驗手冊</h2><span>${esc(BOOK.title)}</span></div>
+  let h = `<div class="rh"><h2>閱讀測驗手冊</h2><span>${esc(BOOK.title)}</span></div>${S.parent ? parBar() : `<div class="parbar"><span>參考答案已鎖住</span><button class="btn sm" data-act="punlock">👨‍👩 家長解鎖</button></div>`}
   <div class="sec exam"><h3>目前分數</h3><p style="font-size:1.4rem;font-weight:800;margin:4px 0">${s.total} / 14</p>
   <p>${R.sub ? `是非題與選擇題 ${s.o} / 10；手寫問答 ${s.w} / 4` : `是非題與選擇題送出後才會計分（已作答 ${s.n} / 10）；手寫問答 ${s.w} / 4`}</p>
   <p style="margin-top:6px">10 題全部作答後按「送出答案」，會顯示答對幾題、答錯幾題，並解釋每個錯題。答對 8 題以上會得到星星。想再試一次，按「再測驗一次」，選項的順序會重新排列。</p></div>
@@ -3918,7 +3957,7 @@ function rightRt(sp) {
   h += `</div><div class="sec"><h3>手寫問答的參考答案</h3>`;
   rt.wr.forEach((x, i) => {
     const k = i + 11;
-    h += `<div class="ak"><b>Q${k}　${esc(x.q)}</b>` + (R.show && R.show[k] ? `<button class="tr" data-act="rtmodel" data-n="${k}"><span class="en">${esc(x.model)}</span><span class="zh">${esc(x.zh)}</span></button><p><b>可以用的關鍵字：</b>${esc(x.keys)}</p><p>${esc(x.tip)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button>` : `<p>先自己寫寫看，再偷看參考答案。</p><button class="btn reveal sm" data-act="rtshow" data-n="${k}">顯示參考答案</button>`) + `</div>`;
+    h += `<div class="ak"><b>Q${k}　${esc(x.q)}</b>` + (R.show && R.show[k] ? `<button class="tr" data-act="rtmodel" data-n="${k}"><span class="en">${esc(x.model)}</span><span class="zh">${esc(x.zh)}</span></button><p><b>可以用的關鍵字：</b>${esc(x.keys)}</p><p>${esc(x.tip)}</p><button class="btn sm" data-act="goto" data-id="${x.j}">回課文找證據</button>` : (S.parent ? `<p>先自己寫寫看，再偷看參考答案。</p><button class="btn reveal sm" data-act="rtshow" data-n="${k}">顯示參考答案</button>` : `<p>🔒 參考答案先蓋起來，請孩子自己先寫。家長可按下面的「家長解鎖」。</p>`)) + `</div>`;
   });
   h += `</div><div class="sec exam"><h3>寫完整句子的三個檢查</h3><ol class="steps">
    <li><span><b>Content 內容（1 分）：</b>有沒有回答題目問的事？可以直接用課文裡的句子。</span></li>
@@ -3985,6 +4024,8 @@ document.addEventListener('click', async e => {
     case 'qspeak': playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break;
     case 'qans': playItems([{ text: sp.q.say }], { mark: false, useMine: false }); break;
     case 'qline': { const l = sp.q.ans.split('\n')[+t.dataset.l]; playItems([{ text: l.replace(/^(Beginning|Middle|End):\s*/, '') }], { mark: false, useMine: false }); break; }
+    case 'punlock': pwAsk(); break;
+    case 'plock': S.parent = false; reR(); toast('已回到孩子模式'); break;
     case 'reveal': { const st = QSTATE[sp.q.pid]; st.help = st.help || {}; [1, 2, 3].forEach(l => { if (!qDoneLv(sp.q, l)) st.help[l] = true; }); toast('看了答案也沒關係！再自己做一次就能拿到星星', 2600); } S.reveal[sp.q.pid] = true; $('#pgR').innerHTML = rightQ(sp); updDock(); break;
     case 'chip': onChip(t.dataset.w); break;
     case 'blank': {
