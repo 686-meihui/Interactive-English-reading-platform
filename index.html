@@ -3567,13 +3567,14 @@ function updDock() {
       <div class="hint">${x ? '選取的句子：' + esc(x.en.length > 34 ? x.en.slice(0, 34) + '…' : x.en) : '點一句課文，就能聽、能錄那一句。虛線單字可以點來看中文。'}</div>`;
   } else if (sp.kind === 'q') {
     const q = sp.q, st = QSTATE[q.pid], key = q.pid, has = DB.keys.has(key), isRec = S.recKey === key, ok = qAny(q) || S.reveal[q.pid];
+    const spq = S.lv >= 2 && smode() === 'speak';
     const kbd = (S.lv >= 2 && S.kb && smode() === 'type' && !qDoneLv(q, S.lv)) ? kbHtml() : '';
     d.innerHTML = kbd + `
       ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="qans" ${ok ? '' : 'disabled'}>${ICON.spk}聽完整答案</button>`}
-      ${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec">${ICON.mic}錄我的回答</button>`}
+      ${spq ? '' : `${isRec ? `<button class="btn recording" data-act="rec">${ICON.stop}停止錄音</button>` : `<button class="btn rec" data-act="rec">${ICON.mic}錄我的回答</button>`}
       <button class="btn" data-act="mine" ${has ? '' : 'disabled'}>${ICON.play}聽我的</button>
       <button class="btn" data-act="compare" ${has && ok ? '' : 'disabled'}>對照：標準 → 我的</button>
-      <button class="btn sm" data-act="delrec" ${has ? '' : 'disabled'} aria-label="刪除我的回答">${ICON.trash}</button>
+      <button class="btn sm" data-act="delrec" ${has ? '' : 'disabled'} aria-label="刪除我的回答">${ICON.trash}</button>`}
       <div class="hint">${ok ? '先聽標準答案，再大聲說一遍並錄下來。' : '先把句子填完，就能聽完整答案。'}</div>`;
   }
 }
@@ -3993,9 +3994,10 @@ document.addEventListener('click', async e => {
     case 'rtans': { const R = rtState(sp), k = +t.dataset.n; if (R.sub) break; R.a[k] = t.dataset.t === 'tf' ? t.dataset.v : +t.dataset.v; rtRefresh(sp); break; }
     case 'rtsubmit': { const R = rtState(sp), s = rtScore(sp); if (s.n < 10) { toast(`還有 ${10 - s.n} 題沒作答`); break; } R.sub = 1; const s2 = rtScore(sp); rtRefresh(sp); $('#pgL').scrollTop = 0; rtReward(sp, s2.o); break; }
     case 'rtreset': { const R = rtState(sp); R.a = {}; R.c = {}; R.show = {}; R.sub = 0; rtShuffle(R, sp); rtRefresh(sp); $('#pgL').scrollTop = 0; toast('重新開始，這次一定可以滿分！'); break; }
-    case 'qlv': { const n = +t.dataset.lv; if (n === S.lv) break; stopAll(); S.lv = n; reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp); $('#pgL').scrollTop = 0; if (n === 3) playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break; }
+    case 'qlv': { const n = +t.dataset.lv; if (n === S.lv) break; stopAll(); S.lv = n; reLeftQ(sp); $('#pgR').innerHTML = rightQ(sp); $('#pgL').scrollTop = 0; if (n === 3 && smode() === 'type') playItems([{ text: sp.q.q }], { mark: false, useMine: false }); break; }
     case 'qreset': resetQ(sp); break;
     case 'smode': spMode(t.dataset.m, sp); break;
+    case 'sreset': saveP(); location.reload(); break;
     case 'srec': spStart(+t.dataset.i); break;
     case 'sstop': spStop(); break;
     case 'sparent': spParent(+t.dataset.i, sp); break;
@@ -5101,7 +5103,7 @@ function spHtml(q, lv) {
     <div class="sptxt" id="splive-${i}">${on ? '正在聽…請說話' : T.vals[i] ? `🎧 電腦聽到：<b>${esc(T.vals[i])}</b>` : ''}</div>
     ${res && !res.ok ? `<div class="tmsg">${esc(res.msg)}</div>` : ''}${T.hm[i] ? `<div class="tmsg hint">${esc(T.hm[i])}</div>` : ''}${T.shown ? `<div class="tmsg ans">參考答案：${esc(r.text)}</div>` : ''}</div>`;
   }).join('');
-  return rows + `<div class="tctl"><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button></div><p class="vnone" style="margin-top:8px">背誦你在第 1 關排好的句子。按下麥克風後大聲、慢慢說完整句，說完會自動檢查。</p>`;
+  return rows + `<div class="tctl"><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button></div>${(T.tries || []).some(n => n >= 1) && !T.done ? '<div class="tctl"><button class="btn sm" data-act="sreset">🔄 麥克風沒反應？按這裡重設（會重新載入，進度不會掉）</button></div>' : ''}<p class="vnone" style="margin-top:8px">背誦你在第 1 關排好的句子。按下麥克風後大聲、慢慢說完整句，說完會自動檢查。</p>`;
 }
 function ansHtml(q, lv) {
   const sp = smode() === 'speak';
@@ -5109,34 +5111,54 @@ function ansHtml(q, lv) {
   return tog + (sp ? spHtml(q, lv) : typedHtml(q, lv));
 }
 function spRefresh() { const sp = SP(); if (!sp || sp.kind !== 'q') return; const e = $('#typed'); if (e && S.lv >= 2) e.innerHTML = ansHtml(sp.q, S.lv); }
-function spStop(silent, auto) { clearTimeout(SPST.tm); SPST.user = !silent && !auto; const r = SPST.rec; if (r) { if (silent) SPST.rec = null; SPST.silent = !!silent; try { silent ? r.abort() : r.stop(); } catch (e) { } if (!silent) { clearTimeout(SPST.wd); SPST.wd = setTimeout(() => { if (SPST.rec === r && SPST.force) SPST.force(); }, 1500); } } else if (SPST.on) { SPST.seq = (SPST.seq || 0) + 1; SPST.on = false; if (!silent) spRefresh(); } if (silent) { SPST.on = false; } }
+try { if (window.speechSynthesis && !speechSynthesis.__w) { const o = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { SPST.ttsT = Date.now(); try { u.addEventListener('end', () => { SPST.ttsT = Date.now(); }); u.addEventListener('error', () => { SPST.ttsT = Date.now(); }); } catch (e) { } return o(u); }; speechSynthesis.__w = 1; } } catch (e) { }
+function spKill() { const L = SPST.live; SPST.live = null; clearTimeout(SPST.idleT); if (L) { L.dead = true; try { L.rec.abort(); } catch (e) { } } }
+function spStop(silent, auto) {
+  clearTimeout(SPST.tm); clearTimeout(SPST.nt);
+  if (silent) { if (SPST.keep) return; spKill(); SPST.on = false; SPST.seq = (SPST.seq || 0) + 1; return; }
+  if (!SPST.on) return;
+  SPST.user = !auto; const my = SPST.seq;
+  if (auto) spEnd(); else setTimeout(() => { if (SPST.seq === my) spEnd(); }, 350);
+}
+/* 一次回答結束：整理結果。麥克風本身（辨識器）會保持開著 90 秒，連續回答時不必每次重新啟動（iPad 重新啟動很不穩） */
+function spEnd() {
+  if (!SPST.on) return; const i = SPST.i, q = SPST.q, lv = SPST.lv;
+  SPST.on = false; clearTimeout(SPST.tm); clearTimeout(SPST.nt);
+  if (!SPST.alts.length) {
+    spKill();
+    if (!SPST.user && (SPST.retry || 0) < 1 && (!SPST.err || ['no-speech', 'aborted', 'audio-capture'].includes(SPST.err))) { toast('麥克風剛剛沒聽到，再幫你開一次…', 1500); return spStart(i, 1); }
+  } else { clearTimeout(SPST.idleT); SPST.idleT = setTimeout(spKill, 90000); }
+  spFinish(i, q, lv);
+}
 function spStart(i, retry) {
   if (!spOK()) { toast('這個瀏覽器不能用口說，請改用打字', 2500); return; }
-  const sp = SP(), q = sp.q, lv = S.lv; if (!retry && S.recKey) { try { toggleRec(S.recKey); } catch (e) { } }
-  stopAll(); spStop(true);
-  /* iPad：剛播完聲音或錄音，麥克風要等一下才會回來；用新的辨識器並稍微延遲 */
+  const sp = SP(), q = sp.q, lv = S.lv;
+  const wasTts = (() => { try { return speechSynthesis.speaking || speechSynthesis.pending; } catch (e) { return false; } })() || Date.now() - (SPST.ttsT || 0) < 5000;
+  SPST.keep = true; try { stopAll(); } finally { SPST.keep = false; }
+  clearTimeout(SPST.tm); clearTimeout(SPST.nt);
   const my = SPST.seq = (SPST.seq || 0) + 1;
-  Object.assign(SPST, { on: true, i, pid: q.pid, lv, rec: null, alts: [], err: '', silent: false, retry: retry || 0, t0: Date.now() }); spRefresh();
+  Object.assign(SPST, { on: true, i, pid: q.pid, q, lv, alts: [], err: '', retry: retry || 0, t0: Date.now(), user: false }); spRefresh();
+  const arm = () => {
+    SPST.tm = setTimeout(() => { if (SPST.seq === my) spStop(false, true); }, 25000);
+    SPST.nt = setTimeout(() => { if (SPST.seq === my && SPST.on && !SPST.alts.length) spStop(false, true); }, 8000);
+  };
+  const L = SPST.live;
+  if (L && !L.dead && !wasTts) { L.base = L.n; arm(); return; }   /* 麥克風還開著：直接接著聽 */
+  if (L) spKill();
   setTimeout(() => {
     if (SPST.seq !== my || !SPST.on) return;
-    const rec = new SPR(); rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = true; SPST.rec = rec;
-    rec.onresult = e => { SPST.alts = Array.from(e.results).map(r => Array.from(r).map(a => a.transcript)); const live = $('#splive-' + i); if (live) live.innerHTML = '🎧 聽到：<b>' + esc(SPST.alts.map(a => a[0]).join(' ')) + '</b>'; };
-    rec.onerror = e => { SPST.err = e.error || 'error'; };
-    let fin = false;
-    const done = () => {
-      if (fin || SPST.rec !== rec) return; fin = true; try { rec.abort(); } catch (e) { }
-      SPST.on = false; clearTimeout(SPST.tm);
-      if (SPST.silent) { SPST.silent = false; return; }
-      SPST.rec = null;
-      /* 一聲不響就結束（常見於 iPad 麥克風還沒準備好）：自動再試一次 */
-      if (!SPST.user && !SPST.alts.length && (!SPST.err || SPST.err === 'no-speech' || SPST.err === 'aborted' || SPST.err === 'audio-capture') && (SPST.retry || 0) < 1 && Date.now() - SPST.t0 < 6000) { toast('麥克風剛剛沒聽到，再幫你開一次…', 1500); return spStart(i, 1); }
-      spFinish(i, q, lv);
+    const rec = new SPR(), L2 = { rec, base: 0, n: 0, dead: false }; SPST.live = L2;
+    rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = true;
+    rec.onresult = e => {
+      if (L2.dead) return; L2.n = e.results.length; if (!SPST.on || SPST.live !== L2) return;
+      SPST.alts = Array.from(e.results).slice(L2.base).map(r => Array.from(r).map(a => a.transcript));
+      const live = $('#splive-' + SPST.i); if (live) live.innerHTML = '🎧 聽到：<b>' + esc(SPST.alts.map(a => a[0]).join(' ')) + '</b>';
     };
-    rec.onend = done; SPST.force = done;
-    try { rec.start(); } catch (e) { SPST.on = false; SPST.rec = null; toast('麥克風打不開，請再按一次', 2500); spRefresh(); return; }
-    SPST.tm = setTimeout(() => spStop(false, true), 25000);
-    clearTimeout(SPST.nt); SPST.nt = setTimeout(() => { if (SPST.rec === rec && !SPST.alts.length) spStop(false, true); }, 8000);
-  }, retry ? 500 : 450);
+    rec.onerror = e => { if (SPST.live === L2) SPST.err = e.error || 'error'; };
+    rec.onend = () => { if (SPST.live === L2) { SPST.live = null; L2.dead = true; if (SPST.on) spStop(false, true); } };
+    try { rec.start(); } catch (e) { spKill(); SPST.on = false; toast('麥克風打不開，請再按一次', 2500); spRefresh(); return; }
+    arm();
+  }, wasTts ? 1000 : 450);
 }
 function spFinish(i, q, lv) {
   const T = QSTATE[q.pid].t[lv], row = q.rows[i], alts = SPST.alts, err = SPST.err;
@@ -5154,7 +5176,7 @@ function spFinish(i, q, lv) {
 function spComplete(q, lv) {
   const sp = SP(), T = QSTATE[q.pid].t[lv]; T.done = true; T.note = ''; award(lvKey(q, lv), isHelped(q, lv));
   spRefresh(); $('#win').innerHTML = winHtml(q); $('#pgR').innerHTML = rightQ(sp); updDock();
-  playItems([{ text: q.say }], { mark: false, useMine: false });
+  toast('🎉 說得很棒！想聽標準答案，按「聽完整答案」', 3200);
 }
 function spHint(sp) { const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv]; markHelp(q, lv); const i = q.rows.findIndex((r, j) => !(T.res[j] && T.res[j].ok)); if (i < 0) return; T.hm[i] = '提示：看著這句話，慢慢唸一次 👉 ' + q.rows[i].text; spRefresh(); }
 function spParent(i, sp) { const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv]; T.res[i] = { ok: true, msg: '' }; if (q.rows.every((r, k) => T.res[k] && T.res[k].ok)) spComplete(q, lv); else spRefresh(); }
