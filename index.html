@@ -5109,18 +5109,34 @@ function ansHtml(q, lv) {
   return tog + (sp ? spHtml(q, lv) : typedHtml(q, lv));
 }
 function spRefresh() { const sp = SP(); if (!sp || sp.kind !== 'q') return; const e = $('#typed'); if (e && S.lv >= 2) e.innerHTML = ansHtml(sp.q, S.lv); }
-function spStop(silent) { clearTimeout(SPST.tm); const r = SPST.rec; SPST.rec = null; if (r) { SPST.silent = !!silent; try { silent ? r.abort() : r.stop(); } catch (e) { } } if (silent) { SPST.on = false; } }
-function spStart(i) {
+function spStop(silent, auto) { clearTimeout(SPST.tm); SPST.user = !silent && !auto; const r = SPST.rec; if (r) { if (silent) SPST.rec = null; SPST.silent = !!silent; try { silent ? r.abort() : r.stop(); } catch (e) { } if (!silent) { clearTimeout(SPST.wd); SPST.wd = setTimeout(() => { if (SPST.rec === r && SPST.force) SPST.force(); }, 1500); } } else if (SPST.on) { SPST.seq = (SPST.seq || 0) + 1; SPST.on = false; if (!silent) spRefresh(); } if (silent) { SPST.on = false; } }
+function spStart(i, retry) {
   if (!spOK()) { toast('這個瀏覽器不能用口說，請改用打字', 2500); return; }
-  const sp = SP(), q = sp.q, lv = S.lv; if (S.recKey) { try { toggleRec(S.recKey); } catch (e) { } }
+  const sp = SP(), q = sp.q, lv = S.lv; if (!retry && S.recKey) { try { toggleRec(S.recKey); } catch (e) { } }
   stopAll(); spStop(true);
-  const rec = new SPR(); rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = false;
-  Object.assign(SPST, { on: true, i, pid: q.pid, lv, rec, alts: [], err: '', silent: false });
-  rec.onresult = e => { SPST.alts = Array.from(e.results).map(r => Array.from(r).map(a => a.transcript)); const live = $('#splive-' + i); if (live) live.innerHTML = '🎧 聽到：<b>' + esc(SPST.alts.map(a => a[0]).join(' ')) + '</b>'; };
-  rec.onerror = e => { SPST.err = e.error || 'error'; };
-  rec.onend = () => { if (SPST.rec !== rec && !SPST.silent) { /* stopped by user */ } SPST.on = false; clearTimeout(SPST.tm); if (SPST.silent) { SPST.silent = false; return; } SPST.rec = null; spFinish(i, q, lv); };
-  try { rec.start(); } catch (e) { SPST.on = false; toast('麥克風打不開，請再按一次', 2500); return; }
-  SPST.tm = setTimeout(() => spStop(), 20000); spRefresh();
+  /* iPad：剛播完聲音或錄音，麥克風要等一下才會回來；用新的辨識器並稍微延遲 */
+  const my = SPST.seq = (SPST.seq || 0) + 1;
+  Object.assign(SPST, { on: true, i, pid: q.pid, lv, rec: null, alts: [], err: '', silent: false, retry: retry || 0, t0: Date.now() }); spRefresh();
+  setTimeout(() => {
+    if (SPST.seq !== my || !SPST.on) return;
+    const rec = new SPR(); rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = true; SPST.rec = rec;
+    rec.onresult = e => { SPST.alts = Array.from(e.results).map(r => Array.from(r).map(a => a.transcript)); const live = $('#splive-' + i); if (live) live.innerHTML = '🎧 聽到：<b>' + esc(SPST.alts.map(a => a[0]).join(' ')) + '</b>'; };
+    rec.onerror = e => { SPST.err = e.error || 'error'; };
+    let fin = false;
+    const done = () => {
+      if (fin || SPST.rec !== rec) return; fin = true; try { rec.abort(); } catch (e) { }
+      SPST.on = false; clearTimeout(SPST.tm);
+      if (SPST.silent) { SPST.silent = false; return; }
+      SPST.rec = null;
+      /* 一聲不響就結束（常見於 iPad 麥克風還沒準備好）：自動再試一次 */
+      if (!SPST.user && !SPST.alts.length && (!SPST.err || SPST.err === 'no-speech' || SPST.err === 'aborted' || SPST.err === 'audio-capture') && (SPST.retry || 0) < 1 && Date.now() - SPST.t0 < 6000) { toast('麥克風剛剛沒聽到，再幫你開一次…', 1500); return spStart(i, 1); }
+      spFinish(i, q, lv);
+    };
+    rec.onend = done; SPST.force = done;
+    try { rec.start(); } catch (e) { SPST.on = false; SPST.rec = null; toast('麥克風打不開，請再按一次', 2500); spRefresh(); return; }
+    SPST.tm = setTimeout(() => spStop(false, true), 25000);
+    clearTimeout(SPST.nt); SPST.nt = setTimeout(() => { if (SPST.rec === rec && !SPST.alts.length) spStop(false, true); }, 8000);
+  }, retry ? 500 : 450);
 }
 function spFinish(i, q, lv) {
   const T = QSTATE[q.pid].t[lv], row = q.rows[i], alts = SPST.alts, err = SPST.err;
