@@ -3567,7 +3567,7 @@ function updDock() {
       <div class="hint">${x ? '選取的句子：' + esc(x.en.length > 34 ? x.en.slice(0, 34) + '…' : x.en) : '點一句課文，就能聽、能錄那一句。虛線單字可以點來看中文。'}</div>`;
   } else if (sp.kind === 'q') {
     const q = sp.q, st = QSTATE[q.pid], key = q.pid, has = DB.keys.has(key), isRec = S.recKey === key, ok = qAny(q) || S.reveal[q.pid];
-    const spq = S.lv >= 2 && smode() === 'speak';
+    const spq = S.lv >= 2 && smode() !== 'type';
     const kbd = (S.lv >= 2 && S.kb && smode() === 'type' && !qDoneLv(q, S.lv)) ? kbHtml() : '';
     d.innerHTML = kbd + `
       ${S.playing ? `<button class="btn pri" data-act="stop">${ICON.stop}停止</button>` : `<button class="btn pri" data-act="qans" ${ok ? '' : 'disabled'}>${ICON.spk}聽完整答案</button>`}
@@ -3703,7 +3703,7 @@ function leftQ(sp) {
   let h = `<div class="qbadge">第 ${q.no} 題 · ${esc(q.cat)} ${esc(q.zh)}</div>${lvTabs(q)}`;
   if (lv === 3) {
     const T3 = st.t[3];
-    h += `<div class="listenbox"><div class="lbt">${smode() === 'speak' ? '只聽問題，用英語把整個答句說出來' : '只聽問題，把整個答句打出來'}</div><div class="lbb"><button class="btn pri" data-act="qspeak">${ICON.spk}聽提問</button><button class="btn" data-act="qslow">${ICON.spk}慢慢聽</button><button class="btn sm" data-act="qzhtoggle">${T3.zh ? '隱藏中文提示' : '需要提示：看中文'}</button></div>
+    h += `<div class="listenbox"><div class="lbt">${smode() !== 'type' ? '只聽問題，用英語把整個答句說出來' : '只聽問題，把整個答句打出來'}</div><div class="lbb"><button class="btn pri" data-act="qspeak">${ICON.spk}聽提問</button><button class="btn" data-act="qslow">${ICON.spk}慢慢聽</button><button class="btn sm" data-act="qzhtoggle">${T3.zh ? '隱藏中文提示' : '需要提示：看中文'}</button></div>
     ${T3.zh ? `<div class="hintbox" style="margin:12px 0 0"><b>中文提示</b>${esc(q.qzh)}<br>${nl(q.azh)}</div>` : ''}</div>`;
   } else {
     h += `<p class="qtext" style="font-family:var(--f-read)">${esc(q.q)}</p><p class="qzh">${esc(q.qzh)}</p>
@@ -3712,7 +3712,7 @@ function leftQ(sp) {
   }
   if (lv === 1) h += un ? `<div class="lab2">Unscramble the Sentence 句子重組：點字塊，排成一句話（句首會自動大寫）</div><div id="scr" style="font-family:var(--f-read)">${scrambleHtml(q)}</div>`
     : `<div class="frame" id="frame" style="font-family:var(--f-read)">${frameHtml(q)}</div><div class="bank" id="bank">${bankHtml(q)}</div><div class="tctl"><button class="btn sm" data-act="qreset">清除重做</button></div>`;
-  else h += `<div class="lab2">${lv === 2 ? (smode() === 'speak' ? 'Say the Sentence 引導口說：看開頭的字，把整句英語背出來' : 'Type the Sentence 引導打字：看開頭的字，接著把句子打完整（注意大寫和句號）') : (smode() === 'speak' ? 'Listen and Say 聽題口說：聽完問題，用英語說出完整的答句' : 'Listen and Type 聽題打字：打出完整的答句（句首大寫、句尾句號）')}</div><div id="typed" style="font-family:var(--f-read)">${ansHtml(q, lv)}</div>`;
+  else h += `<div class="lab2">${lv === 2 ? (smode() !== 'type' ? 'Say the Sentence 引導口說：看開頭的字，把整句英語背出來' : 'Type the Sentence 引導打字：看開頭的字，接著把句子打完整（注意大寫和句號）') : (smode() !== 'type' ? 'Listen and Say 聽題口說：聽完問題，用英語說出完整的答句' : 'Listen and Type 聽題打字：打出完整的答句（句首大寫、句尾句號）')}</div><div id="typed" style="font-family:var(--f-read)">${ansHtml(q, lv)}</div>`;
   h += `<div id="win">${winHtml(q)}</div><div class="dock" id="dock"></div>`;
   return h;
 }
@@ -4002,7 +4002,7 @@ document.addEventListener('click', async e => {
     case 'sstop': spStop(); break;
     case 'sparent': spParent(+t.dataset.i, sp); break;
     case 'qtcheck': typedCheckAll(sp); break;
-    case 'qthint': { if (smode() === 'speak') { spHint(sp); break; } const q = sp.q, lv = S.lv, T = readTyped(q, lv); markHelp(q, lv); const i = q.rows.findIndex((r, j) => !(T.res[j] && T.res[j].ok)); if (i < 0) break; T.hm[i] = nextWord(fullOf(q, lv, i), q.rows[i]); $('#typed').innerHTML = ansHtml(q, lv); break; }
+    case 'qthint': { if (smode() !== 'type') { spHint(sp); break; } const q = sp.q, lv = S.lv, T = readTyped(q, lv); markHelp(q, lv); const i = q.rows.findIndex((r, j) => !(T.res[j] && T.res[j].ok)); if (i < 0) break; T.hm[i] = nextWord(fullOf(q, lv, i), q.rows[i]); $('#typed').innerHTML = ansHtml(q, lv); break; }
     case 'qtshow': { const q = sp.q, lv = S.lv, T = readTyped(q, lv); T.shown = !T.shown; if (T.shown) markHelp(q, lv); $('#typed').innerHTML = ansHtml(q, lv); break; }
     case 'qzhtoggle': { const T = QSTATE[sp.q.pid].t[3]; T.zh = !T.zh; reLeftQ(sp); break; }
     case 'qslow': { const old = S.slow; S.slow = true; await playItems([{ text: sp.q.q }], { mark: false, useMine: false }); S.slow = old; break; }
@@ -5078,7 +5078,7 @@ document.addEventListener('click', e => { const t = e.target.closest('#gv [data-
 /* ============ 口說作答（第 2、3 關）============ */
 const SPR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const spOK = () => !!SPR;
-const smode = () => { try { if (/[?&]sm=type/.test(location.search)) return 'type'; } catch (e) { } return spOK() ? (S.sm || 'speak') : 'type'; };
+const smode = () => { try { if (/[?&]sm=type/.test(location.search)) return 'type'; } catch (e) { } if (S.sm === 'dict') return 'dict'; if (!S.sm && /iPad|Macintosh/.test(navigator.userAgent) && (navigator.maxTouchPoints || 0) > 1) return 'dict'; return spOK() ? (S.sm || 'speak') : 'type'; };
 const SPST = { on: false, i: -1, pid: null, lv: 0, rec: null, alts: [], err: '', tm: null };
 function lev(a, b) { const m = a.length, n = b.length; if (Math.abs(m - n) > 1) return 2; const d = Array.from({ length: m + 1 }, (_, i) => [i]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; }
 const spEq = (a, b) => a === b || wEq(a, b) || (a.length >= 4 && b.length >= 4 && lev(a, b) <= 1);
@@ -5105,10 +5105,34 @@ function spHtml(q, lv) {
   }).join('');
   return rows + `<div class="tctl"><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button></div>${(T.tries || []).some(n => n >= 1) && !T.done ? '<div class="tctl"><button class="btn sm" data-act="sreset">🔄 麥克風沒反應？按這裡重設（會重新載入，進度不會掉）</button></div>' : ''}<p class="vnone" style="margin-top:8px">背誦你在第 1 關排好的句子。按下麥克風後大聲、慢慢說完整句，說完會自動檢查。</p>`;
 }
+function dictHtml(q, lv) {
+  const T = QSTATE[q.pid].t[lv];
+  const rows = q.rows.map((r, i) => {
+    const res = T.res[i], lab = r.label || (q.rows.length > 1 ? `第 ${i + 1} 句` : '');
+    const ok = res && res.ok;
+    return `<div class="trow sprow${ok ? ' ok' : ''}">${lab ? `<div class="tlab">${esc(lab)}</div>` : ''}${lv === 2 ? `<div class="starter big">${esc(r.starter)} …</div>` : ''}
+    ${ok ? `<div class="spok">✅ 說對了！</div><div class="sptxt">🎧 電腦聽到：<b>${esc(T.vals[i] || '')}</b></div>` : T.done ? '' : `<textarea class="dtx" data-i="${i}" rows="2" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="點這裡，再按鍵盤上的 🎤，說英語…">${esc(T.vals[i] || '')}</textarea><div class="sptxt" id="dst-${i}"></div>`}
+    ${T.hm[i] ? `<div class="tmsg hint">${esc(T.hm[i])}</div>` : ''}${T.shown ? `<div class="tmsg ans">參考答案：${esc(r.text)}</div>` : ''}</div>`;
+  }).join('');
+  return `<div class="tmsg hint" style="margin:0 0 8px">點下面的框框，再按 iPad 鍵盤上的 🎤（麥克風）鍵，用英語說出整句話。鍵盤要先切換成英文喔！</div>` + rows + `<div class="tctl"><button class="btn sm" data-act="qthint" ${T.done ? 'disabled' : ''}>提示</button><button class="btn sm" data-act="qtshow">看答案</button><button class="btn sm" data-act="qreset">清除重做</button></div>`;
+}
+let DICTT = null;
+function dictCheck(el) {
+  const sp = SP(); if (!sp || sp.kind !== 'q') return; const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv], i = +el.dataset.i, row = q.rows[i];
+  T.vals[i] = el.value; const st = $('#dst-' + i), txt = el.value.trim(); if (!txt) { if (st) st.innerHTML = ''; return; }
+  const r = speechCheck(txt, row);
+  if (r.ok) {
+    T.res[i] = { ok: true, msg: '' }; T.tries = T.tries || []; T.tries[i] = 0;
+    if (q.rows.every((x, k) => T.res[k] && T.res[k].ok)) return spComplete(q, lv);
+    spRefresh(); const nx = q.rows.findIndex((x, k) => !(T.res[k] && T.res[k].ok)); const ne = $('.dtx[data-i="' + nx + '"]'); if (ne) ne.focus(); return;
+  }
+  if (st) { const w = txt.split(/\s+/).length; st.innerHTML = w >= 3 ? `🎧 還差一點！漏掉或說不清楚的字：<b>${esc(r.miss.slice(0, 4).join('、'))}</b>。可以再說一次補上。 <button class="btn sm" data-act="sparent" data-i="${i}">👨‍👩 家長確認：他說對了</button>` : ''; }
+}
+document.addEventListener('input', e => { const t = e.target; if (t && t.matches && t.matches('.dtx')) { clearTimeout(DICTT); DICTT = setTimeout(() => dictCheck(t), 700); } });
 function ansHtml(q, lv) {
-  const sp = smode() === 'speak';
-  const tog = `<div class="smtog" role="group" aria-label="作答方式"><button data-act="smode" data-m="speak" aria-pressed="${sp}" ${spOK() ? '' : 'disabled'}>🎤 口說作答</button><button data-act="smode" data-m="type" aria-pressed="${!sp}">⌨️ 打字作答</button></div>${spOK() ? '' : '<div class="tmsg">這個瀏覽器不支援語音辨識，請改用 iPad 的 Safari 或電腦的 Chrome。</div>'}`;
-  return tog + (sp ? spHtml(q, lv) : typedHtml(q, lv));
+  const m = smode();
+  const tog = `<div class="smtog" role="group" aria-label="作答方式"><button data-act="smode" data-m="speak" aria-pressed="${m === 'speak'}" ${spOK() ? '' : 'disabled'}>🎤 口說作答</button><button data-act="smode" data-m="dict" aria-pressed="${m === 'dict'}">🎙️ 鍵盤聽寫</button><button data-act="smode" data-m="type" aria-pressed="${m === 'type'}">⌨️ 打字作答</button></div>${spOK() ? '' : '<div class="tmsg">這個瀏覽器不支援語音辨識，請用「鍵盤聽寫」或打字。</div>'}`;
+  return tog + (m === 'speak' ? spHtml(q, lv) : m === 'dict' ? dictHtml(q, lv) : typedHtml(q, lv));
 }
 function spRefresh() { const sp = SP(); if (!sp || sp.kind !== 'q') return; const e = $('#typed'); if (e && S.lv >= 2) e.innerHTML = ansHtml(sp.q, S.lv); }
 try { if (window.speechSynthesis && !speechSynthesis.__w) { const o = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { SPST.ttsT = Date.now(); try { u.addEventListener('end', () => { SPST.ttsT = Date.now(); }); u.addEventListener('error', () => { SPST.ttsT = Date.now(); }); } catch (e) { } return o(u); }; speechSynthesis.__w = 1; } } catch (e) { }
@@ -5197,7 +5221,7 @@ function spComplete(q, lv) {
 function spHint(sp) { const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv]; markHelp(q, lv); const i = q.rows.findIndex((r, j) => !(T.res[j] && T.res[j].ok)); if (i < 0) return; T.hm[i] = '提示：看著這句話，慢慢唸一次 👉 ' + q.rows[i].text; spRefresh(); }
 function spParent(i, sp) { const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv]; T.res[i] = { ok: true, msg: '' }; if (q.rows.every((r, k) => T.res[k] && T.res[k].ok)) spComplete(q, lv); else spRefresh(); }
 function spMode(m, sp) { if (m === 'speak' && !spOK()) return; S.sm = m; spStop(true); saveP(); reLeftQ(sp); updDock(); }
-(function () { const st = document.createElement('style'); st.textContent = `.smtog{display:flex;gap:8px;margin:0 0 10px}.smtog button{flex:1;min-height:46px;border:2px solid var(--line);border-radius:12px;background:var(--card);font-weight:700;font-size:1rem}.smtog button[aria-pressed=true]{background:#1f8a70;color:#fff;border-color:#1f8a70}.sprow .starter.big{font-size:1.3rem;font-weight:700;margin:4px 0}.spctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.btn.mic{font-size:1.15rem;padding:14px 22px;min-height:56px}.btn.mic.rec{background:#e24c3f;border-color:#e24c3f;color:#fff;animation:micp 1s infinite}@keyframes micp{50%{opacity:.65}}.spok{color:#1b8a4b;font-weight:800;font-size:1.1rem}.sptxt{font-family:var(--f-ui);color:#34445e;min-height:1.4em}`; document.head.appendChild(st); })();
+(function () { const st = document.createElement('style'); st.textContent = `.smtog{display:flex;gap:8px;margin:0 0 10px}.dtx{width:100%;box-sizing:border-box;font-size:1.25rem;padding:10px;border:2px solid var(--line);border-radius:12px;font-family:inherit}.smtog button{flex:1;min-height:46px;border:2px solid var(--line);border-radius:12px;background:var(--card);font-weight:700;font-size:1rem}.smtog button[aria-pressed=true]{background:#1f8a70;color:#fff;border-color:#1f8a70}.sprow .starter.big{font-size:1.3rem;font-weight:700;margin:4px 0}.spctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.btn.mic{font-size:1.15rem;padding:14px 22px;min-height:56px}.btn.mic.rec{background:#e24c3f;border-color:#e24c3f;color:#fff;animation:micp 1s infinite}@keyframes micp{50%{opacity:.65}}.spok{color:#1b8a4b;font-weight:800;font-size:1.1rem}.sptxt{font-family:var(--f-ui);color:#34445e;min-height:1.4em}`; document.head.appendChild(st); })();
 /* ============ 書櫃與開始 ============ */
 const BOOKS = [
   { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2, rt: RT2 },
