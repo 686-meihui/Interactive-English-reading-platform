@@ -5112,53 +5112,69 @@ function ansHtml(q, lv) {
 }
 function spRefresh() { const sp = SP(); if (!sp || sp.kind !== 'q') return; const e = $('#typed'); if (e && S.lv >= 2) e.innerHTML = ansHtml(sp.q, S.lv); }
 try { if (window.speechSynthesis && !speechSynthesis.__w) { const o = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { SPST.ttsT = Date.now(); try { u.addEventListener('end', () => { SPST.ttsT = Date.now(); }); u.addEventListener('error', () => { SPST.ttsT = Date.now(); }); } catch (e) { } return o(u); }; speechSynthesis.__w = 1; } } catch (e) { }
-function spKill() { const L = SPST.live; SPST.live = null; clearTimeout(SPST.idleT); if (L) { L.dead = true; try { L.rec.abort(); } catch (e) { } } }
 function spStop(silent, auto) {
-  clearTimeout(SPST.tm); clearTimeout(SPST.nt);
-  if (silent) { if (SPST.keep) return; spKill(); SPST.on = false; SPST.seq = (SPST.seq || 0) + 1; return; }
+  clearTimeout(SPST.tm); clearTimeout(SPST.nt); clearTimeout(SPST.it);
+  if (silent) { if (SPST.keep) return; SPST.want = false; SPST.on = false; SPST.seq = (SPST.seq || 0) + 1; try { if (SPST.inst && SPST.running) SPST.inst.abort(); } catch (e) { } return; }
   if (!SPST.on) return;
-  SPST.user = !auto; const my = SPST.seq;
-  if (auto) spEnd(); else setTimeout(() => { if (SPST.seq === my) spEnd(); }, 350);
+  SPST.user = !auto; SPST.want = false; const my = SPST.seq;
+  try { SPST.inst.stop(); } catch (e) { }
+  setTimeout(() => { if (SPST.seq === my && SPST.on) spEnd(); }, 1500);   /* iPad 有時不送結束訊號：1.5 秒後自己收尾 */
 }
-/* 一次回答結束：整理結果。麥克風本身（辨識器）會保持開著 90 秒，連續回答時不必每次重新啟動（iPad 重新啟動很不穩） */
 function spEnd() {
   if (!SPST.on) return; const i = SPST.i, q = SPST.q, lv = SPST.lv;
-  SPST.on = false; clearTimeout(SPST.tm); clearTimeout(SPST.nt);
-  if (!SPST.alts.length) {
-    spKill();
-    if (!SPST.user && (SPST.retry || 0) < 1 && (!SPST.err || ['no-speech', 'aborted', 'audio-capture'].includes(SPST.err))) { toast('麥克風剛剛沒聽到，再幫你開一次…', 1500); return spStart(i, 1); }
-  } else { clearTimeout(SPST.idleT); SPST.idleT = setTimeout(spKill, 90000); }
+  SPST.on = false; SPST.want = false; clearTimeout(SPST.tm); clearTimeout(SPST.nt); clearTimeout(SPST.it);
+  try { if (SPST.running) SPST.inst.abort(); } catch (e) { }
+  if (!SPST.alts.length && !SPST.user) { SPST.inst = null; SPST.running = false; }   /* 什麼都沒聽到：下次換一個新的辨識器 */
   spFinish(i, q, lv);
 }
-function spStart(i, retry) {
+function spMake() {
+  const rec = new SPR(); SPST.inst = rec; SPST.running = false;
+  rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = false;
+  rec.onstart = () => { SPST.running = true; };
+  rec.onresult = e => {
+    if (!SPST.on || SPST.inst !== rec) return;
+    for (let k = e.resultIndex || 0; k < e.results.length; k++) {
+      const r = e.results[k], a = Array.from(r).map(x => x.transcript);
+      if (r.isFinal) { SPST.fin.push(a); SPST.interim = null; } else SPST.interim = a;
+    }
+    SPST.alts = SPST.fin.concat(SPST.interim ? [SPST.interim] : []);
+    const live = $('#splive-' + SPST.i); if (live) live.innerHTML = '🎧 聽到：<b>' + esc(SPST.alts.map(a => a[0]).join(' ')) + '</b>';
+    clearTimeout(SPST.nt); clearTimeout(SPST.it); const sq = SPST.seq;
+    const row = SPST.q.rows[SPST.i];
+    if (speechCheck(SPST.alts.map(a => a[0]).join(' '), row).ok) { SPST.user = false; SPST.want = false; try { rec.stop(); } catch (x) { } setTimeout(() => { if (SPST.seq === sq && SPST.on) spEnd(); }, 400); return; }   /* 說對了：自動結束 */
+    SPST.it = setTimeout(() => { if (SPST.seq === sq) spStop(false, true); }, window.__SPIDLE || 4000);   /* 停頓一陣子：就當他說完了 */
+  };
+  rec.onerror = e => {
+    if (SPST.inst !== rec) return; const c = e.error || 'error';
+    if (c === 'no-speech' || c === 'aborted') return;   /* 沒講話：繼續聽 */
+    SPST.err = c; SPST.want = false;
+  };
+  rec.onend = () => {
+    if (SPST.inst !== rec) return; SPST.running = false;
+    if (SPST.pend) { const f = SPST.pend; SPST.pend = null; return f(); }
+    if (!SPST.on) return;
+    if (SPST.want && (SPST.restarts = (SPST.restarts || 0) + 1) < 40) { setTimeout(() => { if (SPST.on && SPST.want && SPST.inst === rec) spRun(); }, 120); }   /* iPad 會自己斷線：孩子還沒說完就自動接著聽 */
+    else spEnd();
+  };
+  return rec;
+}
+function spRun() { try { SPST.inst.start(); SPST.running = true; } catch (e) { if (e && e.name === 'InvalidStateError') SPST.running = true; else { SPST.err = SPST.err || 'start-failed'; spEnd(); } } }
+function spStart(i) {
   if (!spOK()) { toast('這個瀏覽器不能用口說，請改用打字', 2500); return; }
   const sp = SP(), q = sp.q, lv = S.lv;
-  const wasTts = (() => { try { return speechSynthesis.speaking || speechSynthesis.pending; } catch (e) { return false; } })() || Date.now() - (SPST.ttsT || 0) < 5000;
+  const wasTts = (() => { try { return speechSynthesis.speaking || speechSynthesis.pending; } catch (e) { return false; } })() || Date.now() - (SPST.ttsT || 0) < 3000;
   SPST.keep = true; try { stopAll(); } finally { SPST.keep = false; }
-  clearTimeout(SPST.tm); clearTimeout(SPST.nt);
+  clearTimeout(SPST.tm); clearTimeout(SPST.nt); clearTimeout(SPST.it);
   const my = SPST.seq = (SPST.seq || 0) + 1;
-  Object.assign(SPST, { on: true, i, pid: q.pid, q, lv, alts: [], err: '', retry: retry || 0, t0: Date.now(), user: false }); spRefresh();
-  const arm = () => {
+  Object.assign(SPST, { on: true, want: true, i, pid: q.pid, q, lv, alts: [], fin: [], interim: null, err: '', user: false, restarts: 0 }); spRefresh();
+  if (!SPST.inst) spMake();
+  const go = () => {
+    if (SPST.seq !== my || !SPST.on) return; spRun();
     SPST.tm = setTimeout(() => { if (SPST.seq === my) spStop(false, true); }, 25000);
     SPST.nt = setTimeout(() => { if (SPST.seq === my && SPST.on && !SPST.alts.length) spStop(false, true); }, 8000);
   };
-  const L = SPST.live;
-  if (L && !L.dead && !wasTts) { L.base = L.n; arm(); return; }   /* 麥克風還開著：直接接著聽 */
-  if (L) spKill();
-  setTimeout(() => {
-    if (SPST.seq !== my || !SPST.on) return;
-    const rec = new SPR(), L2 = { rec, base: 0, n: 0, dead: false }; SPST.live = L2;
-    rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = true;
-    rec.onresult = e => {
-      if (L2.dead) return; L2.n = e.results.length; if (!SPST.on || SPST.live !== L2) return;
-      SPST.alts = Array.from(e.results).slice(L2.base).map(r => Array.from(r).map(a => a.transcript));
-      const live = $('#splive-' + SPST.i); if (live) live.innerHTML = '🎧 聽到：<b>' + esc(SPST.alts.map(a => a[0]).join(' ')) + '</b>';
-    };
-    rec.onerror = e => { if (SPST.live === L2) SPST.err = e.error || 'error'; };
-    rec.onend = () => { if (SPST.live === L2) { SPST.live = null; L2.dead = true; if (SPST.on) spStop(false, true); } };
-    try { rec.start(); } catch (e) { spKill(); SPST.on = false; toast('麥克風打不開，請再按一次', 2500); spRefresh(); return; }
-    arm();
-  }, wasTts ? 1000 : 450);
+  if (SPST.running) { SPST.pend = go; try { SPST.inst.abort(); } catch (e) { } setTimeout(() => { if (SPST.pend === go) { SPST.pend = null; SPST.running = false; go(); } }, 700); }
+  else if (wasTts) setTimeout(go, 900); else go();
 }
 function spFinish(i, q, lv) {
   const T = QSTATE[q.pid].t[lv], row = q.rows[i], alts = SPST.alts, err = SPST.err;
