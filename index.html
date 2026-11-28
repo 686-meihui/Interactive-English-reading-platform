@@ -3209,7 +3209,7 @@ const QSTATE = {};
 function loadP() {
   try {
     const j = JSON.parse(localStorage.getItem(PKEY) || '{}');
-    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {}; P.reps = j.reps || {}; P.fb = j.fb || {}; P.best = j.best || {}; P.tw = j.tw || 0; P.days = j.days || {}; P.log = j.log || []; P.gu = j.gu || 0; P.gend = j.gend || 0;
+    P.done = j.done || {}; P.pos = j.pos || {}; P.rt = j.rt || {}; P.reps = j.reps || {}; P.fb = j.fb || {}; P.best = j.best || {}; P.tw = j.tw || 0; P.days = j.days || {}; P.log = j.log || []; P.gu = j.gu || 0; P.gend = j.gend || 0; P.plan = j.plan || {};
     if (!j.pos && typeof j.i === 'number') P.pos.wwo = j.i;
     if (j.fs) S.fs = j.fs; if (j.auto != null) S.auto = j.auto; if (j.slow != null) S.slow = j.slow; if (j.mode) S.mode = j.mode; if (j.voiceURI) S.voiceURI = j.voiceURI; if (j.bookId) S.bookId = j.bookId; if (typeof j.kb === 'boolean') S.kb = j.kb; if (j.sm) S.sm = j.sm;
   } catch (e) { }
@@ -3217,7 +3217,7 @@ function loadP() {
 function saveP() {
   try {
     if (BOOK && S.view === 'book') P.pos[BOOK.id] = S.i;
-    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, reps: P.reps, fb: P.fb, best: P.best, tw: P.tw, days: P.days, log: P.log, gu: P.gu, gend: P.gend, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, sm: S.sm, mode: S.mode, voiceURI: S.voiceURI }));
+    localStorage.setItem(PKEY, JSON.stringify({ done: P.done, pos: P.pos, rt: P.rt, reps: P.reps, fb: P.fb, best: P.best, tw: P.tw, days: P.days, log: P.log, gu: P.gu, gend: P.gend, plan: P.plan, bookId: S.view === 'book' ? S.bookId : null, fs: S.fs, auto: S.auto, slow: S.slow, kb: S.kb, sm: S.sm, mode: S.mode, voiceURI: S.voiceURI }));
   } catch (e) { }
 }
 
@@ -3820,7 +3820,7 @@ function render(dir = 0) {
 function renderShelf() {
   const sh = $('#shelf');
   sh.innerHTML = `<div class="shelf-in"><h1>靜心小二英文閱讀書櫃</h1><p>選一本書開始。每本書都有課文朗讀、教師手冊和考前練習。</p>
-  <div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="openrw"><div class="art">${ART.coverRw()}</div><div class="bt"><b>我的獎盃與遊戲</b><span class="zh">Trophies &amp; Games</span><small>練習日曆 · 換遊戲券玩益智遊戲</small><span class="bp">🏆 ${P.tw || 0} · 🎮 ${rwTickets()} 張</span></div></button><button class="bk gvbk" data-act="openvc"><div class="art">${ART.coverVc()}</div><div class="bt"><b>單字專項訓練</b><span class="zh">Vocabulary</span><small>期末考 Module 3、4 · 單字、字形變化</small><span class="bp">${VC_COUNT.filter(s => P.done[s.pid]).length} / ${VC_COUNT.length} ⭐</span></div></button></div></div>`;
+  ${typeof planBanner === 'function' ? planBanner() : ''}<div class="shelf-grid">${BOOKS.map(bk => { const n = bk.countable.filter(s => P.done[s.pid]).length; return `<button class="bk" data-act="openbook" data-b="${bk.id}"><div class="art">${ART[bk.cover]()}</div><div class="bt"><b>${esc(bk.title)}</b><span class="zh">${esc(bk.zh)}</span><small>${esc(bk.pages)} · ${esc(bk.when)}</small><span class="bp">${starsHtml(n > 0)}<span>${n} / ${bk.countable.length}</span></span></div></button>`; }).join('')}<button class="bk gvbk" data-act="opengv"><div class="art">${ART.coverGv()}</div><div class="bt"><b>文體與視角專項訓練</b><span class="zh">Genre &amp; Point of View</span><small>專項練習 · 搞懂文體與視角</small><span class="bp">${GV_COUNT.filter(s => P.done[s.pid]).length} / ${GV_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="openrw"><div class="art">${ART.coverRw()}</div><div class="bt"><b>我的獎盃與遊戲</b><span class="zh">Trophies &amp; Games</span><small>練習日曆 · 換遊戲券玩益智遊戲</small><span class="bp">🏆 ${P.tw || 0} · 🎮 ${rwTickets()} 張</span></div></button><button class="bk gvbk" data-act="openvc"><div class="art">${ART.coverVc()}</div><div class="bt"><b>單字專項訓練</b><span class="zh">Vocabulary</span><small>期末考 Module 3、4 · 單字、字形變化</small><span class="bp">${VC_COUNT.filter(s => P.done[s.pid]).length} / ${VC_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="opengm"><div class="art">${ART.coverGm()}</div><div class="bt"><b>文法專項訓練</b><span class="zh">Grammar</span><small>期末考 · 搭鷹架、精熟、應用</small><span class="bp">${GM_COUNT.filter(s => P.done[s.pid]).length} / ${GM_COUNT.length} ⭐</span></div></button><button class="bk gvbk" data-act="openph"><div class="art">${ART.coverPh()}</div><div class="bt"><b>自然拼讀與拼字</b><span class="zh">Phonics & Spelling</span><small>12/10 小考 · 聽寫、字尾、字首</small><span class="bp">${PH_COUNT.filter(s => P.done[s.pid]).length} / ${PH_COUNT.length} ⭐</span></div></button></div></div>`;
 }
 function showShelf() {
   stopAll(); S.view = 'shelf'; renderShelf();
@@ -4017,6 +4017,9 @@ document.addEventListener('click', async e => {
     case 'openbook': openBook(t.dataset.b); break;
     case 'opengv': openGv(); break;
     case 'openvc': openVc(); break;
+    case 'opengm': openGm('gm'); break;
+    case 'openph': openGm('ph'); break;
+    case 'openplan': openGm('plan'); break;
     case 'openrw': openRw(); break;
     case 'tile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; const i = +t.dataset.t; if (st.placed.includes(i)) break; st.placed.push(i); st.wrong = false; speakQuick(q.tiles[i]); checkTiles(sp); break; }
     case 'untile': { const q = sp.q, st = QSTATE[q.pid]; if (st.done) break; st.placed.splice(+t.dataset.p, 1); st.wrong = false; $('#scr').innerHTML = scrambleHtml(q); break; }
@@ -4308,6 +4311,16 @@ ART.coverVc = () => svgWrap(`<rect width="400" height="560" fill="#1f8a70"/><cir
   <g stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="70" y="210" width="110" height="70" rx="12" fill="#fff" transform="rotate(-6 125 245)"/><rect x="215" y="200" width="120" height="70" rx="12" fill="#ffd966" transform="rotate(5 275 235)"/><rect x="110" y="310" width="130" height="70" rx="12" fill="#ffb3c7" transform="rotate(3 175 345)"/><rect x="255" y="320" width="90" height="70" rx="12" fill="#bfe4ff" transform="rotate(-5 300 355)"/></g>
   ${txtP(125, 255, 'bob', 28)}${txtP(275, 245, 'yank', 28)}${txtP(175, 355, 'scurry', 28)}${txtP(300, 365, 'frown', 24)}
   <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>${txtP(200, 534, 'Module 3 · Module 4', 20)}`, '封面：單字專項訓練', '0 0 400 560');
+ART.coverGm = () => svgWrap(`<rect width="400" height="560" fill="#7a4fd0"/><circle cx="330" cy="80" r="110" fill="#9468e6" opacity=".7"/><circle cx="50" cy="340" r="90" fill="#9468e6" opacity=".5"/>
+  ${txtP(200, 100, 'Grammar', 58, '#fff')}${txtP(200, 150, 'Power Up!', 34, '#ffe27a')}
+  <g stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="60" y="210" width="130" height="64" rx="12" fill="#fff" transform="rotate(-5 125 242)"/><rect x="210" y="205" width="130" height="64" rx="12" fill="#ffd966" transform="rotate(5 275 237)"/><rect x="70" y="305" width="130" height="64" rx="12" fill="#ffb3c7" transform="rotate(3 135 337)"/><rect x="220" y="310" width="120" height="64" rx="12" fill="#bfe4ff" transform="rotate(-4 280 342)"/></g>
+  ${txtP(125, 252, 'this / that', 24)}${txtP(275, 247, 'his / her', 26)}${txtP(135, 347, 'taller than', 22)}${txtP(280, 352, 'running', 28)}
+  <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>${txtP(200, 534, 'Module 3 · Module 4', 20)}`, '封面：文法專項訓練', '0 0 400 560');
+ART.coverPh = () => svgWrap(`<rect width="400" height="560" fill="#d9703a"/><circle cx="330" cy="80" r="110" fill="#e88a55" opacity=".7"/><circle cx="50" cy="340" r="90" fill="#e88a55" opacity=".5"/>
+  ${txtP(200, 100, 'Phonics', 58, '#fff')}${txtP(200, 150, '& Spelling', 34, '#ffe27a')}
+  <g stroke="${OUT}" stroke-width="3" stroke-linejoin="round"><rect x="60" y="210" width="130" height="64" rx="12" fill="#fff" transform="rotate(-5 125 242)"/><rect x="210" y="205" width="130" height="64" rx="12" fill="#ffd966" transform="rotate(5 275 237)"/><rect x="70" y="305" width="130" height="64" rx="12" fill="#bfe4ff" transform="rotate(3 135 337)"/><rect x="220" y="310" width="120" height="64" rx="12" fill="#c9f0c0" transform="rotate(-4 280 342)"/></g>
+  ${txtP(125, 252, 'camp', 34)}${txtP(275, 247, 'dress', 34)}${txtP(135, 347, 'drink', 34)}${txtP(280, 352, 'unlock', 30)}
+  <path d="M0 492 Q100 478 200 492 T400 490 V560 H0Z" fill="#bde3a0" stroke="${OUT}" stroke-width="3"/>${txtP(200, 534, 'Quiz 12/10', 22)}`, '封面：自然拼讀與拼字', '0 0 400 560');
 
 ART.coverRw = () => svgWrap(`<rect width="400" height="560" fill="#d98a14"/><circle cx="340" cy="70" r="110" fill="#eba33a" opacity=".7"/><circle cx="40" cy="330" r="90" fill="#eba33a" opacity=".5"/>
   ${txtP(200, 100, 'My Trophies', 52, '#fff')}${txtP(200, 150, '& Games', 40, '#fff6c9')}
@@ -4877,7 +4890,7 @@ document.addEventListener('keydown', e => { if (S.view === 'vc' && e.key === 'En
 
 
 /* ============ 注音（ㄅㄆㄇ）============ */
-const ZYD = `一ㄧ注ㄓㄨˋ三ㄙㄢ上ㄕㄤˋ下ㄒㄧㄚˋ不ㄅㄨˋ中ㄓㄨㄥ也ㄧㄝˇ乾ㄍㄢ了˙ㄌㄜ享ㄒㄧㄤˇ亮ㄌㄧㄤˋ人ㄖㄣˊ什ㄕㄣˊ今ㄐㄧㄣ他ㄊㄚ以ㄧˇ件ㄐㄧㄢˋ伴ㄅㄢˋ但ㄉㄢˋ位ㄨㄟˋ作ㄗㄨㄛˋ你ㄋㄧˇ佳ㄐㄧㄚ使ㄕˇ來ㄌㄞˊ例ㄌㄧˋ係ㄒㄧˋ個˙ㄍㄜ們˙ㄇㄣ候ㄏㄡˋ做ㄗㄨㄛˋ傘ㄙㄢˇ傳ㄔㄨㄢˊ像ㄒㄧㄤˋ先ㄒㄧㄢ光ㄍㄨㄤ兒ㄦˊ全ㄑㄩㄢˊ公ㄍㄨㄥ共ㄍㄨㄥˋ具ㄐㄩˋ再ㄗㄞˋ出ㄔㄨ分ㄈㄣ列ㄌㄧㄝˋ別ㄅㄧㄝˊ到ㄉㄠˋ刻ㄎㄜˋ則ㄗㄜˊ前ㄑㄧㄢˊ力ㄌㄧˋ加ㄐㄧㄚ動ㄉㄨㄥˋ包ㄅㄠ化ㄏㄨㄚˋ午ㄨˇ卡ㄎㄚˇ原ㄩㄢˊ去ㄑㄩˋ參ㄘㄢ友ㄧㄡˇ口ㄎㄡˇ句ㄐㄩˋ只ㄓˇ叫ㄐㄧㄠˋ可ㄎㄜˇ台ㄊㄞˊ右ㄧㄡˋ吃ㄔ合ㄏㄜˊ同ㄊㄨㄥˊ名ㄇㄧㄥˊ吧˙ㄅㄚ含ㄏㄢˊ吵ㄔㄠˇ呼ㄏㄨ和ㄏㄢˋ哪ㄋㄚˇ喔ㄛ單ㄉㄢ嗎˙ㄇㄚ嘯ㄒㄧㄠˋ器ㄑㄧˋ嚇ㄒㄧㄚˋ四ㄙˋ回ㄏㄨㄟˊ因ㄧㄣ園ㄩㄢˊ在ㄗㄞˋ地ㄉㄧˋ型ㄒㄧㄥˊ塊ㄎㄨㄞˋ塞ㄙㄜˋ填ㄊㄧㄢˊ壺ㄏㄨˊ外ㄨㄞˋ多ㄉㄨㄛ夢ㄇㄥˋ大ㄉㄚˋ天ㄊㄧㄢ太ㄊㄞˋ失ㄕ奏ㄗㄡˋ套ㄊㄠˋ奶ㄋㄞˇ她ㄊㄚ好ㄏㄠˇ姐ㄐㄧㄝˇ威ㄨㄟ媽ㄇㄚ嬰ㄧㄥ子ㄗˇ字ㄗˋ孩ㄏㄞˊ學ㄒㄩㄝˊ它ㄊㄚ定ㄉㄧㄥˋ客ㄎㄜˋ室ㄕˋ容ㄖㄨㄥˊ寫ㄒㄧㄝˇ專ㄓㄨㄢ尊ㄗㄨㄣ對ㄉㄨㄟˋ小ㄒㄧㄠˇ尖ㄐㄧㄢ就ㄐㄧㄡˋ尾ㄨㄟˇ屬ㄕㄨˇ差ㄔㄚ己ㄐㄧˇ已ㄧˇ巴ㄅㄚ巾ㄐㄧㄣ師ㄕ帶ㄉㄞˋ幽ㄧㄡ幾ㄐㄧˇ式ㄕˋ形ㄒㄧㄥˊ往ㄨㄤˇ待ㄉㄞˋ很ㄏㄣˇ後ㄏㄡˋ得ㄉㄜˊ從ㄘㄨㄥˊ心ㄒㄧㄣ忙ㄇㄤˊ快ㄎㄨㄞˋ怕ㄆㄚˋ思ㄙ急ㄐㄧˊ性ㄒㄧㄥˋ怪ㄍㄨㄞˋ悶ㄇㄣˋ情ㄑㄧㄥˊ想ㄒㄧㄤˇ意ㄧˋ感ㄍㄢˇ態ㄊㄞˋ懇ㄎㄣˇ成ㄔㄥˊ我ㄨㄛˇ戰ㄓㄢˋ房ㄈㄤˊ所ㄙㄨㄛˇ手ㄕㄡˇ才ㄘㄞˊ找ㄓㄠˇ承ㄔㄥˊ技ㄐㄧˋ把ㄅㄚˇ拉ㄌㄚ拖ㄊㄨㄛ拼ㄆㄧㄣ拿ㄋㄚˊ挑ㄊㄧㄠ挪ㄋㄨㄛˊ捆ㄎㄨㄣˇ掉ㄉㄧㄠˋ排ㄆㄞˊ掠ㄌㄩㄝˋ接ㄐㄧㄝ推ㄊㄨㄟ提ㄊㄧˊ搬ㄅㄢ擠ㄐㄧˇ放ㄈㄤˋ教ㄐㄧㄠˋ敢ㄍㄢˇ整ㄓㄥˇ數ㄕㄨˋ文ㄨㄣˊ於ㄩˊ旁ㄆㄤˊ日ㄖˋ昂ㄤˊ明ㄇㄧㄥˊ易ㄧˋ星ㄒㄧㄥ昨ㄗㄨㄛˊ是ㄕˋ時ㄕˊ晃ㄏㄨㄤˋ晚ㄨㄢˇ更ㄍㄥˋ書ㄕㄨ最ㄗㄨㄟˋ會ㄏㄨㄟˋ有ㄧㄡˇ朋ㄆㄥˊ服ㄈㄨˊ期ㄑㄧˊ末ㄇㄛˋ本ㄅㄣˇ杯ㄅㄟ板ㄅㄢˇ查ㄔㄚˊ校ㄒㄧㄠˋ案ㄢˋ桌ㄓㄨㄛ梭ㄙㄨㄛ棒ㄅㄤˋ椅ㄧˇ楚ㄔㄨˇ業ㄧㄝˋ概ㄍㄞˋ樂ㄌㄜˋ標ㄅㄧㄠ樣ㄧㄤˋ檢ㄐㄧㄢˇ次ㄘˋ正ㄓㄥˋ步ㄅㄨˋ段ㄉㄨㄢˋ母ㄇㄨˇ每ㄇㄟˇ比ㄅㄧˇ氣ㄑㄧˋ水ㄕㄨㄟˇ求ㄑㄧㄡˊ沉ㄔㄣˊ沒ㄇㄟˊ沖ㄔㄨㄥ沿ㄧㄢˊ況ㄎㄨㄤˋ法ㄈㄚˇ泡ㄆㄠˋ洪ㄏㄨㄥˊ派ㄆㄞˋ浪ㄌㄤˋ浮ㄈㄨˊ海ㄏㄞˇ混ㄏㄨㄣˋ清ㄑㄧㄥ演ㄧㄢˇ漫ㄇㄢˋ為ㄨㄟˋ烏ㄨ熟ㄕㄨˊ爭ㄓㄥ爸ㄅㄚˋ爺ㄧㄝˊ犯ㄈㄢˋ狗ㄍㄡˇ猛ㄇㄥˇ猶ㄧㄡˊ玩ㄨㄢˊ現ㄒㄧㄢˋ琴ㄑㄧㄣˊ生ㄕㄥ用ㄩㄥˋ男ㄋㄢˊ畫ㄏㄨㄚˋ疲ㄆㄧˊ發ㄈㄚ的˙ㄉㄜ皺ㄓㄡˋ盡ㄐㄧㄣˋ目ㄇㄨˋ直ㄓˊ眉ㄇㄟˊ看ㄎㄢˋ短ㄉㄨㄢˇ破ㄆㄛˋ確ㄑㄩㄝˋ示ㄕˋ禮ㄌㄧˇ移ㄧˊ種ㄓㄨㄥˇ稱ㄔㄥ稻ㄉㄠˋ空ㄎㄨㄥ穿ㄔㄨㄢ立ㄌㄧˋ章ㄓㄤ第ㄉㄧˋ筋ㄐㄧㄣ答ㄉㄚˊ籃ㄌㄢˊ糊ㄏㄨˊ糕ㄍㄠ糟ㄗㄠ紅ㄏㄨㄥˊ紋ㄨㄣˊ級ㄐㄧˊ結ㄐㄧㄝˊ給ㄍㄟˇ經ㄐㄧㄥ綜ㄗㄨㄥ編ㄅㄧㄢ練ㄌㄧㄢˋ總ㄗㄨㄥˇ績ㄐㄧˋ織ㄓ繞ㄖㄠˋ習ㄒㄧˊ老ㄌㄠˇ考ㄎㄠˇ而ㄦˊ聲ㄕㄥ聽ㄊㄧㄥ背ㄅㄟˋ能ㄋㄥˊ脅ㄒㄧㄝˊ腳ㄐㄧㄠˇ自ㄗˋ舞ㄨˇ般ㄅㄢ船ㄔㄨㄢˊ英ㄧㄥ茶ㄔㄚˊ草ㄘㄠˇ著˙ㄓㄜ藉ㄐㄧㄝˋ蛇ㄕㄜˊ蜒ㄧㄢˊ蜿ㄨㄢ街ㄐㄧㄝ衣ㄧ表ㄅㄧㄠˇ衫ㄕㄢ袋ㄉㄞˋ裡ㄌㄧˇ複ㄈㄨˋ襯ㄔㄣˋ要ㄧㄠˋ規ㄍㄨㄟ角ㄐㄧㄠˇ解ㄐㄧㄝˇ訓ㄒㄩㄣˋ記ㄐㄧˋ詞ㄘˊ試ㄕˋ話ㄏㄨㄚˋ認ㄖㄣˋ說ㄕㄨㄛ請ㄑㄧㄥˇ論ㄌㄨㄣˋ讀ㄉㄨˊ變ㄅㄧㄢˋ讓ㄖㄤˋ豫ㄩˋ貌ㄇㄠˋ貪ㄊㄢ責ㄗㄜˊ買ㄇㄞˇ賽ㄙㄞˋ走ㄗㄡˇ起ㄑㄧˇ越ㄩㄝˋ跑ㄆㄠˇ跟ㄍㄣ踏ㄊㄚˋ身ㄕㄣ車ㄔㄜ較ㄐㄧㄠˋ輛ㄌㄧㄤˋ近ㄐㄧㄣˋ這ㄓㄜˋ逛ㄍㄨㄤˋ速ㄙㄨˋ造ㄗㄠˋ週ㄓㄡ進ㄐㄧㄣˋ過ㄍㄨㄛˋ道ㄉㄠˋ適ㄕˋ選ㄒㄩㄢˇ邀ㄧㄠ邊ㄅㄧㄢ那ㄋㄚˋ部ㄅㄨˋ都ㄉㄡ配ㄆㄟˋ醞ㄩㄣˋ釀ㄋㄧㄤˋ釋ㄕˋ重ㄓㄨㄥˋ鈴ㄌㄧㄥˊ鋼ㄍㄤ錄ㄌㄨˋ錯ㄘㄨㄛˋ長ㄔㄤˊ開ㄎㄞ閒ㄒㄧㄢˊ間ㄐㄧㄢ閱ㄩㄝˋ闊ㄎㄨㄛˋ闖ㄔㄨㄤˇ關ㄍㄨㄢ附ㄈㄨˋ院ㄩㄢˋ陪ㄆㄟˊ隆ㄌㄨㄥˊ隊ㄉㄨㄟˋ雞ㄐㄧ離ㄌㄧˊ雨ㄩˇ雲ㄩㄣˊ需ㄒㄩ靠ㄎㄠˋ面ㄇㄧㄢˋ音ㄧㄣ響ㄒㄧㄤˇ項ㄒㄧㄤˋ頭ㄊㄡˊ顆ㄎㄜ題ㄊㄧˊ飛ㄈㄟ餅ㄅㄧㄥˇ餐ㄘㄢ餓ㄜˋ首ㄕㄡˇ騎ㄑㄧˊ高ㄍㄠ麼˙ㄇㄜ默ㄇㄛˋ點ㄉㄧㄢˇ鼠ㄕㄨˇ之ㄓ二ㄦˋ五ㄨˇ俄ㄜˊ信ㄒㄧㄣˋ兩ㄌㄧㄤˇ六ㄌㄧㄡˋ券ㄑㄩㄢˋ剩ㄕㄥˋ功ㄍㄨㄥ厲ㄌㄧˋ圓ㄩㄢˊ始ㄕˇ完ㄨㄢˊ害ㄏㄞˋ封ㄈㄥ常ㄔㄤˊ張ㄓㄤ或ㄏㄨㄛˋ戲ㄒㄧˋ指ㄓˇ按ㄢˋ換ㄏㄨㄢˋ斯ㄙ方ㄈㄤ旋ㄒㄩㄢˊ智ㄓˋ曆ㄌㄧˋ束ㄕㄨˋ條ㄊㄧㄠˊ櫃ㄍㄨㄟˋ消ㄒㄧㄠ測ㄘㄜˋ獎ㄐㄧㄤˇ白ㄅㄞˊ盃ㄅㄟ益ㄧˋ盤ㄆㄢˊ筆ㄅㄧˇ紀ㄐㄧˋ綠ㄌㄩˋ線ㄒㄧㄢˋ繼ㄐㄧˋ續ㄒㄩˋ羅ㄌㄨㄛˊ與ㄩˇ色ㄙㄜˋ行ㄒㄧㄥˊ衛ㄨㄟˋ賺ㄗㄨㄢˋ超ㄔㄠ轉ㄓㄨㄢˇ退ㄊㄨㄟˋ通ㄊㄨㄥ連ㄌㄧㄢˊ遊ㄧㄡˊ達ㄉㄚˊ還ㄏㄞˊ鍵ㄐㄧㄢˋ鐘ㄓㄨㄥ除ㄔㄨˊ驗ㄧㄢˋ隨ㄙㄨㄟˊ機ㄐㄧ階ㄐㄧㄝ`;
+const ZYD = `備ㄅㄟˋ計ㄐㄧˋ約ㄩㄝ觀ㄍㄨㄢ旨ㄓˇ者ㄓㄜˇ弱ㄖㄨㄛˋ補ㄅㄨˇ鬆ㄙㄨㄥ理ㄌㄧˇ早ㄗㄠˇ睡ㄕㄨㄟˋ覺ㄐㄧㄠˋ任ㄖㄣˋ務ㄨˋ勾ㄍㄡ距ㄐㄩˋ辛ㄒㄧㄣ苦ㄎㄨˇ其ㄑㄧˊ飽ㄅㄠˇ鉛ㄑㄧㄢ然ㄖㄢˊ組ㄗㄨˇ雙ㄕㄨㄤ露ㄌㄨˋ營ㄧㄥˊ喝ㄏㄜ打ㄉㄚˇ獵ㄌㄧㄝˋ尋ㄒㄩㄣˊ池ㄔˊ塘ㄊㄤˊ年ㄋㄧㄢˊ輕ㄑㄧㄥ洋ㄧㄤˊ裝ㄓㄨㄤ親ㄑㄧㄣ吻ㄨㄣˇ灑ㄙㄚˇ增ㄗㄥ址ㄓˇ胸ㄒㄩㄥ膛ㄊㄤˊ箱ㄒㄧㄤ瘦ㄕㄡˋ薄ㄅㄠˊ當ㄉㄤ拇ㄇㄨˇ類ㄌㄟˋ少ㄕㄠˇ量ㄌㄧㄤˋ沙ㄕㄚ團ㄊㄨㄢˊ寄ㄐㄧˋ送ㄙㄨㄥˋ風ㄈㄥ刺ㄘˋ痛ㄊㄨㄥˋ歌ㄍㄜ國ㄍㄨㄛˊ王ㄨㄤˊ戒ㄐㄧㄝˋ唱ㄔㄤˋ強ㄑㄧㄤˊ壯ㄓㄨㄤˋ垃ㄌㄜˋ圾ㄙㄜˋ眨ㄓㄚˇ眼ㄧㄢˇ粉ㄈㄣˇ銀ㄧㄣˊ槽ㄘㄠˊ謝ㄒㄧㄝˋ跳ㄊㄧㄠˋ檯ㄊㄞˊ燈ㄉㄥ撞ㄓㄨㄤˋ郵ㄧㄡˊ票ㄆㄧㄠˋ潮ㄔㄠˊ濕ㄕ課ㄎㄜˋ簡ㄐㄧㄢˇ訊ㄒㄩㄣˋ印ㄧㄣˋ咆ㄆㄠˊ哮ㄒㄧㄠˋ帳ㄓㄤˋ篷ㄆㄥˊ植ㄓˊ荷ㄏㄜˊ螞ㄇㄚˇ蟻ㄧˇ娃ㄨㄚˊ滿ㄇㄢˇ山ㄕㄢ棋ㄑㄧˊ闆ㄅㄢˇ奇ㄑㄧˊ懸ㄒㄩㄢˊ崖ㄧㄚˊ聞ㄨㄣˊ嗅ㄒㄧㄡˋ體ㄊㄧˇ員ㄩㄢˊ工ㄍㄨㄥ嗡ㄨㄥ爵ㄐㄩㄝˊ士ㄕˋ冒ㄇㄠˋ鎖ㄙㄨㄛˇ平ㄆㄧㄥˊ安ㄢ善ㄕㄢˋ幸ㄒㄧㄥˋ運ㄩㄣˋ李ㄌㄧˇ拆ㄔㄞ播ㄅㄛ建ㄐㄧㄢˋ新ㄒㄧㄣ述ㄕㄨˋ油ㄧㄡˊ漆ㄑㄧ唸ㄋㄧㄢˋ押ㄧㄚ韻ㄩㄣˋ圈ㄑㄩㄢ相ㄒㄧㄤ反ㄈㄢˇ根ㄍㄣ頁ㄧㄝˋ遍ㄅㄧㄢˋ範ㄈㄢˋ圍ㄨㄟˊ特ㄊㄜˋ遇ㄩˋ依ㄧ照ㄓㄠˋ布ㄅㄨˋ果ㄍㄨㄛˇ拍ㄆㄞ註ㄓㄨˋ冊ㄘㄜˋ核ㄏㄜˊ搭ㄉㄚ鷹ㄧㄥ架ㄐㄧㄚˋ精ㄐㄧㄥ應ㄧㄥˋ格ㄍㄜˊ庫ㄎㄨˋ女ㄋㄩˇ隻ㄓ物ㄨˋ東ㄉㄨㄥ西ㄒㄧ節ㄐㄧㄝˊ主ㄓㄨˇ誰ㄕㄟˊ擁ㄩㄥ遠ㄩㄢˇ處ㄔㄨˋ幫ㄅㄤ括ㄍㄨㄚˋ號ㄏㄠˋ改ㄍㄞˇ誤ㄨˋ引ㄧㄣˇ導ㄉㄠˇ索ㄙㄨㄛˇ如ㄖㄨˊ告ㄍㄠˋ訴ㄙㄨˋ撇ㄆㄧㄝˇ牠ㄊㄚ縮ㄙㄨㄛ事ㄕˋ些ㄒㄧㄝ訣ㄐㄩㄝˊ忘ㄨㄤˋ驟ㄓㄡˋ住ㄓㄨˋ模ㄇㄛˊ擬ㄋㄧˇ卷ㄐㄩㄢˋ藏ㄘㄤˊ並ㄅㄧㄥˋ判ㄆㄢˋ斷ㄉㄨㄢˋ倒ㄉㄠˋ剛ㄍㄤ輪ㄌㄨㄣˊ一ㄧ注ㄓㄨˋ三ㄙㄢ上ㄕㄤˋ下ㄒㄧㄚˋ不ㄅㄨˋ中ㄓㄨㄥ也ㄧㄝˇ乾ㄍㄢ了˙ㄌㄜ享ㄒㄧㄤˇ亮ㄌㄧㄤˋ人ㄖㄣˊ什ㄕㄣˊ今ㄐㄧㄣ他ㄊㄚ以ㄧˇ件ㄐㄧㄢˋ伴ㄅㄢˋ但ㄉㄢˋ位ㄨㄟˋ作ㄗㄨㄛˋ你ㄋㄧˇ佳ㄐㄧㄚ使ㄕˇ來ㄌㄞˊ例ㄌㄧˋ係ㄒㄧˋ個˙ㄍㄜ們˙ㄇㄣ候ㄏㄡˋ做ㄗㄨㄛˋ傘ㄙㄢˇ傳ㄔㄨㄢˊ像ㄒㄧㄤˋ先ㄒㄧㄢ光ㄍㄨㄤ兒ㄦˊ全ㄑㄩㄢˊ公ㄍㄨㄥ共ㄍㄨㄥˋ具ㄐㄩˋ再ㄗㄞˋ出ㄔㄨ分ㄈㄣ列ㄌㄧㄝˋ別ㄅㄧㄝˊ到ㄉㄠˋ刻ㄎㄜˋ則ㄗㄜˊ前ㄑㄧㄢˊ力ㄌㄧˋ加ㄐㄧㄚ動ㄉㄨㄥˋ包ㄅㄠ化ㄏㄨㄚˋ午ㄨˇ卡ㄎㄚˇ原ㄩㄢˊ去ㄑㄩˋ參ㄘㄢ友ㄧㄡˇ口ㄎㄡˇ句ㄐㄩˋ只ㄓˇ叫ㄐㄧㄠˋ可ㄎㄜˇ台ㄊㄞˊ右ㄧㄡˋ吃ㄔ合ㄏㄜˊ同ㄊㄨㄥˊ名ㄇㄧㄥˊ吧˙ㄅㄚ含ㄏㄢˊ吵ㄔㄠˇ呼ㄏㄨ和ㄏㄢˋ哪ㄋㄚˇ喔ㄛ單ㄉㄢ嗎˙ㄇㄚ嘯ㄒㄧㄠˋ器ㄑㄧˋ嚇ㄒㄧㄚˋ四ㄙˋ回ㄏㄨㄟˊ因ㄧㄣ園ㄩㄢˊ在ㄗㄞˋ地ㄉㄧˋ型ㄒㄧㄥˊ塊ㄎㄨㄞˋ塞ㄙㄜˋ填ㄊㄧㄢˊ壺ㄏㄨˊ外ㄨㄞˋ多ㄉㄨㄛ夢ㄇㄥˋ大ㄉㄚˋ天ㄊㄧㄢ太ㄊㄞˋ失ㄕ奏ㄗㄡˋ套ㄊㄠˋ奶ㄋㄞˇ她ㄊㄚ好ㄏㄠˇ姐ㄐㄧㄝˇ威ㄨㄟ媽ㄇㄚ嬰ㄧㄥ子ㄗˇ字ㄗˋ孩ㄏㄞˊ學ㄒㄩㄝˊ它ㄊㄚ定ㄉㄧㄥˋ客ㄎㄜˋ室ㄕˋ容ㄖㄨㄥˊ寫ㄒㄧㄝˇ專ㄓㄨㄢ尊ㄗㄨㄣ對ㄉㄨㄟˋ小ㄒㄧㄠˇ尖ㄐㄧㄢ就ㄐㄧㄡˋ尾ㄨㄟˇ屬ㄕㄨˇ差ㄔㄚ己ㄐㄧˇ已ㄧˇ巴ㄅㄚ巾ㄐㄧㄣ師ㄕ帶ㄉㄞˋ幽ㄧㄡ幾ㄐㄧˇ式ㄕˋ形ㄒㄧㄥˊ往ㄨㄤˇ待ㄉㄞˋ很ㄏㄣˇ後ㄏㄡˋ得ㄉㄜˊ從ㄘㄨㄥˊ心ㄒㄧㄣ忙ㄇㄤˊ快ㄎㄨㄞˋ怕ㄆㄚˋ思ㄙ急ㄐㄧˊ性ㄒㄧㄥˋ怪ㄍㄨㄞˋ悶ㄇㄣˋ情ㄑㄧㄥˊ想ㄒㄧㄤˇ意ㄧˋ感ㄍㄢˇ態ㄊㄞˋ懇ㄎㄣˇ成ㄔㄥˊ我ㄨㄛˇ戰ㄓㄢˋ房ㄈㄤˊ所ㄙㄨㄛˇ手ㄕㄡˇ才ㄘㄞˊ找ㄓㄠˇ承ㄔㄥˊ技ㄐㄧˋ把ㄅㄚˇ拉ㄌㄚ拖ㄊㄨㄛ拼ㄆㄧㄣ拿ㄋㄚˊ挑ㄊㄧㄠ挪ㄋㄨㄛˊ捆ㄎㄨㄣˇ掉ㄉㄧㄠˋ排ㄆㄞˊ掠ㄌㄩㄝˋ接ㄐㄧㄝ推ㄊㄨㄟ提ㄊㄧˊ搬ㄅㄢ擠ㄐㄧˇ放ㄈㄤˋ教ㄐㄧㄠˋ敢ㄍㄢˇ整ㄓㄥˇ數ㄕㄨˋ文ㄨㄣˊ於ㄩˊ旁ㄆㄤˊ日ㄖˋ昂ㄤˊ明ㄇㄧㄥˊ易ㄧˋ星ㄒㄧㄥ昨ㄗㄨㄛˊ是ㄕˋ時ㄕˊ晃ㄏㄨㄤˋ晚ㄨㄢˇ更ㄍㄥˋ書ㄕㄨ最ㄗㄨㄟˋ會ㄏㄨㄟˋ有ㄧㄡˇ朋ㄆㄥˊ服ㄈㄨˊ期ㄑㄧˊ末ㄇㄛˋ本ㄅㄣˇ杯ㄅㄟ板ㄅㄢˇ查ㄔㄚˊ校ㄒㄧㄠˋ案ㄢˋ桌ㄓㄨㄛ梭ㄙㄨㄛ棒ㄅㄤˋ椅ㄧˇ楚ㄔㄨˇ業ㄧㄝˋ概ㄍㄞˋ樂ㄌㄜˋ標ㄅㄧㄠ樣ㄧㄤˋ檢ㄐㄧㄢˇ次ㄘˋ正ㄓㄥˋ步ㄅㄨˋ段ㄉㄨㄢˋ母ㄇㄨˇ每ㄇㄟˇ比ㄅㄧˇ氣ㄑㄧˋ水ㄕㄨㄟˇ求ㄑㄧㄡˊ沉ㄔㄣˊ沒ㄇㄟˊ沖ㄔㄨㄥ沿ㄧㄢˊ況ㄎㄨㄤˋ法ㄈㄚˇ泡ㄆㄠˋ洪ㄏㄨㄥˊ派ㄆㄞˋ浪ㄌㄤˋ浮ㄈㄨˊ海ㄏㄞˇ混ㄏㄨㄣˋ清ㄑㄧㄥ演ㄧㄢˇ漫ㄇㄢˋ為ㄨㄟˋ烏ㄨ熟ㄕㄨˊ爭ㄓㄥ爸ㄅㄚˋ爺ㄧㄝˊ犯ㄈㄢˋ狗ㄍㄡˇ猛ㄇㄥˇ猶ㄧㄡˊ玩ㄨㄢˊ現ㄒㄧㄢˋ琴ㄑㄧㄣˊ生ㄕㄥ用ㄩㄥˋ男ㄋㄢˊ畫ㄏㄨㄚˋ疲ㄆㄧˊ發ㄈㄚ的˙ㄉㄜ皺ㄓㄡˋ盡ㄐㄧㄣˋ目ㄇㄨˋ直ㄓˊ眉ㄇㄟˊ看ㄎㄢˋ短ㄉㄨㄢˇ破ㄆㄛˋ確ㄑㄩㄝˋ示ㄕˋ禮ㄌㄧˇ移ㄧˊ種ㄓㄨㄥˇ稱ㄔㄥ稻ㄉㄠˋ空ㄎㄨㄥ穿ㄔㄨㄢ立ㄌㄧˋ章ㄓㄤ第ㄉㄧˋ筋ㄐㄧㄣ答ㄉㄚˊ籃ㄌㄢˊ糊ㄏㄨˊ糕ㄍㄠ糟ㄗㄠ紅ㄏㄨㄥˊ紋ㄨㄣˊ級ㄐㄧˊ結ㄐㄧㄝˊ給ㄍㄟˇ經ㄐㄧㄥ綜ㄗㄨㄥ編ㄅㄧㄢ練ㄌㄧㄢˋ總ㄗㄨㄥˇ績ㄐㄧˋ織ㄓ繞ㄖㄠˋ習ㄒㄧˊ老ㄌㄠˇ考ㄎㄠˇ而ㄦˊ聲ㄕㄥ聽ㄊㄧㄥ背ㄅㄟˋ能ㄋㄥˊ脅ㄒㄧㄝˊ腳ㄐㄧㄠˇ自ㄗˋ舞ㄨˇ般ㄅㄢ船ㄔㄨㄢˊ英ㄧㄥ茶ㄔㄚˊ草ㄘㄠˇ著˙ㄓㄜ藉ㄐㄧㄝˋ蛇ㄕㄜˊ蜒ㄧㄢˊ蜿ㄨㄢ街ㄐㄧㄝ衣ㄧ表ㄅㄧㄠˇ衫ㄕㄢ袋ㄉㄞˋ裡ㄌㄧˇ複ㄈㄨˋ襯ㄔㄣˋ要ㄧㄠˋ規ㄍㄨㄟ角ㄐㄧㄠˇ解ㄐㄧㄝˇ訓ㄒㄩㄣˋ記ㄐㄧˋ詞ㄘˊ試ㄕˋ話ㄏㄨㄚˋ認ㄖㄣˋ說ㄕㄨㄛ請ㄑㄧㄥˇ論ㄌㄨㄣˋ讀ㄉㄨˊ變ㄅㄧㄢˋ讓ㄖㄤˋ豫ㄩˋ貌ㄇㄠˋ貪ㄊㄢ責ㄗㄜˊ買ㄇㄞˇ賽ㄙㄞˋ走ㄗㄡˇ起ㄑㄧˇ越ㄩㄝˋ跑ㄆㄠˇ跟ㄍㄣ踏ㄊㄚˋ身ㄕㄣ車ㄔㄜ較ㄐㄧㄠˋ輛ㄌㄧㄤˋ近ㄐㄧㄣˋ這ㄓㄜˋ逛ㄍㄨㄤˋ速ㄙㄨˋ造ㄗㄠˋ週ㄓㄡ進ㄐㄧㄣˋ過ㄍㄨㄛˋ道ㄉㄠˋ適ㄕˋ選ㄒㄩㄢˇ邀ㄧㄠ邊ㄅㄧㄢ那ㄋㄚˋ部ㄅㄨˋ都ㄉㄡ配ㄆㄟˋ醞ㄩㄣˋ釀ㄋㄧㄤˋ釋ㄕˋ重ㄓㄨㄥˋ鈴ㄌㄧㄥˊ鋼ㄍㄤ錄ㄌㄨˋ錯ㄘㄨㄛˋ長ㄔㄤˊ開ㄎㄞ閒ㄒㄧㄢˊ間ㄐㄧㄢ閱ㄩㄝˋ闊ㄎㄨㄛˋ闖ㄔㄨㄤˇ關ㄍㄨㄢ附ㄈㄨˋ院ㄩㄢˋ陪ㄆㄟˊ隆ㄌㄨㄥˊ隊ㄉㄨㄟˋ雞ㄐㄧ離ㄌㄧˊ雨ㄩˇ雲ㄩㄣˊ需ㄒㄩ靠ㄎㄠˋ面ㄇㄧㄢˋ音ㄧㄣ響ㄒㄧㄤˇ項ㄒㄧㄤˋ頭ㄊㄡˊ顆ㄎㄜ題ㄊㄧˊ飛ㄈㄟ餅ㄅㄧㄥˇ餐ㄘㄢ餓ㄜˋ首ㄕㄡˇ騎ㄑㄧˊ高ㄍㄠ麼˙ㄇㄜ默ㄇㄛˋ點ㄉㄧㄢˇ鼠ㄕㄨˇ之ㄓ二ㄦˋ五ㄨˇ俄ㄜˊ信ㄒㄧㄣˋ兩ㄌㄧㄤˇ六ㄌㄧㄡˋ券ㄑㄩㄢˋ剩ㄕㄥˋ功ㄍㄨㄥ厲ㄌㄧˋ圓ㄩㄢˊ始ㄕˇ完ㄨㄢˊ害ㄏㄞˋ封ㄈㄥ常ㄔㄤˊ張ㄓㄤ或ㄏㄨㄛˋ戲ㄒㄧˋ指ㄓˇ按ㄢˋ換ㄏㄨㄢˋ斯ㄙ方ㄈㄤ旋ㄒㄩㄢˊ智ㄓˋ曆ㄌㄧˋ束ㄕㄨˋ條ㄊㄧㄠˊ櫃ㄍㄨㄟˋ消ㄒㄧㄠ測ㄘㄜˋ獎ㄐㄧㄤˇ白ㄅㄞˊ盃ㄅㄟ益ㄧˋ盤ㄆㄢˊ筆ㄅㄧˇ紀ㄐㄧˋ綠ㄌㄩˋ線ㄒㄧㄢˋ繼ㄐㄧˋ續ㄒㄩˋ羅ㄌㄨㄛˊ與ㄩˇ色ㄙㄜˋ行ㄒㄧㄥˊ衛ㄨㄟˋ賺ㄗㄨㄢˋ超ㄔㄠ轉ㄓㄨㄢˇ退ㄊㄨㄟˋ通ㄊㄨㄥ連ㄌㄧㄢˊ遊ㄧㄡˊ達ㄉㄚˊ還ㄏㄞˊ鍵ㄐㄧㄢˋ鐘ㄓㄨㄥ除ㄔㄨˊ驗ㄧㄢˋ隨ㄙㄨㄟˊ機ㄐㄧ階ㄐㄧㄝ`;
 const ZY = {}; (function () { const re = /([一-鿿])([ㄅ-ㄯˊˇˋ˙]+)/g; let m; while ((m = re.exec(ZYD))) ZY[m[1]] = m[2]; })();
 /* 破音字／輕聲詞：[正規表示式, 該詞每個字的注音] */
 const ZYP = [
@@ -5222,6 +5235,656 @@ function spHint(sp) { const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv]; markHe
 function spParent(i, sp) { const q = sp.q, lv = S.lv, T = QSTATE[q.pid].t[lv]; T.res[i] = { ok: true, msg: '' }; if (q.rows.every((r, k) => T.res[k] && T.res[k].ok)) spComplete(q, lv); else spRefresh(); }
 function spMode(m, sp) { if (m === 'speak' && !spOK()) return; S.sm = m; spStop(true); saveP(); reLeftQ(sp); updDock(); }
 (function () { const st = document.createElement('style'); st.textContent = `.smtog{display:flex;gap:8px;margin:0 0 10px}.dtx{width:100%;box-sizing:border-box;font-size:1.25rem;padding:10px;border:2px solid var(--line);border-radius:12px;font-family:inherit}.smtog button{flex:1;min-height:46px;border:2px solid var(--line);border-radius:12px;background:var(--card);font-weight:700;font-size:1rem}.smtog button[aria-pressed=true]{background:#1f8a70;color:#fff;border-color:#1f8a70}.sprow .starter.big{font-size:1.3rem;font-weight:700;margin:4px 0}.spctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.btn.mic{font-size:1.15rem;padding:14px 22px;min-height:56px}.btn.mic.rec{background:#e24c3f;border-color:#e24c3f;color:#fff;animation:micp 1s infinite}@keyframes micp{50%{opacity:.65}}.spok{color:#1b8a4b;font-weight:800;font-size:1.1rem}.sptxt{font-family:var(--f-ui);color:#34445e;min-height:1.4em}`; document.head.appendChild(st); })();
+/* ============ 文法專項訓練：搭鷹架 → 項目精熟 → 應用 ============ */
+const GMT = [
+  { id: 'poss', t: '所有格形容詞', en: 'his / her / its / their', ic: '🧸' },
+  { id: 'dem', t: '指示詞', en: 'this / that / these / those', ic: '👉' },
+  { id: 'comp', t: '比較級', en: '-er than / more … than', ic: '📏' },
+  { id: 'ing', t: '動詞 -ed / -ing', en: '變化與拼字', ic: '🔧' },
+];
+const GM = { tab: 'learn', topic: 'poss', quiz: null, mod: 'gm' };
+const GMC = {};
+const gmCfg = () => GMC[GM.mod];
+const gmTopic = (id, mod) => GMC[mod || GM.mod].topics.find(t => t.id === id);
+const gmKeys = (pre, topics) => topics.flatMap(t => [`${pre}.${t.id}.guide`, `${pre}.${t.id}.drill`]).concat([`${pre}.apply.exam`, `${pre}.apply.fix`]).map(pid => ({ pid }));
+const GM_COUNT = GMT.flatMap(t => [`gm.${t.id}.guide`, `gm.${t.id}.drill`]).concat(['gm.apply.exam', 'gm.apply.fix']).map(pid => ({ pid }));
+const gmN = s => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+const gmCap = s => s[0].toUpperCase() + s.slice(1);
+const gmMiss = tag => (P.best['gw.' + tag] || 0) > 0;
+const gmBlank = s => vcBlank(s);
+const gmFill = (s, a) => vcFill(s, a);
+
+/* ---------- 題庫 ---------- */
+const POSS_BANK = [
+  ['Tom has a ball.', '____ ball is red.', 'his'], ['Amy has a cat.', '____ cat is cute.', 'her'],
+  ['The rabbit has a tail.', '____ tail is short.', 'its'], ['The kids have homework.', '____ homework is fun.', 'their'],
+  ['Ben has a dog.', '____ dog is big.', 'his'], ['Mia has a bag.', '____ bag is new.', 'her'],
+  ['The bird has a nest.', '____ nest is in the tree.', 'its'], ['Tom and Amy have a house.', '____ house is near the park.', 'their'],
+  ['The boy has a bottle.', '____ water is cold.', 'his'], ['The elephant has a nose.', '____ nose is long.', 'its'],
+  ['Lisa has a pencil box.', '____ pencil box is on the desk.', 'her'], ['My parents have a car.', '____ car is white.', 'their'],
+  ['Tom likes soccer.', 'He plays soccer with ____ friends.', 'his'], ['Amy has a sister.', 'She helps ____ sister every day.', 'her'],
+  ['The cat is hungry.', 'It is looking for ____ food.', 'its'], ['The students are busy.', 'They are doing ____ homework.', 'their'],
+  ['The dog is happy.', 'It wags ____ tail.', 'its'],
+].map(([ctx, s, a]) => ({ ctx, s, a }));
+const POSS_OWN = { his: '男生（he）', her: '女生（she）', its: '一隻動物或一樣東西（it）', their: '很多個人或動物（they）' };
+
+const DEM_BANK = [
+  ['____ is my pencil.', 'this', 'near', 'one'], ['____ is our school.', 'that', 'far', 'one'],
+  ['____ are my books.', 'these', 'near', 'many'], ['____ are his shoes.', 'those', 'far', 'many'],
+  ['____ is her hotdog.', 'this', 'near', 'one'], ['____ are his pencils.', 'these', 'near', 'many'],
+  ['____ is a big tree.', 'that', 'far', 'one'], ['____ are my friends.', 'those', 'far', 'many'],
+  ['____ is my cat.', 'this', 'near', 'one'], ['____ are red apples.', 'these', 'near', 'many'],
+  ['____ is a nice park.', 'that', 'far', 'one'], ['____ are cute rabbits.', 'those', 'far', 'many'],
+  ['Look at ____ flowers over there.', 'those', 'far', 'many'], ['I like ____ bag in my hand.', 'this', 'near', 'one'],
+  ['Do you want ____ cookies here?', 'these', 'near', 'many'], ['Who is ____ boy over there?', 'that', 'far', 'one'],
+].map(([s, a, d, n]) => ({ s, a, d, n }));
+const DEM_ALL = ['this', 'that', 'these', 'those'];
+
+const COMP_BANK = [
+  ['long', 'add', 'The snake is ____ than the pencil.'], ['tall', 'add', 'Dad is ____ than Mom.'], ['fast', 'add', 'A car is ____ than a bike.'],
+  ['small', 'add', 'A mouse is ____ than a cat.'], ['cold', 'add', 'Winter is ____ than autumn.'], ['slow', 'add', 'A turtle is ____ than a rabbit.'],
+  ['strong', 'add', 'An elephant is ____ than a dog.'], ['old', 'add', 'My grandpa is ____ than my dad.'],
+  ['large', 'e', 'A bus is ____ than a car.'], ['nice', 'e', 'The weather today is ____ than yesterday.'], ['wide', 'e', 'The river is ____ than the road.'], ['safe', 'e', 'A car is ____ than a motorcycle.'],
+  ['easy', 'y', 'English is ____ than math.'], ['happy', 'y', 'I am ____ than yesterday.'], ['heavy', 'y', 'A rock is ____ than a leaf.'], ['funny', 'y', 'This cartoon is ____ than that one.'], ['busy', 'y', 'Monday is ____ than Sunday.'],
+  ['hot', 'dbl', 'Taiwan is ____ than Japan.'], ['big', 'dbl', 'A bus is ____ than a car.'], ['thin', 'dbl', 'A pencil is ____ than a book.'], ['sad', 'dbl', 'I am ____ than my brother today.'], ['wet', 'dbl', 'The grass is ____ than the road.'],
+  ['expensive', 'more', 'A motorcycle is ____ than a bicycle.'], ['beautiful', 'more', 'The rose is ____ than the grass.'], ['difficult', 'more', 'Math is ____ than art.'],
+  ['interesting', 'more', 'This book is ____ than that book.'], ['delicious', 'more', 'Pizza is ____ than bread.'], ['dangerous', 'more', 'A tiger is ____ than a cat.'],
+].map(([adj, k, s]) => ({ adj, k, s, a: gmCmp(adj, k) }));
+function gmCmp(adj, k) { return k === 'add' ? adj + 'er' : k === 'e' ? adj + 'r' : k === 'y' ? adj.slice(0, -1) + 'ier' : k === 'dbl' ? adj + adj.slice(-1) + 'er' : 'more ' + adj; }
+const COMP_RULE = {
+  add: ['短短的字：直接加 -er', 'long → longer', 'tall → taller'],
+  e: ['字尾是 e：只加 -r', 'large → larger', 'nice → nicer'],
+  y: ['子音 + y：y 變 i，再加 -er', 'easy → easier', 'happy → happier'],
+  dbl: ['短母音 + 一個子音：重複字母，再加 -er', 'hot → hotter', 'big → bigger'],
+  more: ['很長的字（三個音節以上）：前面加 more，字不變', 'expensive → more expensive', 'beautiful → more beautiful'],
+};
+function gmCompWrong(adj, k) {
+  const w = { add: ['more ' + adj, adj + 'est', adj + 'ier'], e: [adj + 'er', 'more ' + adj, adj + 'st'], y: [adj + 'er', adj.slice(0, -1) + 'er', 'more ' + adj], dbl: [adj + 'er', 'more ' + adj, adj + adj.slice(-1) + 'est'], more: [adj + 'er', 'most ' + adj, 'more ' + adj + 'er'] }[k];
+  return w;
+}
+
+const ING_BANK = [
+  ['talk', 'add', 'She is ____ (talk) to her friend.', 'Yesterday, we ____ (talk) about the trip.'],
+  ['watch', 'add', 'He is ____ (watch) TV now.', 'We ____ (watch) a movie yesterday.'],
+  ['jump', 'add', 'The frog is ____ (jump) on the rock.', 'He ____ (jump) over the puddle yesterday.'],
+  ['play', 'add', 'They are ____ (play) outside now.', 'We ____ (play) soccer last Sunday.'],
+  ['clean', 'add', 'I am ____ (clean) my room now.', 'Last year we ____ (clean) the classroom before summer break.'],
+  ['walk', 'add', 'Dad is ____ (walk) the dog now.', 'She ____ (walk) to school yesterday.'],
+  ['help', 'add', 'Mom is ____ (help) me with my homework.', 'He ____ (help) his friend last night.'],
+  ['wander', 'add', 'The dog is ____ (wander) in the park now.', 'The cat ____ (wander) in the garden yesterday.'],
+  ['threaten', 'add', 'The dark cloud is ____ (threaten) the picnic.', 'The big dog ____ (threaten) the cat yesterday.'],
+  ['write', 'e', 'I am ____ (write) a story about my trip to Japan.', null],
+  ['dance', 'e', 'The girls are ____ (dance) on the stage now.', 'She ____ (dance) at the party last night.'],
+  ['invite', 'e', 'Tom is ____ (invite) his friends to his party now.', 'She ____ (invite) me to her house yesterday.'],
+  ['use', 'e', 'He is ____ (use) a computer now.', 'I ____ (use) a pencil yesterday.'],
+  ['bake', 'e', 'Grandma is ____ (bake) a cake now.', 'We ____ (bake) cookies last weekend.'],
+  ['live', 'e', 'He is ____ (live) with his aunt now.', 'They ____ (live) in Taipei last year.'],
+  ['mope', 'e', 'He is ____ (mope) in his room now.', 'She ____ (mope) all day yesterday.'],
+  ['argue', 'e', 'They are ____ (argue) loudly now.', 'The two boys ____ (argue) yesterday.'],
+  ['run', 'dbl', 'The dog is ____ (run) in the park.', null],
+  ['swim', 'dbl', 'They are ____ (swim) in the pool now.', null],
+  ['stop', 'dbl', 'The bus is ____ (stop) at the school now.', 'The car ____ (stop) at the red light.'],
+  ['plan', 'dbl', 'We are ____ (plan) a trip now.', 'She ____ (plan) a party last week.'],
+  ['drag', 'dbl', 'He is ____ (drag) a heavy box now.', 'She ____ (drag) the bag to the door yesterday.'],
+  ['shop', 'dbl', 'Mom is ____ (shop) at the market now.', 'We ____ (shop) for shoes last Saturday.'],
+  ['hug', 'dbl', 'The boy is ____ (hug) his dog now.', 'She ____ (hug) her mom yesterday.'],
+  ['clap', 'dbl', 'The kids are ____ (clap) their hands now.', 'Everyone ____ (clap) after the song.'],
+  ['whiz', 'dbl', 'The car is ____ (whiz) past me now.', 'The car ____ (whiz) past me yesterday.'],
+  ['study', 'y', 'He is ____ (study) English now.', 'She ____ (study) for the test last night.'],
+  ['cry', 'y', 'The baby is ____ (cry) loudly now.', 'He ____ (cry) when he was sad.'],
+  ['carry', 'y', 'She is ____ (carry) a big bag now.', 'He ____ (carry) the books yesterday.'],
+  ['try', 'y', 'I am ____ (try) a new game now.', 'We ____ (try) again yesterday.'],
+  ['copy', 'y', 'He is ____ (copy) the words now.', 'I ____ (copy) the sentence yesterday.'],
+  ['worry', 'y', 'Mom is ____ (worry) about me now.', 'She ____ (worry) about the test yesterday.'],
+  ['scurry', 'y', 'The mouse is ____ (scurry) across the floor now.', 'The mouse ____ (scurry) across the floor yesterday.'],
+].map(([v, k, si, se]) => ({ v, k, si, se, ing: gmIngF(v, k), ed: gmEdF(v, k) }));
+function gmIngF(v, k) { return k === 'e' ? v.slice(0, -1) + 'ing' : k === 'dbl' ? v + v.slice(-1) + 'ing' : v + 'ing'; }
+function gmEdF(v, k) { return k === 'e' ? v + 'd' : k === 'dbl' ? v + v.slice(-1) + 'ed' : k === 'y' ? v.slice(0, -1) + 'ied' : v + 'ed'; }
+const ING_RULE = {
+  ing: { add: '一般：直接加 -ing', e: '字尾是 e：去掉 e，再加 -ing', dbl: '短母音 + 一個子音：重複字母，再加 -ing' },
+  ed: { add: '一般：直接加 -ed', e: '字尾是 e：只加 -d', dbl: '短母音 + 一個子音：重複字母，再加 -ed', y: '子音 + y：y 變 i，再加 -ed' },
+};
+function gmIngWrong(v, k, t) {
+  const c = new Set();
+  const stem = v.endsWith('e') ? v.slice(0, -1) : v, dbl = v + v.slice(-1), yi = v.endsWith('y') ? v.slice(0, -1) + 'i' : v;
+  if (t === 'ing') [v + 'ing', stem + 'ing', dbl + 'ing', yi + 'ing', v + 'ed', v + 'eing', v + 'ning'].forEach(x => c.add(x));
+  else [v + 'ed', v + 'd', stem + 'ed', dbl + 'ed', yi + 'ed', v + 'ied', yi + 'd', v + 'ing'].forEach(x => c.add(x));
+  c.delete(t === 'ing' ? gmIngF(v, k) : gmEdF(v, k)); c.delete(v);
+  return vcSh([...c]);
+}
+
+/* ---------- 出題 ---------- */
+function gmAcc(a) { return [gmN(a)]; }
+function gmQPoss(it, clue = true) {
+  const cap = it.s.startsWith('____'), A = cap ? gmCap(it.a) : it.a, opts = ['his', 'her', 'its', 'their'].map(w => cap ? gmCap(w) : w);
+  return { kind: 'wb', topic: 'poss', tag: 'poss', sentence: it.s, ans: A, opts: opts.map(o => ({ id: o, a: o })),
+    prompt: `<p class="gctx">${esc(it.ctx)}</p><p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">用 his / her / its / their 填空${cap ? '（放在句子開頭，第一個字母要<b>大寫</b>）' : ''}。</p>`,
+    explain: `${esc(it.ctx)} 主人是${POSS_OWN[it.a]}，所以用 <b>${esc(A)}</b>。<br>${gmFill(it.s, A)}`,
+    hintHtml: `<div class="vhint">💡 先找「誰擁有它」：男生 <b>his</b>、女生 <b>her</b>、動物或東西 <b>its</b>、很多個 <b>their</b>。${cap ? '<br>空格在句子開頭，要用大寫。' : ''}</div>` };
+}
+function gmQDem(it, clue = true) {
+  const cap = it.s.startsWith('____'), A = cap ? gmCap(it.a) : it.a, opts = DEM_ALL.map(w => cap ? gmCap(w) : w);
+  const chip = `<span class="gchip">📍 ${it.d === 'near' ? '近（在手邊）' : '遠（在那邊）'}</span><span class="gchip">🔢 ${it.n === 'one' ? '一個' : '很多個'}</span>`;
+  return { kind: 'wb', topic: 'dem', tag: 'dem', sentence: it.s, ans: A, opts: opts.map(o => ({ id: o, a: o })),
+    prompt: `${clue ? `<p>${chip}</p>` : ''}<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">用 this / that / these / those 填空${cap ? '（放在句子開頭，要<b>大寫</b>）' : ''}。</p>`,
+    explain: `東西${it.d === 'near' ? '在<b>近處</b>' : '在<b>遠處</b>'}、${it.n === 'one' ? '<b>一個</b>' : '<b>很多個</b>'}，所以用 <b>${esc(A)}</b>。<br>${gmFill(it.s, A)}`,
+    hintHtml: `<div class="vhint">💡 <b>近</b>：this（一個）、these（很多個）；<b>遠</b>：that（一個）、those（很多個）。<br>看後面是 is 還是 are，也能幫你：is → this / that，are → these / those。</div>` };
+}
+function gmQComp(it, mode) {   /* mode: 'mc' | 'type' | 'than' */
+  const adj = it.adj, A = it.a, rule = COMP_RULE[it.k];
+  const explain = `<b>${esc(adj)}</b> → <b>${esc(A)}</b>（${rule[0]}）<br>${gmFill(it.s, A)}`;
+  const hintHtml = `<div class="vhint">💡 ${rule[0]}。<br>例：${rule[1]}、${rule[2]}。</div>`;
+  if (mode === 'mc') {
+    const opts = vcSh([A].concat(gmCompWrong(adj, it.k))).map(x => ({ id: x, a: x }));
+    return { kind: 'mc', topic: 'comp', tag: 'comp.' + it.k, ans: A, opts, prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">形容詞是 <b>${esc(adj)}</b>，哪一個比較級的寫法正確？</p>`, explain, hintHtml };
+  }
+  if (mode === 'than') {
+    const s2 = it.s.replace(' than', ''); const A2 = A + ' than';
+    return { kind: 'type', topic: 'comp', tag: 'comp.' + it.k, ans: A2, acc: gmAcc(A2), prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(s2)}</p><p class="qzh">形容詞：<b>${esc(adj)}</b>。寫出「比較級 ＋ than」。</p>`, explain: `<b>${esc(adj)}</b> → <b>${esc(A)}</b>，後面要接 <b>than</b>。<br>${gmFill(s2, A2)}`, hintHtml };
+  }
+  return { kind: 'type', topic: 'comp', tag: 'comp.' + it.k, ans: A, acc: gmAcc(A), prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">形容詞：<b>${esc(adj)}</b>。把比較級拼出來（小寫就可以）。</p>`, explain, hintHtml };
+}
+function gmQIng(it, t, mode) {   /* t: 'ing' | 'ed' */
+  const A = t === 'ing' ? it.ing : it.ed, s = t === 'ing' ? it.si : it.se, rule = ING_RULE[t][it.k] || ING_RULE[t].add, tag = 'ing.' + (t === 'ing' && it.k === 'y' ? 'add' : it.k);
+  const clue = t === 'ing' ? '看到 <b>now</b>、<b>is / am / are</b>：正在做 → 動詞加 <b>-ing</b>' : '看到 <b>yesterday</b>、<b>last ...</b>、<b>ago</b>：過去做過 → 動詞加 <b>-ed</b>';
+  const explain = `<b>${esc(it.v)}</b> → <b>${esc(A)}</b>（${rule}）<br>${gmFill(s, A)}`;
+  const hintHtml = `<div class="vhint">💡 ${clue}。<br>拼字規則：${rule}。<br>例：${t === 'ing' ? 'run → running、write → writing' : 'stop → stopped、study → studied'}</div>`;
+  if (mode === 'mc') {
+    const opts = vcSh([A].concat(gmIngWrong(it.v, it.k, t).slice(0, 3))).map(x => ({ id: x, a: x }));
+    return { kind: 'mc', topic: 'ing', tag, ans: A, opts, prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(s)}</p><p class="qzh">括號裡的動詞要改成正確的 <b>${t === 'ing' ? '-ing' : '-ed'}</b> 形態，哪一個拼法正確？</p>`, explain, hintHtml };
+  }
+  return { kind: 'type', topic: 'ing', tag, ans: A, acc: gmAcc(A), prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(s)}</p><p class="qzh">把括號裡的動詞改成正確形態，拼出來（小寫就可以）。</p>`, explain, hintHtml };
+}
+const gmPick = (arr, n) => vcSh(arr).slice(0, n);
+const gmIngPairs = () => ING_BANK.flatMap(it => [['ing', it]].concat(it.se ? [['ed', it]] : []));
+function gmDrill(topic) {
+  let qs;
+  if (topic === 'poss') qs = gmPick(POSS_BANK, 10).map(it => gmQPoss(it, true));
+  else if (topic === 'dem') qs = gmPick(DEM_BANK, 10).map(it => gmQDem(it, true));
+  else if (topic === 'comp') {
+    const items = []; ['add', 'e', 'y', 'dbl', 'more'].forEach(k => { items.push(...gmPick(COMP_BANK.filter(x => x.k === k), 2)); });
+    qs = vcSh(items).map((it, i) => gmQComp(it, i < 4 ? 'mc' : 'type'));
+  } else {
+    const pairs = [], used = new Set(); ['add', 'e', 'dbl', 'y'].forEach(k => { vcSh(gmIngPairs().filter(p => p[1].k === k)).slice(0, k === 'add' ? 2 : 3).forEach(p => { pairs.push(p); used.add(p); }); });
+    while (pairs.length < 10) { const p = gmPick(gmIngPairs(), 1)[0]; if (!used.has(p)) { pairs.push(p); used.add(p); } }
+    qs = vcSh(pairs).slice(0, 10).map((p, i) => gmQIng(p[1], p[0], i < 4 ? 'mc' : 'type'));
+  }
+  return qs;
+}
+function gmExam() {
+  const mk = (arr, part) => arr.map(q => Object.assign(q, { part }));
+  return [].concat(
+    mk(gmPick(POSS_BANK, 3).map(it => gmQPoss(it, false)), 'Part 1　所有格形容詞（選字填空，注意大寫）'),
+    mk(gmPick(DEM_BANK, 3).map(it => gmQDem(it, false)), 'Part 2　指示詞（選字填空，注意大寫）'),
+    mk(gmPick(COMP_BANK, 4).map(it => gmQComp(it, 'than')), 'Part 3　比較級（寫出比較級 ＋ than）'),
+    mk(gmPick(gmIngPairs(), 4).map(p => gmQIng(p[1], p[0], 'type')), 'Part 4　動詞 -ed / -ing（變化詞性）'));
+}
+function gmFix() {
+  const out = [];
+  const mkFix = (q, pre, wrong, post) => Object.assign(q, { kind: 'mc', part: '找錯誤，改正它', prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${esc(pre)}<span class="vwrong">${esc(wrong)}</span>${esc(post)}</p><p class="qzh">🔎 句子裡有一個<b>錯誤</b>（紅色的字）。哪一個才是正確的寫法？</p>` });
+  const sp = (s, tok) => { const k = s.indexOf(tok); return [s.slice(0, k), s.slice(k + tok.length)]; };
+  gmPick(POSS_BANK, 2).forEach(it => { const q = gmQPoss(it, true), w = gmPick(q.opts.map(o => o.id).filter(x => x !== q.ans), 1)[0], [p1, p2] = sp(it.s, '____'); out.push(mkFix(q, it.ctx + ' ' + p1, w, p2)); });
+  gmPick(DEM_BANK, 2).forEach(it => { const q = gmQDem(it, true), w = gmPick(q.opts.map(o => o.id).filter(x => x !== q.ans), 1)[0], [p1, p2] = sp(it.s, '____'); out.push(mkFix(q, p1, w, p2)); });
+  gmPick(COMP_BANK, 2).forEach(it => { const q = gmQComp(it, 'mc'), w = gmPick(gmCompWrong(it.adj, it.k), 1)[0], [p1, p2] = sp(it.s, '____'); out.push(mkFix(q, p1, w, p2)); });
+  gmPick(gmIngPairs(), 2).forEach(p => { const q = gmQIng(p[1], p[0], 'mc'), w = gmPick(q.opts.map(o => o.id).filter(x => x !== q.ans), 1)[0], s = p[0] === 'ing' ? p[1].si : p[1].se, [p1, p2] = sp(s, '____ (' + p[1].v + ')'); out.push(mkFix(q, p1, w, p2)); });
+  return vcSh(out);
+}
+/* ---------- 引導題（搭鷹架）：一步一步想 ---------- */
+function gmGuideItems(topic) {
+  const S = (prompt, opts, ans, explain, extra = {}) => Object.assign({ prompt, opts: opts.map(o => (typeof o === 'string' ? { id: o, a: o } : o)), ans, explain }, extra);
+  if (topic === 'poss') return gmPick(POSS_BANK.slice(0, 12).concat(POSS_BANK.slice(12)), 5).map(it => {
+    const cap = it.s.startsWith('____'), A = cap ? gmCap(it.a) : it.a;
+    return { topic, head: `<p class="gctx">${esc(it.ctx)}</p><p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p>`, done: gmFill(it.s, A), steps: [
+      S('第 1 步：誰擁有它？', Object.entries(POSS_OWN).map(([k, v]) => ({ id: k, a: v })), it.a, `${esc(it.ctx)} 主人是 ${POSS_OWN[it.a]}。`),
+      S('第 2 步：主人是這個人，要用哪一個字？' + (cap ? '（空格在句首，字母要大寫）' : ''), ['his', 'her', 'its', 'their'].map(w => ({ id: cap ? gmCap(w) : w, a: cap ? gmCap(w) : w })), A, `男生 his、女生 her、動物或東西 its、很多個 their。`, { wb: true }),
+    ] };
+  });
+  if (topic === 'dem') return gmPick(DEM_BANK, 5).map(it => {
+    const cap = it.s.startsWith('____'), A = cap ? gmCap(it.a) : it.a;
+    return { topic, head: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p>`, done: gmFill(it.s, A), steps: [
+      S('第 1 步：這個東西離你近，還是遠？（看看句子的線索）', [{ id: 'near', a: '近（在手邊）' }, { id: 'far', a: '遠（在那邊）' }], it.d, `在句子裡找線索，例如 here（這裡）、over there（那邊）、in my hand（我手上）。這題是${it.d === 'near' ? '近' : '遠'}。`),
+      S('第 2 步：是一個，還是很多個？（看 is 還是 are，或名詞有沒有 -s）', [{ id: 'one', a: '一個（is）' }, { id: 'many', a: '很多個（are）' }], it.n, `這題是${it.n === 'one' ? '一個' : '很多個'}。`),
+      S('第 3 步：選出正確的字' + (cap ? '（空格在句首，要大寫）' : ''), DEM_ALL.map(w => ({ id: cap ? gmCap(w) : w, a: cap ? gmCap(w) : w })), A, `近 + 一個 = this；遠 + 一個 = that；近 + 很多個 = these；遠 + 很多個 = those。`, { wb: true }),
+    ] };
+  });
+  if (topic === 'comp') {
+    const items = []; ['add', 'e', 'y', 'dbl', 'more'].forEach(k => items.push(gmPick(COMP_BANK.filter(x => x.k === k), 1)[0]));
+    return vcSh(items).map(it => ({ topic, head: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">形容詞：<b>${esc(it.adj)}</b></p>`, done: gmFill(it.s, it.a), steps: [
+      S('第 1 步：這個形容詞屬於哪一種？', ['add', 'e', 'y', 'dbl', 'more'].map(k => ({ id: k, a: COMP_RULE[k][0] })), it.k, `<b>${esc(it.adj)}</b>：${COMP_RULE[it.k][0]}。`),
+      S('第 2 步：把比較級拼出來', [], it.a, `<b>${esc(it.adj)}</b> → <b>${esc(it.a)}</b>`, { typed: true }),
+    ] }));
+  }
+  const kinds = [['ing', 'add'], ['ing', 'e'], ['ing', 'dbl'], ['ed', 'dbl'], ['ed', 'y']], items = [];
+  kinds.forEach(([t, k]) => { const c = gmIngPairs().filter(p => p[0] === t && p[1].k === k); items.push(gmPick(c, 1)[0]); });
+  return vcSh(items).map(([t, it]) => {
+    const A = t === 'ing' ? it.ing : it.ed, s = t === 'ing' ? it.si : it.se, rk = it.k === 'y' && t === 'ing' ? 'add' : it.k;
+    const ropts = Object.entries(ING_RULE[t]).map(([k, v]) => ({ id: k, a: v }));
+    return { topic, head: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(s)}</p><p class="qzh">動詞：<b>${esc(it.v)}</b></p>`, done: gmFill(s, A), steps: [
+      S('第 1 步：是「正在做」還是「已經做過」？', [{ id: 'ing', a: '正在做（now / is / am / are）→ -ing' }, { id: 'ed', a: '過去做過（yesterday / last / ago）→ -ed' }], t, t === 'ing' ? '句子裡有 now 或 is / am / are，是正在做，用 -ing。' : '句子裡有 yesterday 或 last ...，是過去做過，用 -ed。'),
+      S(`第 2 步：${esc(it.v)} 的拼字，要用哪一條規則？`, ropts, rk, `<b>${esc(it.v)}</b>：${ING_RULE[t][rk]}。`),
+      S('第 3 步：把答案拼出來', [], A, `<b>${esc(it.v)}</b> → <b>${esc(A)}</b>`, { typed: true }),
+    ] };
+  });
+}
+/* ---------- 畫面 ---------- */
+GMC.gm = { master: '文法小達人', pre: 'gm', title: '文法專項訓練', subt: 'Grammar', label: '文法：', intro: '期末考 Module 3、Module 4 的文法。先搭鷹架、再項目精熟、最後應用！', topics: GMT, count: GM_COUNT, modeT: { drill: '項目精熟', exam: '段考模擬卷', fix: '找錯誤' },
+  applyCards: [['exam', '📝', '段考模擬卷', '像考卷一樣：所有格、指示詞、比較級、-ed/-ing，共 14 題，答對 12 題拿星星'], ['fix', '🔎', '找錯誤，改正它', '句子裡藏著一個錯誤，找出來並改正，共 8 題，答對 6 題拿星星']] };
+const GM_TABS = [['learn', '🪜 搭鷹架'], ['drill', '🎯 項目精熟'], ['apply', '🏆 應用']];
+function gmTabs() { return `<div class="gvtabs">${GM_TABS.map(([k, l]) => `<button data-x="tab" data-v="${k}" class="${GM.tab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`; }
+function gmChips() { return `<div class="gvtabs vwk">${gmCfg().topics.map(t => `<button data-x="topic" data-v="${t.id}" class="${GM.topic === t.id ? 'on' : ''}">${t.ic} ${t.t}</button>`).join('')}</div>`; }
+function gmStar(key) { const b = P.best[key]; return `${starsHtml(!!P.done[key])}${b != null ? `<small>最佳 ${b}</small>` : ''}${P.reps[key] ? `<small>🏅 ${P.reps[key]}</small>` : ''}`; }
+function gmTbl(rows, head) { return `<table class="vtab vr">${head ? `<tr>${head.map(h => `<th>${h}</th>`).join('')}</tr>` : ''}${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`; }
+const gmSay = (s, l) => `<button class="btn sm" data-x="say" data-s="${esc(s)}">🔊${l || ''}</button>`;
+function gmLearnBody(topic) {
+  if (topic === 'poss') return `<div class="gvc"><h3>🧸 所有格形容詞：這是誰的？</h3><p>放在名詞前面，告訴我們「這個東西是誰的」。<b>後面一定要接名詞</b>。</p>
+    ${gmTbl([['He（男生）', '<b>his</b>', 'His ball is red. ' + gmSay('His ball is red.')], ['She（女生）', '<b>her</b>', 'Her cat is cute. ' + gmSay('Her cat is cute.')], ['It（動物、東西）', '<b>its</b>', 'Its tail is short. ' + gmSay('Its tail is short.')], ['They（很多個）', '<b>their</b>', 'Their homework is fun. ' + gmSay('Their homework is fun.')]], ['誰', '用哪個字', '例句'])}</div>
+    <div class="gvc"><h3>⚠️ 兩個容易錯的地方</h3><p>① 空格在<b>句子開頭</b>，第一個字母要<b>大寫</b>：<b>His</b> ball is red.（不是 his）</p><p>② <b>its</b> 沒有撇號，意思是「牠的、它的」；<b>it's</b> 有撇號，是 <b>it is</b>（牠是）的縮寫。</p></div>`;
+  if (topic === 'dem') return `<div class="gvc"><h3>👉 指示詞：指出「這個」還是「那個」</h3><p>看兩件事：<b>近還是遠</b>？<b>一個還是很多個</b>？</p>
+    ${gmTbl([['近（在手邊）', '<b>this</b>（這個）', '<b>these</b>（這些）'], ['遠（在那邊）', '<b>that</b>（那個）', '<b>those</b>（那些）']], ['', '一個 → 後面用 is', '很多個 → 後面用 are'])}</div>
+    <div class="gvc"><h3>例句，點 🔊 聽聽看</h3><p>This is my pencil. ${gmSay('This is my pencil.')}</p><p>That is our school. ${gmSay('That is our school.')}</p><p>These are my books. ${gmSay('These are my books.')}</p><p>Those are his shoes. ${gmSay('Those are his shoes.')}</p><p><small>口訣：this / that 搭配 <b>is</b>；these / those 搭配 <b>are</b>。句子開頭要大寫。</small></p></div>`;
+  if (topic === 'comp') return `<div class="gvc"><h3>📏 比較級：A 比 B 更…</h3><p>比較兩個東西，句型是：<b>A is ＋ 比較級 ＋ than ＋ B</b>。<br>例：The snake is <b>longer than</b> the pencil. ${gmSay('The snake is longer than the pencil.')}</p>
+    ${gmTbl(['add', 'e', 'y', 'dbl', 'more'].map(k => [`${gmMiss('comp.' + k) ? '⚠️ ' : ''}${COMP_RULE[k][0]}`, COMP_RULE[k][1], COMP_RULE[k][2]]), ['規則', '例子', '例子'])}
+    <p><small>⚠️ 不可以同時用兩種：<b>more taller ✗</b>，要寫 <b>taller</b>。比較級後面別忘了 <b>than</b>。</small></p></div>`;
+  return `<div class="gvc"><h3>🔧 動詞加 -ing 和 -ed</h3><p>先看<b>時間線索</b>：<b>now</b>、<b>is / am / are</b> → 正在做 → 加 <b>-ing</b>；<b>yesterday</b>、<b>last ...</b>、<b>ago</b> → 過去做過 → 加 <b>-ed</b>。</p>
+    <p>例：She is <b>talking</b> to her friend. ${gmSay('She is talking to her friend.')}　We <b>watched</b> a movie yesterday. ${gmSay('We watched a movie yesterday.')}</p></div>
+    <div class="gvc"><h3>拼字規則</h3>${gmTbl([
+      [`${gmMiss('ing.add') ? '⚠️ ' : ''}一般：直接加`, 'talk → talking', 'talk → talked'],
+      [`${gmMiss('ing.e') ? '⚠️ ' : ''}字尾是 e`, 'write → writ<b>ing</b>（去 e）', 'dance → danc<b>ed</b>（只加 d）'],
+      [`${gmMiss('ing.dbl') ? '⚠️ ' : ''}短母音 + 一個子音<br><small>（重複最後一個字母）</small>`, 'run → ru<b>nn</b>ing<br>whiz → whi<b>zz</b>ing', 'stop → sto<b>pp</b>ed<br>whiz → whi<b>zz</b>ed'],
+      [`${gmMiss('ing.y') ? '⚠️ ' : ''}子音 + y`, 'study → study<b>ing</b>（y 不變）', 'study → stud<b>ied</b>（y 變 i）'],
+    ], ['規則', '加 -ing', '加 -ed'])}<p><small>⚠️ 常錯：<b>running</b>（不是 runing）。run 是「子音 r-u-n」結尾，要把 n 再寫一次。</small></p></div>`;
+}
+function gmLearn() {
+  const t = gmTopic(GM.topic), key = `${gmCfg().pre}.${t.id}.guide`;
+  return gmChips() + gmCfg().learn(t.id) + `<div class="gvc"><h3>🪜 引導題：一步一步想，不會也沒關係</h3><p>5 題，每一題分成幾個小步驟，卡住會有提示，可以一直試到答對。<b>5 題全部完成就拿星星</b>。</p>
+    <div class="tctl"><button class="btn pri" data-x="gstart">開始引導題</button><span class="gvprog">${gmStar(key)}</span></div></div>`;
+}
+function gmDrillList() {
+  return `<div class="gvc"><h3>🎯 每關 10 題，答對 8 題以上拿星星</h3><p>每次出的題目都不一樣。提示 💡 用了也沒關係，但要<b>靠自己答對</b>才有星星喔！</p></div>
+  <div class="gvgrid">${gmCfg().topics.map(t => { const k = `${gmCfg().pre}.${t.id}.drill`; return `<button class="gvc gitem rnd" data-x="dstart" data-v="${t.id}"><span class="ri">${t.ic}</span><b>${t.t}</b><small>${t.en}</small><span class="rs">${gmStar(k)}</span></button>`; }).join('')}</div>`;
+}
+function gmApplyList() {
+  const C = gmCfg().applyCards, pre = gmCfg().pre;
+  return `<div class="gvc"><h3>🏆 應用：像考試一樣自己完成</h3><p>這裡沒有題目前的提示線索，要自己判斷。先把「搭鷹架」和「項目精熟」做熟，再來挑戰！</p></div>
+  <div class="gvgrid">${C.map(([k, ic, t, sub]) => `<button class="gvc gitem rnd" data-x="astart" data-v="${k}"><span class="ri">${ic}</span><b>${t}</b><small>${sub}</small><span class="rs">${gmStar(pre + '.apply.' + k)}</span></button>`).join('')}</div>`;
+}
+const gmKb = () => {
+  const k = l => [...l].map(c => `<button class="kk" data-x="gk" data-k="${c}">${c}</button>`).join('');
+  return `<div class="kb vkb"><div class="kr">${k('qwertyuiop')}</div><div class="kr">${k('asdfghjkl')}</div><div class="kr">${k('zxcvbnm')}<button class="kk wide" data-x="gk" data-k="BACK" aria-label="倒退">⌫</button></div><div class="kr"><button class="kk wide" style="flex:3" data-x="gk" data-k=" ">空白鍵</button><button class="kk go" data-x="gk" data-k="GO">檢查</button></div></div>`;
+};
+function gmKey(k) {
+  const inp = $('#gin'); if (!inp || inp.disabled) return;
+  if (k === 'BACK') inp.value = inp.value.slice(0, -1); else if (k === 'GO') { const b = $('#gv [data-x="check"]'); b && b.click(); return; } else inp.value += k;
+}
+document.addEventListener('pointerdown', e => { const t = e.target.closest && e.target.closest('#gv [data-x="gk"]'); if (!t || S.view !== 'gm') return; e.preventDefault(); window.__gkTs = Date.now(); gmKey(t.dataset.k); });
+function gmBody(q, cur) {   /* cur: 目前這一題/這一步 {kind, opts, pick, st, ans, wrongs} */
+  const done = cur.pick != null && cur.st !== 'try';
+  if (cur.kind === 'type') {
+    return done ? `<div class="vtype"><input class="vinput ${cur.st === 'bad' ? 'bad' : 'good'}" value="${esc(cur.pick)}" disabled></div>`
+      : `<div class="vtype"><input id="gin" class="vinput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="在這裡拼字" value="" inputmode="none"><button class="btn pri" data-x="check">檢查</button></div>${gmKb()}`;
+  }
+  const cls = cur.kind === 'wb' ? 'gwb' : 'gvopts';
+  return `<div class="${cls}">${cur.opts.map(o => { let c = ''; if (cur.pick != null && cur.st !== 'try') c = o.id === cur.ans ? ' good' : o.id === cur.pick ? ' badc' : ' dim'; else if ((cur.wrongs || []).includes(o.id)) c = ' badc'; return `<button class="${cur.kind === 'wb' ? 'gwbtn' : 'gvopt'}${c}" data-x="pick" data-v="${esc(o.id)}" ${done || (cur.wrongs || []).includes(o.id) ? 'disabled' : ''}><b>${esc(o.a)}</b></button>`; }).join('')}</div>`;
+}
+function gmFeedback(q) {
+  const z = GM.quiz, ok = q.st !== 'bad', last = z.i === z.qs.length - 1;
+  const head = q.st === 'ok' ? '🎉 答對了！太棒了！' : q.st === 'help' ? '🌱 答對了！用了提示也沒關係，下次試著靠自己！' : '💪 差一點點！看看解釋，下次就會了。';
+  return `<div class="gvfb ${ok ? 'ok' : 'no'}"><b>${head}</b><p>${q.explain}</p><div class="tctl"><button class="btn pri" data-x="qnext">${last ? '看成績 →' : '下一題 →'}</button></div></div>`;
+}
+const GM_MODE_T = { drill: '項目精熟', exam: '段考模擬卷', fix: '找錯誤' };
+function gmQuiz() {
+  const z = GM.quiz; if (!z) return GM.tab === 'learn' ? gmLearn() : GM.tab === 'drill' ? gmDrillList() : gmApplyList();
+  if (z.done) return gmSummary();
+  if (z.mode === 'guide') return gmGuide();
+  const q = z.qs[z.i], answered = q.pick != null;
+  const title = z.mode === 'drill' ? `${gmTopic(z.topic, z.mod).ic} ${gmTopic(z.topic, z.mod).t}` : gmCfg().modeT[z.mode];
+  return `<div class="tctl"><button class="btn sm" data-x="qback">← 離開</button><span class="gvprog">${title} · 第 ${z.i + 1} / ${z.qs.length} 題</span></div><div class="gvbar"><i style="width:${z.i / z.qs.length * 100}%"></i></div>
+  <div class="gvc">${q.part ? `<p class="gpart">${esc(q.part)}</p>` : ''}${q.prompt}${q.hint && !answered ? q.hintHtml : ''}${gmBody(q, q)}${!answered ? `<div class="tctl"><button class="btn" data-x="hint" ${q.hint ? 'disabled' : ''}>💡 提示</button></div>` : ''}${answered ? gmFeedback(q) : ''}</div>`;
+}
+function gmGuide() {
+  const z = GM.quiz, it = z.qs[z.i], st = it.steps[it.si], fin = it.si === it.steps.length - 1 && st.pick != null && st.st === 'ok';
+  const cur = Object.assign({ kind: st.typed ? 'type' : st.wb ? 'wb' : 'mc' }, st);
+  const bar = it.steps.map((s, k) => `<span class="gstep ${k < it.si || (k === it.si && s.st === 'ok') ? 'ok' : k === it.si ? 'now' : ''}">${k + 1}</span>`).join('');
+  const msg = st.st === 'ok' ? `<div class="gvfb ok"><b>✅ 答對了！</b><p>${st.explain}</p>${fin ? `<p>完整的句子：${it.done}</p>` : ''}<div class="tctl"><button class="btn pri" data-x="gnext">${fin ? (z.i === z.qs.length - 1 ? '完成！看成績 →' : '下一題 →') : '下一步 →'}</button></div></div>`
+    : st.st === 'try' ? `<div class="gvfb no"><b>🌱 再想想看～</b><p>${st.typed ? `提示：${esc(st.ans[0])} ${'_ '.repeat(Math.max(0, st.ans.length - 1))}（共 ${st.ans.length} 個字母）` : '剛剛選的不對，換一個再試試看。'}</p>${st.typed ? '' : `<p>${st.explain}</p>`}</div>` : '';
+  return `<div class="tctl"><button class="btn sm" data-x="qback">← 離開</button><span class="gvprog">🪜 引導題 · 第 ${z.i + 1} / ${z.qs.length} 題</span></div><div class="gvbar"><i style="width:${z.i / z.qs.length * 100}%"></i></div>
+  <div class="gvc">${it.head}<div class="gsteps">${bar}</div><p class="qtext" style="font-size:1.1rem">${st.prompt}</p>${gmBody(it, cur)}${msg}</div>`;
+}
+function gmSummary() {
+  const z = GM.quiz;
+  if (z.mode === 'guide') return `<div class="gvc gvwin"><h3>🪜 引導題完成！</h3><p class="gvbig">${z.qs.length} <small>/ ${z.qs.length}</small></p><p>你一步一步把 ${z.qs.length} 題都想通了！接下來去「🎯 項目精熟」自己練習吧。</p><div class="tctl"><button class="btn" data-x="qback">回到搭鷹架</button><button class="btn pri" data-x="gstart">再做一輪</button><button class="btn pri" data-x="togo" data-v="drill">去項目精熟 →</button></div></div>`;
+  const ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, bad = z.qs.filter(q => q.st === 'bad').length;
+  return `<div class="gvc gvwin"><h3>${z.mode === 'exam' ? '📝' : z.mode === 'fix' ? '🔎' : gmTopic(z.topic, z.mod).ic} ${z.mode === 'drill' ? gmTopic(z.topic, z.mod).t : gmCfg().modeT[z.mode]}：成績</h3><p class="gvbig">${ok} <small>/ ${z.qs.length}</small></p><p>✅ 自己答對 ${ok} 題　🌱 用提示答對 ${hp} 題　❌ 答錯 ${bad} 題</p>
+  <div class="gvlist">${z.qs.map((q, i) => `<div class="gvrow ${q.st}"><span>${q.st === 'ok' ? '✅' : q.st === 'help' ? '🌱' : '❌'}</span><div><b>${i + 1}.</b> ${q.st === 'bad' ? q.explain : '<small>' + (q.ans ? esc(q.ans) : '') + '</small>'}</div></div>`).join('')}</div>
+  <div class="tctl"><button class="btn" data-x="qback">回到列表</button><button class="btn pri" data-x="qagain">再挑戰一次</button></div></div>`;
+}
+function gmReward() {
+  const z = GM.quiz;
+  if (z.mode === 'guide') {
+    const key = `${gmCfg().pre}.${z.topic}.guide`; const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; logWin(gmCfg().label + '引導題：' + gmTopic(z.topic, z.mod).t, P.reps[key]); saveP(); updStars();
+    celebrate('🪜 引導題完成！', first ? '得到一顆星星！星星記錄在右上角' : `練習章 +1 🏅（第 ${P.reps[key]} 次）`, 36); return;
+  }
+  const key = z.mode === 'drill' ? `${gmCfg().pre}.${z.topic}.drill` : `${gmCfg().pre}.apply.${z.mode}`, n = z.qs.length, ok = z.qs.filter(q => q.st === 'ok').length, hp = z.qs.filter(q => q.st === 'help').length, need = n - 2;
+  P.best[key] = Math.max(P.best[key] || 0, ok);
+  const label = gmCfg().label + (z.mode === 'drill' ? gmTopic(z.topic, z.mod).t : gmCfg().modeT[z.mode]);
+  if (ok >= need) { const first = !P.done[key]; P.done[key] = 1; P.reps[key] = (P.reps[key] || 0) + 1; logWin(label, P.reps[key]); saveP(); updStars(); celebrate(ok === n ? '🏆 全部答對！' + gmCfg().master + '！' : '🌟 好棒！' + (first ? '得到一顆星星！' : '練習章 +1 🏅'), first ? '星星記錄在右上角' : `這一關已經練了 ${P.reps[key]} 次，越練越熟！`, ok === n ? 50 : 36); }
+  else if (hp > 0 && ok + hp >= need) { saveP(); updStars(); encourage(); }
+  else { saveP(); celebrate(`💪 答對 ${ok} 題，進步中！`, '看看下面的解釋，再挑戰一次，一定會更好！', 14); }
+}
+function gmRender(keep) {
+  const el = $('#gv'); if (!el || S.view !== 'gm') return; const top = el.scrollTop;
+  if (gmCfg().render) { el.innerHTML = `<div class="shelf-in gvin">${gmCfg().render()}</div>`; el.scrollTop = keep ? top : 0; el.classList.toggle('zyon', VC_ZY); if (VC_ZY) zyNode(el); return; }
+  el.innerHTML = `<div class="shelf-in gvin"><h1>${gmCfg().title}</h1><p>${gmCfg().intro} <button class="btn sm" data-x="zy">注音：${VC_ZY ? '開' : '關'}</button></p>${gmTabs()}${gmQuiz()}</div>`;
+  el.scrollTop = keep ? top : 0; const f = el.querySelector('.gvfb'); if (f && keep) f.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  el.classList.toggle('zyon', VC_ZY); if (VC_ZY) zyNode(el);
+  const inp = $('#gin'); if (inp && !keep) setTimeout(() => inp.focus(), 50);
+  gmAutoSay(keep);
+}
+function gmAutoSay(keep) {
+  const z = GM.quiz; if (!z || z.done) return; const q = z.qs[z.i]; const cur = z.mode === 'guide' ? q.steps[q.si] : q; const w = (z.mode === 'guide' ? q.say : q.say); if (!w || keep) return;
+  if (z.mode !== 'guide' && q.pick != null) return; if (z.mode === 'guide' && cur.st === 'ok') return; clearTimeout(window.__gsay); window.__gsay = setTimeout(() => speakQuick(w), 350);
+}
+function openGm(mod) {
+  stopAll(); GM.mod = mod || 'gm'; GM.topic = gmCfg().topics[0].id; GM.tab = 'learn'; GM.quiz = null; S.view = 'gm'; S.bookId = null; countable = gmCfg().count;
+  $('#shelf').hidden = true; $('#book').hidden = true; document.querySelector('.pager').hidden = true; $('#gv').hidden = false; $('#starCount').hidden = (GM.mod === 'plan');
+  $('#brandTitle').textContent = gmCfg().title; $('#brandSub').textContent = gmCfg().subt; $('#bShelf').setAttribute('aria-pressed', 'false');
+  document.documentElement.style.setProperty('--fs', S.fs); updStars(); gmRender(); saveP();
+}
+function gmAnswer(q, val) {
+  q.pick = val; const ok = q.kind === 'type' ? q.acc.includes(gmN(val)) : val === q.ans;
+  q.st = ok ? (q.hint ? 'help' : 'ok') : 'bad';
+  const k = 'gw.' + q.tag; if (q.st === 'bad') P.best[k] = (P.best[k] || 0) + 1; else if (q.st === 'ok' && P.best[k]) P.best[k] = Math.max(0, P.best[k] - 1);
+  if (q.st === 'ok') toast('答對了 ✓', 900);
+}
+function gmStepAnswer(it, val) {
+  const st = it.steps[it.si]; const ok = st.typed ? gmN(val) === gmN(st.ans) : val === st.ans;
+  if (ok) { st.pick = val; st.st = 'ok'; toast('答對了 ✓', 900); }
+  else { st.wrongs = (st.wrongs || []).concat(st.typed ? [] : [val]); st.st = 'try'; st.pick = null; if (st.typed) st.tries = (st.tries || 0) + 1; }
+}
+function gmStart(mode, topic) {
+  const c = gmCfg(); let qs; if (mode === 'drill') qs = c.drill(topic); else if (mode === 'exam') qs = c.exam(); else if (mode === 'fix') qs = c.fix(); else qs = c.guide(topic).map(it => Object.assign(it, { si: 0 }));
+  return { mode, topic, qs, i: 0, done: false, mod: GM.mod };
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('#gv [data-x]'); if (!t || S.view !== 'gm' || GM.mod === 'plan') return; const a = t.dataset.x, z = GM.quiz;
+  switch (a) {
+    case 'tab': GM.tab = t.dataset.v; GM.quiz = null; stopAll(); break;
+    case 'topic': GM.topic = t.dataset.v; GM.quiz = null; break;
+    case 'say': speakQuick(t.dataset.s); return;
+    case 'gk': if (Date.now() - (window.__gkTs || 0) > 500) gmKey(t.dataset.k); return;
+    case 'zy': VC_ZY = !VC_ZY; try { localStorage.setItem('vc-zy', VC_ZY ? '1' : '0'); } catch (x) { } break;
+    case 'gstart': GM.quiz = gmStart('guide', (z && z.topic) || GM.topic); break;
+    case 'dstart': GM.topic = t.dataset.v; GM.quiz = gmStart('drill', t.dataset.v); break;
+    case 'astart': GM.quiz = gmStart(t.dataset.v, GM.topic); break;
+    case 'qagain': GM.quiz = gmStart(z.mode, z.topic); break;
+    case 'togo': GM.tab = t.dataset.v; GM.quiz = null; break;
+    case 'qback': GM.quiz = null; stopAll(); break;
+    case 'hint': { z.qs[z.i].hint = true; break; }
+    case 'pick': { const q = z.qs[z.i]; if (z.mode === 'guide') { gmStepAnswer(q, t.dataset.v); break; } if (q.pick != null) return; gmAnswer(q, t.dataset.v); break; }
+    case 'check': { const q = z.qs[z.i], v = ($('#gin') || {}).value || ''; if (!v.trim()) { toast('先拼拼看喔～', 1200); return; } if (z.mode === 'guide') { gmStepAnswer(q, v.trim()); break; } if (q.pick != null) return; gmAnswer(q, v.trim()); break; }
+    case 'gnext': { const it = z.qs[z.i]; if (it.si < it.steps.length - 1) it.si++; else if (z.i < z.qs.length - 1) z.i++; else { z.done = true; gmRender(); gmReward(); return; } break; }
+    case 'qnext': if (z.i < z.qs.length - 1) z.i++; else { z.done = true; gmRender(); gmReward(); return; } break;
+  }
+  gmRender(!['tab', 'topic', 'gstart', 'dstart', 'astart', 'qagain', 'togo', 'qback', 'qnext', 'gnext'].includes(a));
+  if (['qnext', 'gnext', 'gstart', 'dstart', 'astart', 'qagain'].includes(a)) { const inp = $('#gin'); inp && inp.focus(); }
+});
+Object.assign(GMC.gm, { learn: gmLearnBody, drill: gmDrill, exam: gmExam, fix: gmFix, guide: gmGuideItems });
+document.addEventListener('keydown', e => { if (S.view === 'gm' && e.key === 'Enter' && e.target && e.target.id === 'gin') { e.preventDefault(); const b = $('#gv [data-x="check"]'); b && b.click(); } });
+(function () {
+  const st = document.createElement('style');
+  st.textContent = `.gwb{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}.gwbtn{border:3px solid var(--line);background:#fffbe8;border-radius:14px;padding:10px 22px;font-size:1.35rem;font-family:var(--f-read);min-height:56px;cursor:pointer;color:var(--ink)}.gwbtn.good{background:#d8f2d8;border-color:#2e9e4a}.gwbtn.badc{background:#fde0e0;border-color:#c0392b}.gwbtn.dim{opacity:.45}
+.gchip{display:inline-block;background:#e6eefc;color:#2b4a8a;border-radius:999px;padding:3px 12px;margin:0 8px 4px 0;font-weight:700;font-size:.95rem}.gctx{margin:0 0 4px;color:#555;font-family:var(--f-read)}.gpart{background:#fff3cd;border-radius:10px;padding:4px 12px;font-weight:800;display:inline-block;margin:0 0 6px}
+.vwrong{color:#c0392b;font-weight:800;text-decoration:underline wavy #c0392b}.gsteps{display:flex;gap:8px;margin:8px 0}.gstep{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800}.gstep.ok{background:#2e9e4a;border-color:#2e9e4a;color:#fff}.gstep.now{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.gvtabs.vwk button{font-size:.95rem}`;
+  document.head.appendChild(st);
+})();
+/* ============ 自然拼讀與拼字專項訓練（Module 3 W1–2 小考）============ */
+const PHT = [
+  { id: 'spell', t: '聽寫拼字', en: 'W1–2 拼字表', ic: '✏️' },
+  { id: 'blend', t: '字尾字母組合', en: '-nd -ng -nk -mp -xt -nt', ic: '🔤' },
+  { id: 'dbl', t: '雙字尾子音', en: '-ll -ss -dd -ff -zz', ic: '🔡' },
+  { id: 'pre', t: '字首 un- / re-', en: 'prefixes', ic: '🧩' },
+  { id: 'ing', t: '字尾變化 -ed / -ing', en: 'inflections', ic: '🔧' },
+];
+/* 老師的拼字表 */
+const PH_SP = {
+  w1: [['next', '下一個', 'xt', 'Who is next in line?'], ['long', '長的', 'ng', 'The snake is very long.'], ['camp', '露營', 'mp', 'We went to a summer camp.'], ['drink', '喝', 'nk', 'I drink milk every day.'],
+    ['hunt', '打獵、尋找', 'nt', 'The cat will hunt for a mouse.'], ['pond', '池塘', 'nd', 'Ducks swim in the pond.'], ['friend', '朋友', 'nd', 'She is my best friend.'], ['young', '年輕的', 'ng', 'The young bird is learning to fly.']],
+  w2: [['dress', '洋裝', 'ss', 'That is a beautiful dress.'], ['kiss', '親吻', 'ss', 'Mom gave me a kiss.'], ['pull', '拉', 'll', 'Please pull the door.'], ['spill', '灑出來', 'll', 'Try not to spill your water.'],
+    ['off', '關掉、離開', 'ff', 'Turn off the light, please.'], ['add', '增加', 'dd', 'Add two and three.'], ['address', '地址', 'ss', 'What is your address?'], ['across', '穿過、在對面', 'ss', 'Nathan lives across from the school.']],
+  w3: [['chest', '胸膛、箱子', 'ch', 'A pirate keeps gold in a chest.'], ['such', '這麼', 'ch', 'I have such a nice friend.'], ['thin', '瘦的、薄的', 'th', 'A pencil is thin.'], ['these', '這些', 'th', 'These are my books.'],
+    ['shine', '發亮', 'sh', 'The sun will shine today.'], ['while', '當…的時候', 'wh', 'Please read while I cook.'], ['whisper', '小聲說', 'wh', 'Please whisper in the library.'], ['thumb', '大拇指', 'th', 'He hurt his thumb.']],
+};
+const PH_ALL = [].concat(PH_SP.w1, PH_SP.w2).map(([w, zh, pat, s]) => ({ w, zh, pat, s }));
+const PH_W3 = PH_SP.w3.map(([w, zh, pat, s]) => ({ w, zh, pat, s }));
+/* 分類字庫（老師的作業字 + 少量同類單字） */
+const PH_BL = {
+  nd: [['friend', '朋友'], ['hand', '手'], ['pond', '池塘'], ['bond', '連結'], ['sand', '沙子'], ['band', '樂團'], ['send', '寄、送'], ['wind', '風']],
+  ng: [['long', '長的'], ['young', '年輕的'], ['stung', '刺痛（sting 的過去式）'], ['song', '歌'], ['king', '國王'], ['ring', '戒指'], ['sing', '唱歌'], ['strong', '強壯的']],
+  nk: [['junk', '垃圾'], ['drink', '喝'], ['blink', '眨眼'], ['pink', '粉紅色'], ['think', '想'], ['bank', '銀行'], ['sink', '水槽'], ['thank', '謝謝']],
+  mp: [['jump', '跳'], ['camp', '露營'], ['lamp', '檯燈'], ['bump', '撞到'], ['pump', '打氣'], ['stamp', '郵票'], ['damp', '潮濕的'], ['lump', '一小塊']],
+  xt: [['text', '課文、簡訊'], ['next', '下一個'], ['context', '上下文']],
+  nt: [['hunt', '打獵'], ['print', '列印'], ['rant', '咆哮'], ['tent', '帳篷'], ['plant', '植物'], ['went', '去（go 的過去式）'], ['mint', '薄荷'], ['ant', '螞蟻']],
+};
+const PH_DB = {
+  ll: [['pull', '拉'], ['spill', '灑出來'], ['doll', '洋娃娃'], ['full', '滿的'], ['bell', '鈴'], ['hill', '小山']],
+  ss: [['dress', '洋裝'], ['kiss', '親吻'], ['across', '穿過'], ['address', '地址'], ['chess', '西洋棋'], ['boss', '老闆']],
+  dd: [['add', '增加'], ['odd', '奇怪的、奇數的']],
+  ff: [['off', '關掉、離開'], ['cliff', '懸崖'], ['sniff', '聞、嗅'], ['staff', '全體員工']],
+  zz: [['buzz', '嗡嗡叫'], ['jazz', '爵士樂'], ['fizz', '冒泡']],
+};
+const PH_ZH = {}; [PH_BL, PH_DB].forEach(o => Object.values(o).forEach(a => a.forEach(([w, z]) => { PH_ZH[w] = z; })));
+PH_ALL.concat(PH_W3).forEach(x => { PH_ZH[x.w] = x.zh; });
+const PH_SENT = {}; PH_ALL.concat(PH_W3).forEach(x => { PH_SENT[x.w] = x.s; });
+const PH_RH = [['song', 'long'], ['time', 'climb'], ['lamp', 'camp'], ['pink', 'drink'], ['text', 'next'], ['pin', 'skin'], ['robe', 'globe'], ['gym', 'swim'], ['address', 'dress'], ['pond', 'bond'], ['across', 'boss'], ['miss', 'kiss'], ['add', 'lad'], ['pull', 'full']];
+const PH_PRE = [
+  ['un', 'happy', '不快樂的', 'She is ____ because she lost her toy.'], ['un', 'lock', '打開（鎖）', 'Use the key to ____ the door.'], ['un', 'fair', '不公平的', 'It is ____ to cut in line.'],
+  ['un', 'safe', '不安全的', 'It is ____ to run near the pool.'], ['un', 'tie', '解開', 'Can you ____ my shoes?'], ['un', 'kind', '不友善的', 'It is ____ to say mean words.'],
+  ['un', 'lucky', '不幸運的', 'He was ____ and lost his game.'], ['un', 'pack', '打開行李、拆開', 'We ____ our bags after the trip.'], ['un', 'wrap', '拆開包裝', 'I will ____ the present now.'],
+  ['un', 'clear', '不清楚的', 'The picture is ____, so I can not see it.'],
+  ['re', 'do', '重做', 'I need to ____ my homework.'], ['re', 'play', '重播', 'Let us ____ the song again.'], ['re', 'read', '重讀', 'I will ____ the story to find the main idea.'],
+  ['re', 'write', '重寫', 'Please ____ your sentence neatly.'], ['re', 'build', '重建', 'They will ____ the tower.'], ['re', 'fill', '重新裝滿', 'Please ____ my cup with water.'],
+  ['re', 'tell', '重述', 'Can you ____ the story in your own words?'], ['re', 'use', '再使用', 'We can ____ this bottle.'], ['re', 'wind', '倒帶', '____ the video to the start.'], ['re', 'paint', '重新油漆', 'We will ____ the old fence.'],
+].map(([p, b, zh, s]) => ({ p, b, w: p + b, zh, s }));
+
+const phPick = (a, n) => vcSh(a).slice(0, n);
+const phSay = w => `<button class="btn sm" data-x="say" data-s="${esc(w)}">🔊 聽單字</button>`;
+const phSaySent = w => PH_SENT[w] ? `<button class="btn sm" data-x="say" data-s="${esc(PH_SENT[w])}">🔊 聽句子</button>` : '';
+const phFlat = o => Object.entries(o).flatMap(([k, a]) => a.map(([w, zh]) => ({ w, zh, pat: k })));
+const phBL = phFlat(PH_BL), phDB = phFlat(PH_DB);
+function phWrongs(w) {
+  const c = new Set(), L = w[w.length - 1], dbl = w.length > 2 && w[w.length - 1] === w[w.length - 2];
+  if (dbl) { c.add(w.slice(0, -1)); c.add(w + L); }
+  else { c.add(w + L); }
+  c.add(w.slice(0, -2) + w[w.length - 1] + w[w.length - 2]);
+  for (let i = 1; i < w.length; i++) { if (w[i] === w[i - 1]) c.add(w.slice(0, i) + w.slice(i + 1)); }
+  for (let i = 1; i < w.length - 1; i++) c.add(w.slice(0, i) + w.slice(i + 1));
+  const vow = { a: 'e', e: 'a', i: 'y', o: 'a', u: 'o' }; for (let i = 1; i < w.length - 1; i++) if (vow[w[i]]) c.add(w.slice(0, i) + vow[w[i]] + w.slice(i + 1));
+  c.add(w + 'e'); c.add(w.slice(0, -1) + 'v'); c.add(w.slice(0, 1) + 'h' + w.slice(1));
+  c.delete(w); PH_ALL.concat(PH_W3).forEach(x => c.delete(x.w));
+  const arr = vcSh([...c]); const pref = arr.filter(x => dbl ? (x === w.slice(0, -1) || x === w + L) : true);
+  return pref.slice(0, 3).concat(arr.filter(x => !pref.slice(0, 3).includes(x))).slice(0, 3);
+}
+const phHintP = (it, pat) => `<div class="vhint">💡 ${esc(it.zh || PH_ZH[it.w] || '')}。${pat ? `結尾是 <b>-${esc(pat)}</b>，` : ''}第一個字母是 <b>${esc(it.w[0])}</b>，一共 ${it.w.length} 個字母。</div>`;
+/* ----- 題型 ----- */
+function phQDict(it, clue = true) {   /* 聽寫 */
+  const w = it.w, pat = it.pat;
+  return { kind: 'type', topic: 'spell', tag: 'spell.' + pat, say: w, ans: w, acc: [w],
+    prompt: `<p class="qtext vbig">🎧 聽聽看 ${phSay(w)} ${phSaySent(w)}</p>${clue ? `<p class="qzh">中文：${esc(PH_ZH[w] || it.zh || '')}</p>` : ''}<p class="qzh">把聽到的單字拼出來（小寫就可以）。</p>`,
+    explain: `<b>${esc(w)}</b>（${esc(PH_ZH[w] || it.zh || '')}）${pat && pat.length === 2 && /^(nd|ng|nk|mp|xt|nt|ll|ss|dd|ff|zz)$/.test(pat) ? `——結尾是 <b>-${pat}</b>` : ''}${PH_SENT[w] ? `<br>${esc(PH_SENT[w])}` : ''}`, hintHtml: phHintP(it, pat) };
+}
+function phQSort(it, kind, clue = true) {   /* 字尾分類 */
+  const ends = kind === 'blend' ? ['nd', 'ng', 'nk', 'mp', 'xt', 'nt'] : ['ll', 'ss', 'dd', 'ff', 'zz'];
+  return { kind: 'wb', topic: kind, tag: kind + '.' + it.pat, ans: it.pat, opts: ends.map(e => ({ id: e, a: '-' + e })),
+    prompt: `<p class="qtext vbig">${esc(it.w)} ${phSay(it.w)}</p>${clue ? `<p class="qzh">${esc(it.zh)}</p>` : ''}<p class="qzh">這個單字的結尾是哪一組字母？</p>`,
+    explain: `<b>${esc(it.w)}</b>（${esc(it.zh)}）的結尾是 <b>-${it.pat}</b>。`, hintHtml: `<div class="vhint">💡 大聲唸唸看，最後的音是什麼？${kind === 'blend' ? '<br>-nd（pond）、-ng（long）、-nk（drink）、-mp（camp）、-xt（next）、-nt（hunt）' : '<br>-ll（pull）、-ss（kiss）、-dd（add）、-ff（off）、-zz（buzz）'}</div>` };
+}
+function phQRhyme(pair) {
+  const [q, a] = pair, pool = PH_RH.filter(p => p[0] !== q).map(p => p[1]).filter(x => x !== a && x !== q);
+  const opts = vcSh([a].concat(phPick([...new Set(pool)], 3))).map(x => ({ id: x, a: x }));
+  return { kind: 'mc', topic: 'rhyme', tag: 'rhyme', ans: a, opts,
+    prompt: `<p class="qtext vbig">${esc(q)} ${phSay(q)}</p><p class="qzh">哪一個單字和 <b>${esc(q)}</b> 押韻（尾音一樣）？</p>`,
+    explain: `<b>${esc(q)}</b> 和 <b>${esc(a)}</b> 押韻，尾音都是 <b>-${esc(a.replace(/^[^aeiou]*/, ''))}</b>。`, hintHtml: `<div class="vhint">💡 把選項一個一個唸出來，哪一個結尾的聲音和 ${esc(q)} 一樣？</div>` };
+}
+function phQMis(it, ctx = true) {   /* 圈出拼錯的字 → 選正確拼法 */
+  const w = it.w, wr = phWrongs(w)[0] || w + 'e', s = PH_SENT[w] || '', re = new RegExp('\\b' + w + '\\b', 'i');
+  const m = s.match(re), cap = m && m[0][0] !== m[0][0].toLowerCase(), W = cap ? gmCap(w) : w, WR = cap ? gmCap(wr) : wr;
+  const opts = vcSh([w].concat(phWrongs(w))).map(x => ({ id: x, a: cap ? gmCap(x) : x }));
+  const k = s.search(re), sh = k >= 0 ? `${esc(s.slice(0, k))}<span class="vwrong">${esc(WR)}</span>${esc(s.slice(k + w.length))}` : `<span class="vwrong">${esc(WR)}</span>`;
+  const optsF = opts.map(o => ({ id: o.id, a: o.a }));
+  const q = { kind: 'mc', topic: 'spell', tag: 'spell.' + it.pat, say: null, ans: w, opts: optsF,
+    prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${sh}</p><p class="qzh">🔎 紅色的字<b>拼錯了</b>。哪一個才是正確的拼法？</p>`,
+    explain: `正確拼法是 <b>${esc(w)}</b>（${esc(PH_ZH[w] || it.zh || '')}）。`, hintHtml: phHintP(it, it.pat) };
+  return q;
+}
+function phQPre(it, mode) {   /* mode: pick | meaning | type */
+  const s2 = it.s.replace('____', '____' + it.b);
+  if (mode === 'pick') {
+    const cap = it.s.startsWith('____'), P = cap ? gmCap(it.p) : it.p;
+    return { kind: 'wb', topic: 'pre', tag: 'pre.' + it.p, ans: P, opts: ['un', 're'].map(x => ({ id: cap ? gmCap(x) : x, a: (cap ? gmCap(x) : x) + '-' })),
+      prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(s2)}</p><p class="qzh">意思是「${esc(it.zh)}」。要在 <b>${esc(it.b)}</b> 前面加哪一個字首？</p>`,
+      explain: `<b>${esc(it.p)}-</b> + ${esc(it.b)} = <b>${esc(it.w)}</b>（${esc(it.zh)}）<br>${it.p === 'un' ? 'un- 的意思是「不、相反」' : 're- 的意思是「再一次」'}。`,
+      hintHtml: `<div class="vhint">💡 <b>un-</b> ＝ 不、相反（unhappy）；<b>re-</b> ＝ 再一次（redo）。<br>「${esc(it.zh)}」是不是「再做一次」？還是「不」？</div>` };
+  }
+  if (mode === 'meaning') {
+    const others = phPick(PH_PRE.filter(x => x.w !== it.w), 3), opts = vcSh([it].concat(others)).map(x => ({ id: x.w, a: x.zh }));
+    return { kind: 'mc', topic: 'pre', tag: 'pre.' + it.p, ans: it.w, opts, prompt: `<p class="qtext vbig">${esc(it.w)} ${phSay(it.w)}</p><p class="qzh">這個單字是什麼意思？（${esc(it.p)}- ＋ ${esc(it.b)}）</p>`,
+      explain: `<b>${esc(it.p)}-</b> + ${esc(it.b)} = <b>${esc(it.w)}</b>＝${esc(it.zh)}`, hintHtml: `<div class="vhint">💡 ${it.p === 'un' ? 'un- ＝ 不、相反' : 're- ＝ 再一次'}。</div>` };
+  }
+  const cap = it.s.startsWith('____'), A = it.w;
+  return { kind: 'type', topic: 'pre', tag: 'pre.' + it.p, ans: A, acc: [A], prompt: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">意思是「${esc(it.zh)}」。字首 ＋ <b>${esc(it.b)}</b>，把整個單字拼出來。</p>`,
+    explain: `<b>${esc(it.p)}-</b> + ${esc(it.b)} = <b>${esc(A)}</b>（${esc(it.zh)}）<br>${gmFill(it.s, cap ? gmCap(A) : A)}`, hintHtml: `<div class="vhint">💡 ${it.p === 'un' ? 'un- ＝ 不、相反' : 're- ＝ 再一次'}：字首加在 <b>${esc(it.b)}</b> 前面，字母不會變。</div>` };
+}
+const phSpellW12 = () => PH_ALL;
+/* ----- 出題組合 ----- */
+function phDrill(topic) {
+  if (topic === 'ing') return gmDrill('ing');
+  if (topic === 'spell') return vcSh(phPick(PH_ALL, 6).map(x => phQDict(x, true)).concat(phPick(PH_ALL, 4).map(x => phQMis(x)))).map((q, i) => q);
+  if (topic === 'blend') {
+    const sort = phPick(phBL, 4).map(x => phQSort(x, 'blend', true)), dict = phPick(phBL.filter(x => ['friend', 'hand', 'pond', 'long', 'young', 'drink', 'blink', 'jump', 'camp', 'lamp', 'text', 'next', 'hunt', 'print'].includes(x.w)), 3).map(x => phQDict(x, true)), rh = phPick(PH_RH.filter(p => PH_BL.ng.concat(PH_BL.nk, PH_BL.mp, PH_BL.xt, PH_BL.nd).some(([w]) => w === p[1])), 3).map(phQRhyme);
+    return vcSh(sort.concat(dict, rh));
+  }
+  if (topic === 'dbl') {
+    const sort = phPick(phDB, 4).map(x => phQSort(x, 'dbl', true)), dict = phPick(phDB.filter(x => x.pat !== 'zz'), 3).map(x => phQDict(x, true)), mis = phPick(PH_ALL.filter(x => /^(ss|ll|dd|ff)$/.test(x.pat)), 3).map(x => phQMis(x));
+    return vcSh(sort.concat(dict, mis));
+  }
+  const un = PH_PRE.filter(x => x.p === 'un'), re = PH_PRE.filter(x => x.p === 're');
+  const items = phPick(un, 5).concat(phPick(re, 5));
+  return vcSh(items).map((it, i) => phQPre(it, i < 4 ? 'pick' : i < 7 ? 'meaning' : 'type'));
+}
+function phExam() {
+  const mk = (arr, part) => arr.map(q => Object.assign(q, { part }));
+  const dbls = PH_ALL.filter(x => /^(ss|ll|dd|ff)$/.test(x.pat));
+  return [].concat(
+    mk(phPick(PH_ALL, 6).map(x => phQDict(x, false)), 'Part 1　聽寫拼字（聽到的單字，把它寫出來）'),
+    mk(phPick(PH_ALL, 4).map(x => phQMis(x)), 'Part 2　圈出拼錯的字，選出正確拼法'),
+    mk(phPick(PH_RH, 4).map(phQRhyme), 'Part 3　押韻配對'),
+    mk(phPick(phBL, 1).map(x => phQSort(x, 'blend', false)).concat(phPick(phDB, 1).map(x => phQSort(x, 'dbl', false))), 'Part 4　字尾字母組合'),
+    mk(phPick(gmIngPairs(), 2).map(p => gmQIng(p[1], p[0], 'type')), 'Part 5　字尾變化 -ed / -ing'));
+}
+function phFix() { return vcSh(phPick(PH_ALL, 8).map(x => Object.assign(phQMis(x), { part: '圈出拼錯的字' }))); }
+function phGuide(topic) {
+  if (topic === 'ing') return gmGuideItems('ing');
+  const S = (prompt, opts, ans, explain, extra = {}) => Object.assign({ prompt, opts: opts.map(o => (typeof o === 'string' ? { id: o, a: o } : o)), ans, explain }, extra);
+  if (topic === 'pre') {
+    return vcSh(phPick(PH_PRE.filter(x => x.p === 'un'), 3).concat(phPick(PH_PRE.filter(x => x.p === 're'), 2))).map(it => {
+      const cap = it.s.startsWith('____'), P = cap ? gmCap(it.p) : it.p;
+      return { topic, head: `<p class="qtext vsent" style="font-family:var(--f-read)">${gmBlank(it.s)}</p><p class="qzh">意思：${esc(it.zh)}　字根：<b>${esc(it.b)}</b></p>`, done: gmFill(it.s, cap ? gmCap(it.w) : it.w), steps: [
+        S('第 1 步：這個字的意思，是「不」還是「再一次」？', [{ id: 'un', a: '不、相反（un-）' }, { id: 're', a: '再一次（re-）' }], it.p, `「${esc(it.zh)}」→ ${it.p === 'un' ? '有「不、相反」的意思，用 un-' : '有「再一次」的意思，用 re-'}。`),
+        S('第 2 步：要加哪一個字首？', ['un', 're'].map(x => ({ id: x, a: x + '-' })), it.p, `${esc(it.p)}- 加在 ${esc(it.b)} 前面。`, { wb: true }),
+        S('第 3 步：把整個單字拼出來', [], it.w, `<b>${esc(it.p)}</b> + <b>${esc(it.b)}</b> = <b>${esc(it.w)}</b>`, { typed: true }),
+      ] };
+    });
+  }
+  const list = topic === 'blend' ? phPick(['xt', 'ng', 'nk', 'mp', 'nd', 'nt'].map(k => phPick(phBL.filter(x => x.pat === k && PH_ALL.some(y => y.w === x.w)), 1)[0] || phPick(phBL.filter(x => x.pat === k), 1)[0]), 5)
+    : topic === 'dbl' ? phPick(['ss', 'll', 'dd', 'ff'].map(k => phPick(phDB.filter(x => x.pat === k && PH_ALL.some(y => y.w === x.w)), 1)[0]).concat([phPick(phDB.filter(x => !PH_ALL.some(y => y.w === x.w) && x.pat !== 'zz'), 1)[0]]), 5)
+      : phPick(PH_ALL, 5);
+  return list.map(it => {
+    const w = it.w, pat = it.pat, kind = /^(nd|ng|nk|mp|xt|nt)$/.test(pat) ? 'blend' : 'dbl', ends = kind === 'blend' ? ['nd', 'ng', 'nk', 'mp', 'xt', 'nt'] : ['ll', 'ss', 'dd', 'ff'];
+    const wrongs = phWrongs(w), sp = vcSh([w].concat(wrongs)).map(x => ({ id: x, a: x }));
+    const steps = [S('第 1 步：聽一聽，這個字的結尾是哪一組字母？', ends.map(e => ({ id: e, a: '-' + e })), pat, `<b>${esc(w)}</b> 的結尾是 <b>-${pat}</b>。`, { wb: true }),
+      S('第 2 步：哪一個拼法正確？', sp, w, `正確拼法是 <b>${esc(w)}</b>。`),
+      S('第 3 步：自己把單字拼出來', [], w, `<b>${esc(w)}</b>（${esc(PH_ZH[w] || '')}）`, { typed: true })];
+    return { topic, say: w, head: `<p class="qtext vbig">🎧 ${phSay(w)} ${phSaySent(w)}</p><p class="qzh">中文：${esc(PH_ZH[w] || it.zh || '')}</p>`, done: `<b>${esc(w)}</b>（${esc(PH_ZH[w] || it.zh || '')}）${PH_SENT[w] ? '<br>' + esc(PH_SENT[w]) : ''}`, steps };
+  });
+}
+/* ----- 學習頁 ----- */
+const phChips = (arr, mark) => arr.map(([w]) => `<button class="btn sm phw${mark && mark.includes(w) ? ' star' : ''}" data-x="say" data-s="${esc(w)}">🔊 ${esc(w)}</button>`).join(' ');
+function phLearnBody(topic) {
+  const spw = PH_ALL.map(x => x.w);
+  if (topic === 'spell') return `<div class="gvc"><h3>✏️ 聽寫拼字：老師的拼字表</h3><p>考試時老師會唸單字，你要把它<b>拼出來</b>。點 🔊 先聽幾遍，再用手指在桌上寫一寫。</p>
+    <h4>Module 3 Week 1（結尾字母組合）</h4><p>${phChips(PH_SP.w1)}</p><h4>Module 3 Week 2（雙字尾子音）</h4><p>${phChips(PH_SP.w2)}</p>
+    <p><small>這 16 個字是 12/10 小考的拼字範圍。Week 1 的字結尾是 -nd -ng -nk -mp -xt -nt；Week 2 的字結尾是 -ss -ll -dd -ff。</small></p></div>
+    <div class="gvc"><h3>⚠️ 以前常錯的字</h3><p><b>dress</b>（不是 dres）、<b>across</b>（不是 acros）、<b>address</b>（有兩個 d、兩個 s）、<b>off</b>（只有兩個 f，不是 offf）。</p><p>拼完要<b>檢查兩次</b>，特別看字尾的雙字母。</p></div>
+    <div class="gvc"><h3>之後 Week 3 的拼字（不在 12/10 範圍）</h3><p>${phChips(PH_SP.w3)}</p></div>`;
+  if (topic === 'blend') return `<div class="gvc"><h3>🔤 字尾字母組合（Ending Blends）</h3><p>兩個子音<b>連在一起</b>放在字的結尾，唸的時候兩個聲音要一起出來。⭐ 是拼字表上的字。</p>
+    ${gmTbl(Object.entries(PH_BL).map(([k, a]) => [`<b>-${k}</b>`, phChips(a, spw)]), ['字尾', '單字（點 🔊 聽）'])}</div>
+    <div class="gvc"><h3>🎵 押韻小幫手</h3><p>尾音一樣就是押韻：song – <b>long</b>、lamp – <b>camp</b>、pink – <b>drink</b>、text – <b>next</b>、pond – <b>bond</b>。<br>遇到不會拼的字，想想有沒有押韻的字可以幫忙。</p></div>`;
+  if (topic === 'dbl') return `<div class="gvc"><h3>🔡 雙字尾子音（Double Final Consonants）</h3><p>短母音的單字，結尾的 <b>l、s、d、f、z</b> 常常要<b>寫兩次</b>。⭐ 是拼字表上的字。</p>
+    ${gmTbl(Object.entries(PH_DB).map(([k, a]) => [`<b>-${k}</b>`, phChips(a, spw)]), ['字尾', '單字（點 🔊 聽）'])}</div>
+    <div class="gvc"><h3>⚠️ 拼完要檢查</h3><p>dress、kiss、across、address 結尾都是 <b>ss</b>；pull、spill 是 <b>ll</b>；add 是 <b>dd</b>；off 是 <b>ff</b>。<br>寫了 dres、acros、offf、addres，都是錯的！</p></div>`;
+  if (topic === 'pre') return `<div class="gvc"><h3>🧩 字首 un- 和 re-</h3><p>字首加在單字<b>前面</b>，會改變意思，但原來的字母<b>不會變</b>。</p>
+    ${gmTbl([['<b>un-</b>', '不、相反', 'happy → <b>un</b>happy（不快樂）<br>lock → <b>un</b>lock（打開鎖）<br>safe → <b>un</b>safe（不安全）'], ['<b>re-</b>', '再一次', 'do → <b>re</b>do（重做）<br>read → <b>re</b>read（重讀）<br>write → <b>re</b>write（重寫）']], ['字首', '意思', '例子'])}</div>
+    <div class="gvc"><h3>un- 的字</h3><p>${phChips(PH_PRE.filter(x => x.p === 'un').map(x => [x.w]))}</p><h3>re- 的字</h3><p>${phChips(PH_PRE.filter(x => x.p === 're').map(x => [x.w]))}</p>
+    <p><small>這些字是我依照字首規則挑的練習字，老師還沒有公布字首的單字表；如果老師給了表，再請媽媽拍給我，我會換成老師的字。</small></p></div>`;
+  return gmLearnBody('ing');
+}
+/* ----- 註冊 ----- */
+const PH_COUNT = gmKeys('ph', PHT);
+GMC.ph = { master: '拼讀小達人', pre: 'ph', title: '自然拼讀與拼字', subt: 'Phonics & Spelling', label: '拼讀：', intro: '12/10 小考：拼字、結尾字母組合、雙字尾子音、字首和字尾變化。先搭鷹架、再項目精熟、最後應用！', topics: PHT, count: PH_COUNT,
+  modeT: { drill: '項目精熟', exam: '拼讀檢核卷', fix: '圈出拼錯的字' }, learn: phLearnBody, drill: phDrill, exam: phExam, fix: phFix, guide: phGuide,
+  applyCards: [['exam', '📝', '拼讀・拼字檢核卷', '像小考一樣：聽寫、圈拼錯字、押韻、字尾、字尾變化，共 18 題，答對 16 題拿星星'], ['fix', '🔎', '圈出拼錯的字', '句子裡有一個單字拼錯了，選出正確拼法，共 8 題，答對 6 題拿星星']] };
+(function () { const st = document.createElement('style'); st.textContent = `.phw{margin:2px 4px 2px 0}.phw.star{border-color:#e0a800;background:#fff6d6}.gvc h4{margin:10px 0 4px;font-family:var(--f-display)}`; document.head.appendChild(st); })();
+
+/* ============ 12/10 備考計畫 ============ */
+const PLAN_EXAM = new Date(2026, 11, 10);
+const PL = (id, label, o) => Object.assign({ id, label }, o);
+const PLAN = [
+  ['11/28', '六', [PL('a1', '文法：搭鷹架（所有格、指示詞）', { keys: ['gm.poss.guide', 'gm.dem.guide'], go: ['gm', 'learn', 'poss'] }), PL('a2', '單字 W1：看單字卡（約 10 分鐘）', { go: ['vc', 'm3w1'] })]],
+  ['11/29', '日', [PL('b1', '文法：搭鷹架（比較級、-ed/-ing）', { keys: ['gm.comp.guide', 'gm.ing.guide'], go: ['gm', 'learn', 'comp'] }), PL('b2', '單字 W2：看單字卡', { go: ['vc', 'm3w2'] })]],
+  ['11/30', '一', [PL('c1', '拼讀：搭鷹架（字尾字母組合）', { keys: ['ph.blend.guide'], go: ['ph', 'learn', 'blend'] }), PL('c2', '文法：精熟（所有格、指示詞）', { keys: ['gm.poss.drill', 'gm.dem.drill'], go: ['gm', 'drill'] })]],
+  ['12/1', '二', [PL('d1', '拼讀：搭鷹架（雙字尾子音、聽寫拼字）', { keys: ['ph.dbl.guide', 'ph.spell.guide'], go: ['ph', 'learn', 'dbl'] }), PL('d2', '單字 W1 綜合闖關', { keys: ['vc.m3w1.mix'], go: ['vc', 'm3w1'] })]],
+  ['12/2', '三', [PL('e1', '拼讀：精熟（字尾組合、雙字尾子音）', { keys: ['ph.blend.drill', 'ph.dbl.drill'], go: ['ph', 'drill'] }), PL('e2', '文法：精熟（比較級、-ed/-ing）', { keys: ['gm.comp.drill', 'gm.ing.drill'], go: ['gm', 'drill'] })]],
+  ['12/3', '四', [PL('f1', '單字 W2 綜合闖關', { keys: ['vc.m3w2.mix'], go: ['vc', 'm3w2'] }), PL('f2', '拼讀：字首 un- / re-（搭鷹架＋精熟）', { keys: ['ph.pre.guide', 'ph.pre.drill'], go: ['ph', 'learn', 'pre'] })]],
+  ['12/4', '五', [PL('g1', '單字 W3 綜合闖關（單字考到 W3）', { keys: ['vc.m3w3.mix'], go: ['vc', 'm3w3'] }), PL('g2', '閱讀：Big Red Lollipop 口試題（第 2、3 關口說）', { go: ['book', 'lol'] })]],
+  ['12/5', '六', [PL('h1', '閱讀：Working with Others 口試題＋閱讀測驗', { go: ['book', 'wwo'] }), PL('h2', '拼讀：聽寫拼字精熟（W1–2 的 16 個字）', { keys: ['ph.spell.drill'], go: ['ph', 'drill'] })]],
+  ['12/6', '日', [PL('i1', '拼讀・拼字檢核卷（像小考）', { keys: ['ph.apply.exam'], go: ['ph', 'apply'] }), PL('i2', '單字全部複習（綜合）', { keys: ['vc.m3all.mix'], go: ['vc', 'm3all'] })]],
+  ['12/7', '一', [PL('j1', '文法段考模擬卷', { keys: ['gm.apply.exam'], go: ['gm', 'apply'] }), PL('j2', '文體與觀點訓練（主旨、觀點、作者目的）', { go: ['genre'] })]],
+  ['12/8', '二', [PL('k1', '弱點補強：「找錯誤」文法＋拼字', { keys: ['gm.apply.fix', 'ph.apply.fix'], go: ['gm', 'apply'] }), PL('k2', '重做還沒拿到星星的關卡', { go: ['trophy'] })]],
+  ['12/9', '三', [PL('l1', '輕鬆複習：每個主題挑一關玩玩看，不加新東西', {}), PL('l2', '整理文具、早點睡覺 🌙', {})]],
+];
+const planDone = t => (t.keys && t.keys.length) ? t.keys.every(k => P.done[k]) : !!(P.plan && P.plan[t.id]);
+const planDays = () => { const n = new Date(), a = new Date(n.getFullYear(), n.getMonth(), n.getDate()); return Math.round((PLAN_EXAM - a) / 864e5); };
+function planBanner() {
+  const d = planDays(), all = PLAN.flatMap(x => x[2]), n = all.filter(planDone).length;
+  return `<button class="gvc planbn" data-act="openplan"><span class="ri">📅</span><div><b>${d > 0 ? `12/10 小考倒數 ${d} 天` : d === 0 ? '今天就是小考日！加油！' : '12/10 小考備考計畫'}</b><small>每天兩件小任務，做完自動打勾　已完成 ${n} / ${all.length}</small></div><span class="btn sm pri">看計畫</span></button>`;
+}
+function planRender() {
+  const d = planDays(), all = PLAN.flatMap(x => x[2]), n = all.filter(planDone).length, now = new Date(), tk = `${now.getMonth() + 1}/${now.getDate()}`;
+  const days = PLAN.map(([date, dow, tasks]) => {
+    const isT = date === tk, dn = tasks.filter(planDone).length === tasks.length;
+    return `<div class="gvc plday${isT ? ' today' : ''}${dn ? ' ok' : ''}"><h3>${isT ? '👉 今天　' : ''}${date}（${dow}）${dn ? ' ✅' : ''}</h3>${tasks.map(t => `<div class="pltask"><span class="plck ${planDone(t) ? 'on' : ''}" ${t.keys ? '' : `data-x="pchk" data-id="${t.id}"`} role="${t.keys ? 'img' : 'checkbox'}" aria-checked="${planDone(t)}">${planDone(t) ? '✔' : ''}</span><span class="pltx">${t.label}${t.keys ? '' : '<small>（做完請自己點一下打勾）</small>'}</span>${t.go ? `<button class="btn sm" data-x="pgo" data-id="${t.id}">去做 →</button>` : ''}</div>`).join('')}</div>`;
+  }).join('');
+  return `<h1>📅 12/10 備考計畫</h1><p>第二次小考範圍：Module 3 Week 1–2（單字到 Week 3），包含拼字、自然拼讀、單字、閱讀理解和文法。<button class="btn sm" data-x="zy">注音：${VC_ZY ? '開' : '關'}</button></p>
+  <div class="gvc plhead"><b>${d > 0 ? `距離考試還有 <span class="plbig">${d}</span> 天` : d === 0 ? '🎉 今天考試，放輕鬆！' : '考試已過，辛苦了！'}</b><div class="gvbar"><i style="width:${n / all.length * 100}%"></i></div><small>已完成 ${n} / ${all.length} 項任務。有 ⭐ 的關卡做完會自動打勾，其他的做完請自己點一下圓圈。</small></div>${days}
+  <div class="gvc"><h3>12/10（四）　考試日 🍀</h3><p>早餐吃飽、帶好鉛筆。拼字題寫完要<b>檢查兩次</b>，特別看字尾的雙字母（dress、across、off）。你一定可以的！</p></div>`;
+}
+GMC.plan = { render: planRender, title: '12/10 備考計畫', subt: 'Study Plan', topics: [{ id: 'x' }], count: [] };
+document.addEventListener('click', e => {
+  const t = e.target.closest('#gv [data-x]'); if (!t || S.view !== 'gm' || GM.mod !== 'plan') return; const a = t.dataset.x;
+  if (a === 'zy') { VC_ZY = !VC_ZY; try { localStorage.setItem('vc-zy', VC_ZY ? '1' : '0'); } catch (x) { } gmRender(true); return; }
+  if (a === 'pchk') { P.plan = P.plan || {}; P.plan[t.dataset.id] = !P.plan[t.dataset.id]; saveP(); gmRender(true); return; }
+  if (a === 'pgo') {
+    const task = PLAN.flatMap(x => x[2]).find(x => x.id === t.dataset.id), g = task && task.go; if (!g) return;
+    if (g[0] === 'gm' || g[0] === 'ph') { openGm(g[0]); GM.tab = g[1] || 'learn'; if (g[2]) GM.topic = g[2]; gmRender(); }
+    else if (g[0] === 'vc') { openVc(); try { VC.week = g[1]; VC.tab = 'learn'; vcRender(); } catch (x) { } }
+    else if (g[0] === 'book') { openBook(g[1]); }
+    else if (g[0] === 'genre') { openGv(); }
+    else if (g[0] === 'trophy') { showShelf(); const b = document.querySelector('[data-act="openrw"]'); b && b.click(); }
+  }
+});
+(function () { const st = document.createElement('style'); st.textContent = `.planbn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;border:3px solid #e0a800;background:#fff6d6;margin:6px 0 18px}.planbn .ri{font-size:2.2rem}.planbn small{display:block;color:#6b5a1e;font-weight:600}.planbn>div{flex:1}
+.plday.today{border-color:#e0a800;background:#fffbe8}.plday.ok{border-color:#2e9e4a}.pltask{display:flex;align-items:center;gap:10px;margin:8px 0}.pltx{flex:1}.pltx small{display:block;color:#888}.plck{width:30px;height:30px;border-radius:8px;border:3px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;flex:none}.plck.on{background:#2e9e4a;border-color:#2e9e4a}.plck[data-x]{cursor:pointer}.plbig{font-size:2.2rem;color:#c0392b}.plhead{margin-bottom:14px}`; document.head.appendChild(st); })();
 /* ============ 書櫃與開始 ============ */
 const BOOKS = [
   { id: 'lol', kp: 'lol-', title: 'Big Red Lollipop', zh: '大紅棒棒糖', author: 'Rukhsana Khan', pages: 'pp.204–224', when: '上一課', cover: 'cover2', coverBg: '#b3302b', qmode: 'unscramble', startId: 'b1', spreads: SPREADS2, qs: QS2, rt: RT2 },
